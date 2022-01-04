@@ -1,3 +1,15 @@
 [submodule "libs/qtbase"]
 	path = libs/qtbase
 	url = https://github.com/qt/qtbase
+[submodule "libs/GDAL"]
+	path = libs/GDAL
+	url = https://github.com/OSGeo/GDAL
+[submodule "libs/libosmium"]
+	path = libs/libosmium
+	url = https://github.com/osmcode/libosmium
+[submodule "libs/range-v3"]
+	path = libs/range-v3
+	url = https://github.com/ericniebler/range-v3
+[submodule "libs/fmt"]
+	path = libs/fmt
+	url = https://github.com/fmtlib/fmt
