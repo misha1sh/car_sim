@@ -1,4 +1,4 @@
-#include "roads_extractor.h"
+#include "roads_map_reader.h"
 
 #include <boost/lexical_cast.hpp>
 #include <fmt/core.h>
@@ -8,11 +8,7 @@
 
 #include <cstring>
 #include <unordered_set>
-
-RoadsExtractor::RoadsExtractor(std::filesystem::path osm_input_file_path):
-    osm_input_file_path_(std::move(osm_input_file_path)) {
-
-}
+#include <filesystem>
 
 inline bool contains_string(const char* str, const std::vector<const char*>& strs) {
     return std::ranges::any_of(strs, [&](const char* other_str) {
@@ -87,9 +83,7 @@ struct RoadsMapExtractor : public osmium::handler::Handler {
 
         nodes[node.id()] = Node {
             .id = node.id(),
-            .c = {0, 0}
-//            .lon = node.location().lat_without_check(),
-//            .lat = node.location().lon_without_check()
+            .c = {node.location().lat_without_check(), node.location().lon_without_check()}
         };
     }
 
@@ -100,14 +94,12 @@ struct RoadsMapExtractor : public osmium::handler::Handler {
     }
 };
 
-RoadsVectorMapPtr RoadsExtractor::ExtractRoads() {
-    osmium::io::Reader reader{osm_input_file_path_, osmium::osm_entity_bits::node | osmium::osm_entity_bits::way};
+RoadsVectorMapPtr RoadsMapReader::ReadRoads(const std::filesystem::path& osm_input_file_path) {
+    osmium::io::Reader reader{osm_input_file_path, osmium::osm_entity_bits::node | osmium::osm_entity_bits::way};
 
     RoadsMapExtractor extractor;
     osmium::apply(reader, extractor);
     extractor.printReport();
-
-
 
     return RoadsVectorMap::Create(std::move(extractor.nodes), std::move(extractor.roads));;
 }

@@ -20,29 +20,31 @@ find_package(Boost REQUIRED)
 find_package(Qt6 COMPONENTS Widgets OpenGL OpenGLWidgets REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
+find_package(OpenCV REQUIRED )
 
 add_subdirectory(libs/fmt)
 
 
-
 include_directories(src)
 include_directories(SYSTEM ${OSMIUM_INCLUDE_DIRS})
-include_directories(SYSTEM ${BOOST_INCLUDE_DIRS})
+include_directories( ${OpenCV_INCLUDE_DIRS} )
 
 add_executable(cars_sim
         src/main.cpp
-        src/main_window.cpp
-        src/map/glmapwidget.cpp
-        src/main_window.ui
-        src/map/map_painter.cpp src/map/map_painter.h src/rasterize/roads_extractor.cpp src/rasterize/roads_extractor.h
-        src/rasterize/roads_vector_map.cpp src/rasterize/roads_vector_map.h src/rasterize/projector.cpp src/rasterize/projector.h src/common/entities.h)
+        src/ui/main_window.cpp
+        src/ui/map/glmapwidget.cpp
+        src/ui/main_window.ui
+        src/ui/map/map_painter.cpp src/ui/map/map_painter.h src/rasterize/roads_map_reader.cpp src/rasterize/roads_map_reader.h
+        src/common/roads_vector_map.h src/projections/lon_lat_to_meters_projector.cpp src/projections/lon_lat_to_meters_projector.h src/common/entities.h src/common/raster_map.h src/common/raster_data.h src/rasterize/roads_rasterizer.cpp src/rasterize/roads_rasterizer.h src/projections/meters_to_image_projector.cpp src/projections/meters_to_image_projector.h src/main/roads_map_builder.cpp src/main/roads_map_builder.h)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
 
 target_include_directories(cars_sim PRIVATE ${Qt6_INCLUDE_DIRS} )
+target_include_directories(cars_sim PUBLIC SYSTEM ${BOOST_INCLUDE_DIRS})
+
 target_link_libraries(cars_sim PRIVATE
     Qt6::Widgets Qt6::OpenGL Qt6::OpenGLWidgets
     range-v3::range-v3 fmt::fmt-header-only
-    ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${OSMIUM_LIBRARIES} ${BOOST_LIBRARIES})
+    ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${OSMIUM_LIBRARIES} ${BOOST_LIBRARIES} ${OpenCV_LIBS})

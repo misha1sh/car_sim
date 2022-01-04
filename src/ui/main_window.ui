@@ -41,7 +41,7 @@
   <customwidget>
    <class>GLMapWidget</class>
    <extends>QOpenGLWidget</extends>
-   <header location="global">map/glmapwidget.h</header>
+   <header location="global">ui/map/glmapwidget.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
