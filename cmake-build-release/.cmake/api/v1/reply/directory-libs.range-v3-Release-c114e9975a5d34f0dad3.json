@@ -1,0 +1,95 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"libs/range-v3/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 181,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 182,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 186,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "Unspecified",
+			"destination" : "lib/cmake/range-v3",
+			"exportName" : "range-v3-targets",
+			"exportTargets" : 
+			[
+				{
+					"id" : "range-v3-concepts::@25e5ffa9fda7036367ad",
+					"index" : 0
+				},
+				{
+					"id" : "range-v3-meta::@25e5ffa9fda7036367ad",
+					"index" : 0
+				},
+				{
+					"id" : "range-v3::@25e5ffa9fda7036367ad",
+					"index" : 0
+				}
+			],
+			"paths" : 
+			[
+				"libs/range-v3/CMakeFiles/Export/lib/cmake/range-v3/range-v3-targets.cmake"
+			],
+			"type" : "export"
+		},
+		{
+			"backtrace" : 2,
+			"component" : "Unspecified",
+			"destination" : "lib/cmake/range-v3",
+			"paths" : 
+			[
+				"cmake-build-release/libs/range-v3/range-v3-config-version.cmake",
+				"libs/range-v3/cmake/range-v3-config.cmake"
+			],
+			"type" : "file"
+		},
+		{
+			"backtrace" : 3,
+			"component" : "Unspecified",
+			"destination" : "include",
+			"paths" : 
+			[
+				{
+					"from" : "libs/range-v3/include",
+					"to" : "."
+				}
+			],
+			"type" : "directory"
+		}
+	],
+	"paths" : 
+	{
+		"build" : "libs/range-v3",
+		"source" : "libs/range-v3"
+	}
+}

@@ -1,0 +1,157 @@
+{
+	"BUILD_DIR" : "/home/misha-sh/course/cmake-build-release/libs/fmt/fmt_autogen",
+	"CMAKE_BINARY_DIR" : "/home/misha-sh/course/cmake-build-release",
+	"CMAKE_CURRENT_BINARY_DIR" : "/home/misha-sh/course/cmake-build-release/libs/fmt",
+	"CMAKE_CURRENT_SOURCE_DIR" : "/home/misha-sh/course/libs/fmt",
+	"CMAKE_EXECUTABLE" : "/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/bin/cmake",
+	"CMAKE_LIST_FILES" : 
+	[
+		"/home/misha-sh/course/libs/fmt/CMakeLists.txt",
+		"/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CMakeParseArguments.cmake",
+		"/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/GNUInstallDirs.cmake",
+		"/home/misha-sh/course/libs/fmt/support/cmake/cxx14.cmake",
+		"/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CheckCXXSourceCompiles.cmake",
+		"/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CheckCXXCompilerFlag.cmake",
+		"/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CheckCXXCompilerFlag.cmake",
+		"/home/misha-sh/course/libs/fmt/support/cmake/JoinPaths.cmake",
+		"/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CheckSymbolExists.cmake"
+	],
+	"CMAKE_SOURCE_DIR" : "/home/misha-sh/course",
+	"DEP_FILE" : "/home/misha-sh/course/cmake-build-release/libs/fmt/fmt_autogen/deps",
+	"DEP_FILE_RULE_NAME" : "fmt_autogen/timestamp",
+	"HEADERS" : 
+	[
+		[
+			"/home/misha-sh/course/libs/fmt/include/fmt/args.h",
+			"MU",
+			"4KJVY35SYX/moc_args.cpp",
+			null
+		],
+		[
+			"/home/misha-sh/course/libs/fmt/include/fmt/chrono.h",
+			"MU",
+			"4KJVY35SYX/moc_chrono.cpp",
+			null
+		],
+		[
+			"/home/misha-sh/course/libs/fmt/include/fmt/color.h",
+			"MU",
+			"4KJVY35SYX/moc_color.cpp",
+			null
+		],
+		[
+			"/home/misha-sh/course/libs/fmt/include/fmt/compile.h",
+			"MU",
+			"4KJVY35SYX/moc_compile.cpp",
+			null
+		],
+		[
+			"/home/misha-sh/course/libs/fmt/include/fmt/core.h",
+			"MU",
+			"4KJVY35SYX/moc_core.cpp",
+			null
+		],
+		[
+			"/home/misha-sh/course/libs/fmt/include/fmt/format-inl.h",
+			"MU",
+			"4KJVY35SYX/moc_format-inl.cpp",
+			null
+		],
+		[
+			"/home/misha-sh/course/libs/fmt/include/fmt/format.h",
+			"MU",
+			"4KJVY35SYX/moc_format.cpp",
+			null
+		],
+		[
+			"/home/misha-sh/course/libs/fmt/include/fmt/locale.h",
+			"MU",
+			"4KJVY35SYX/moc_locale.cpp",
+			null
+		],
+		[
+			"/home/misha-sh/course/libs/fmt/include/fmt/os.h",
+			"MU",
+			"4KJVY35SYX/moc_os.cpp",
+			null
+		],
+		[
+			"/home/misha-sh/course/libs/fmt/include/fmt/ostream.h",
+			"MU",
+			"4KJVY35SYX/moc_ostream.cpp",
+			null
+		],
+		[
+			"/home/misha-sh/course/libs/fmt/include/fmt/printf.h",
+			"MU",
+			"4KJVY35SYX/moc_printf.cpp",
+			null
+		],
+		[
+			"/home/misha-sh/course/libs/fmt/include/fmt/ranges.h",
+			"MU",
+			"4KJVY35SYX/moc_ranges.cpp",
+			null
+		],
+		[
+			"/home/misha-sh/course/libs/fmt/include/fmt/xchar.h",
+			"MU",
+			"4KJVY35SYX/moc_xchar.cpp",
+			null
+		]
+	],
+	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
+	"INCLUDE_DIR" : "/home/misha-sh/course/cmake-build-release/libs/fmt/fmt_autogen/include",
+	"MOC_COMPILATION_FILE" : "/home/misha-sh/course/cmake-build-release/libs/fmt/fmt_autogen/mocs_compilation.cpp",
+	"MOC_DEFINITIONS" : [ "FMT_LOCALE", "_FILE_OFFSET_BITS=64", "_LARGEFILE_SOURCE" ],
+	"MOC_DEPEND_FILTERS" : 
+	[
+		[
+			"Q_PLUGIN_METADATA",
+			"[\n][ \t]*Q_PLUGIN_METADATA[ \t]*\\([^\\)]*FILE[ \t]*\"([^\"]+)\""
+		]
+	],
+	"MOC_INCLUDES" : 
+	[
+		"/home/misha-sh/course/libs/fmt/include",
+		"/usr/include/c++/10",
+		"/usr/include/x86_64-linux-gnu/c++/10",
+		"/usr/include/c++/10/backward",
+		"/usr/lib/gcc/x86_64-linux-gnu/10/include",
+		"/usr/local/include",
+		"/usr/include/x86_64-linux-gnu",
+		"/usr/include"
+	],
+	"MOC_MACRO_NAMES" : [ "Q_OBJECT", "Q_GADGET", "Q_NAMESPACE", "Q_NAMESPACE_EXPORT" ],
+	"MOC_OPTIONS" : [],
+	"MOC_PATH_PREFIX" : false,
+	"MOC_PREDEFS_CMD" : 
+	[
+		"/usr/bin/c++",
+		"-dM",
+		"-E",
+		"-c",
+		"/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CMakeCXXCompilerABI.cpp"
+	],
+	"MOC_PREDEFS_FILE" : "/home/misha-sh/course/cmake-build-release/libs/fmt/fmt_autogen/moc_predefs.h",
+	"MOC_RELAXED_MODE" : false,
+	"MOC_SKIP" : [],
+	"MULTI_CONFIG" : false,
+	"PARALLEL" : 4,
+	"PARSE_CACHE_FILE" : "/home/misha-sh/course/cmake-build-release/libs/fmt/CMakeFiles/fmt_autogen.dir/ParseCache.txt",
+	"QT_MOC_EXECUTABLE" : "/home/misha-sh/Qt/6.2.2/gcc_64/./libexec/moc",
+	"QT_UIC_EXECUTABLE" : "/home/misha-sh/Qt/6.2.2/gcc_64/./libexec/uic",
+	"QT_VERSION_MAJOR" : 6,
+	"QT_VERSION_MINOR" : 2,
+	"SETTINGS_FILE" : "/home/misha-sh/course/cmake-build-release/libs/fmt/CMakeFiles/fmt_autogen.dir/AutogenUsed.txt",
+	"SOURCES" : 
+	[
+		[ "/home/misha-sh/course/libs/fmt/src/format.cc", "MU", null ],
+		[ "/home/misha-sh/course/libs/fmt/src/os.cc", "MU", null ]
+	],
+	"UIC_OPTIONS" : [],
+	"UIC_SEARCH_PATHS" : [],
+	"UIC_SKIP" : [],
+	"UIC_UI_FILES" : [],
+	"VERBOSITY" : 0
+}

@@ -29,9 +29,10 @@ PolylineF BuildPolyline(const RoadsVectorMapPtr &vector_map, const Road& road) {
     polyline.resize(road.nodes.size());
     for (size_t i = 0; i < road.nodes.size(); i++) {
         const auto& node_id = road.nodes[i];
-        const auto& c = vector_map->nodes.at(node_id).c;
-        polyline[i] = projector.project(c).p;
+        const auto& c = vector_map->nodes.at(node_id).c;;;
+        polyline[i] = c;
     }
+
     return polyline;
 }
 
@@ -39,9 +40,17 @@ PolylineF BuildPolyline(const RoadsVectorMapPtr &vector_map, const Road& road) {
 
 void RoadsRasterizer::RasterizeRoads(const RoadsVectorMapPtr &vector_map, RasterMap &map) {
     const double lane_width = 4.0;
+    MetersToImageProjector imageProjector{vector_map->stats.min_xy, vector_map->stats.max_xy,
+                                          map.road_dir.sizeX(), map.road_dir.sizeY()};
     for (const auto& [road_id, road] : vector_map->roads) {
         const auto polyline = BuildPolyline(vector_map, road);
-        const auto polygon = ExpandPolyline(polyline, road.lanes_count);
-        map.road_dir.fill(polygon, {0.1, 0.2});
+        for (int i = 0; i + 1 < polyline.size(); i++) {
+            const PolylineF segment{polyline[i], polyline[i + 1]};
+            const auto polygon = ExpandPolyline(polyline, road.lanes_count * lane_width);
+            const PolygonI polygonImage = imageProjector.project(polygon);
+
+            const Coord dir = (Coord{polyline[i + 1]} - Coord{polyline[i]}).Norm();
+            map.road_dir.fill(polygonImage, dir);
+        }
     }
 }

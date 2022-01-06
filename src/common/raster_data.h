@@ -2,6 +2,7 @@
 
 #include "common/entities.h"
 
+#include <range/v3/all.hpp>
 #include <opencv2/opencv.hpp>
 #include <vector>
 
@@ -9,51 +10,73 @@
 template <typename T, typename CV_T>
 class RasterData {
 public:
-    explicit RasterData(size_t len_x, size_t len_y, const T& default_value) :
+    explicit RasterData(int len_x, int len_y, const T& default_value) :
         len_x_(len_x),
         len_y_(len_y),
         data_(len_x, len_y, toCV(default_value))
     {
     }
 
-    T& operator()(size_t x, size_t y) {
-        return reinterpret_cast<T&>(data_.at(x, y));
+    inline T& operator()(int x, int y) {
+        CV_T& t = data_.template at<CV_T>(x, y);
+        return *reinterpret_cast<T*>(&t);
     }
 
-    const T& operator()(size_t x, size_t y) const {
-        return reinterpret_cast<const T&>(data_.at(x, y));
+    inline T getOrDefault(int x, int y, T default_value) {
+        if (x < 0 || y < 0 || x >= len_x_ || y >= len_y_) {
+            return default_value;
+        }
+        return (*this)(x, y);
     }
+
+
+//    inline const T& operator()(int x, int y) const {
+//        return reinterpret_cast<const T&>(data_.at(x, y));
+//    }
 
     void fill(const PolygonI& polygon, const T& value) {
-        cv::fillConvexPoly(data_,
-                           polygon,
-                           toCV(value),
-                           cv::LineTypes::FILLED);
+        // TODO: can be optimized
+        // TODO: add support for inners()
+        std::vector<cv::Point> points = polygon.outer() |
+                ranges::views::transform([](const auto& pointI) {
+                    return cv::Point{pointI.x(), pointI.y};
+                }) | ranges::to_vector;
+
+//        for (const auto& point : points) {
+//            (*this)(point.x, point.y) = value;
+//        }
+
+        cv::fillPoly(data_,
+                       points,
+                       toCV(value),
+                       cv::LineTypes::LINE_4);
     }
 
-    inline size_t sizeX() {
+    inline int sizeX() {
         return len_x_;
     }
 
-    inline size_t sizeY() {
+    inline int sizeY() {
         return len_y_;
     }
 
 private:
-    size_t len_x_, len_y_;
+    int len_x_, len_y_;
     cv::Mat_<CV_T> data_;
 
     inline CV_T toCV(const T& t) const {
-        return reinterpret_cast<CV_T>(t);
+        T t_copy = t;
+        return *reinterpret_cast<CV_T*>(&t_copy);
     }
 
     inline T fromCV(const CV_T& t) const {
-        return reinterpret_cast<T>(t);
+        CV_T t_copy = t;
+        return *reinterpret_cast<T*>(&t_copy);
     }
     //    std::vector<T> data_;
 };
 
-using RasterDataPoint = RasterData<PointF, cv::Vec2d>;
+using RasterDataPoint = RasterData<Coord, cv::Vec2d>;
 
 template <typename T>
 using RasterDataEnum = RasterData<T, char>;

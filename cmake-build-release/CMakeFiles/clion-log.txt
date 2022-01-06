@@ -1,0 +1,11 @@
+/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_MAKE_PROGRAM=/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/ninja/linux/ninja -DCMAKE_CXX_FLAGS=-fuse-ld=lld -G Ninja /home/misha-sh/course
+-- Could NOT find Doxygen (missing: DOXYGEN_EXECUTABLE) 
+-- [range-v3]: C++ std=2a
+-- Module support is disabled.
+-- Version: 8.1.0
+-- Build type: Release
+-- CXX_STANDARD: 20
+-- Required features: cxx_variadic_templates
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/misha-sh/course/cmake-build-release

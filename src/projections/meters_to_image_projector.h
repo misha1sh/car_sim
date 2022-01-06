@@ -7,13 +7,13 @@
 class MetersToImageProjector {
 public:
     MetersToImageProjector(Coord min_corner, Coord max_corner,
-                           size_t image_x_size, size_t image_y_size);
+                           int image_x_size, int image_y_size);
 
-    PointI project(const Coord& coord) const;
-
+    PointI project(const PointF& coord) const;
+    PolygonI project(const PolygonF& polygonF) const;
 
 private:
     Coord min_corner_, max_corner_;
-    size_t image_x_size_, image_y_size_;
+    int image_x_size_, image_y_size_;
 };
 

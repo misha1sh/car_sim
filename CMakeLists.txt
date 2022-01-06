@@ -3,6 +3,8 @@ project(cars_sim VERSION 0.1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+#set(CMAKE_CXX_FLAGS_DEBUG "-g")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -35,7 +37,7 @@ add_executable(cars_sim
         src/ui/map/glmapwidget.cpp
         src/ui/main_window.ui
         src/ui/map/map_painter.cpp src/ui/map/map_painter.h src/rasterize/roads_map_reader.cpp src/rasterize/roads_map_reader.h
-        src/common/roads_vector_map.h src/projections/lon_lat_to_meters_projector.cpp src/projections/lon_lat_to_meters_projector.h src/common/entities.h src/common/raster_map.h src/common/raster_data.h src/rasterize/roads_rasterizer.cpp src/rasterize/roads_rasterizer.h src/projections/meters_to_image_projector.cpp src/projections/meters_to_image_projector.h src/main/roads_map_builder.cpp src/main/roads_map_builder.h)
+        src/common/roads_vector_map.h src/projections/lon_lat_to_meters_projector.cpp src/projections/lon_lat_to_meters_projector.h src/common/entities.h src/common/raster_map.h src/common/raster_data.h src/rasterize/roads_rasterizer.cpp src/rasterize/roads_rasterizer.h src/projections/meters_to_image_projector.cpp src/projections/meters_to_image_projector.h src/main/raster_map_builder.cpp src/main/raster_map_builder.h src/main/simulator.cpp src/main/simulator.h src/utils/verify.h src/utils/math_utils.h src/ui/map/camera.h)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

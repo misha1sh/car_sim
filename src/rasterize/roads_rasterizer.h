@@ -5,8 +5,6 @@
 
 class RoadsRasterizer {
 public:
-    RoadsRasterizer();
-
     void RasterizeRoads(const RoadsVectorMapPtr& vector_map, RasterMap& map);
 };
 

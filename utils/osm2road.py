@@ -50,7 +50,7 @@ class RoadWriter(o.SimpleHandler):
                 finally:
                     pass
 
-            width = 0.1
+            # width = 0.1
 
             polys = expand_line(line, width / 2)
             self.polys += [(poly, w.id) for poly in polys]
