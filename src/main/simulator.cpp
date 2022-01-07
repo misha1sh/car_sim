@@ -7,8 +7,8 @@ void Simulator::CreateMap() {
     VERIFY(state_ == State::NO_MAP || state_ == State::PAUSED);
     state_ = State::LOADING_MAP;
 
-    RasterMapBuilder builder(2000, 2000);
-    builder.CreateRoadsMap("../data/london.osm");
+    RasterMapBuilder builder(1);
+    builder.CreateRoadsMap("../data/berlin.osm");
     map_ = builder.GetMap();
 
     state_ = State::PAUSED;

@@ -623,7 +623,7 @@
 			"sourceIndexes" : 
 			[
 				4,
-				27
+				28
 			]
 		},
 		{
@@ -644,14 +644,15 @@
 				23,
 				24,
 				25,
-				26
+				26,
+				27
 			]
 		},
 		{
 			"name" : "CMake Rules",
 			"sourceIndexes" : 
 			[
-				28
+				29
 			]
 		}
 	],
@@ -797,6 +798,11 @@
 		{
 			"backtrace" : 1,
 			"path" : "src/ui/map/camera.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "src/ui/draw_settings.h",
 			"sourceGroupIndex" : 2
 		},
 		{

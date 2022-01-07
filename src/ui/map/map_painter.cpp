@@ -12,26 +12,18 @@ MapPainter::MapPainter() {
     circlePen = QPen(Qt::black);
     circlePen.setWidth(1);
     textPen = QPen(Qt::white);
-    textFont.setPixelSize(14);
+    textFont.setPixelSize(12);
 }
 
 void MapPainter::setMap(RasterMapPtr map) {
     map_ = std::move(map);
 }
 
-//struct RGBColor {
-//    int r, g, n;
-//};
-//
-//template <typename T1, typename T2, typename T3>
-//inline RGBColor AsRGBColor(const T1& r, const T2& g, const T3& b) {
-//    return {
-//        static_cast<int>(r),
-//        static_cast<int>(g),
-//        static_cast<int>(b)
-//    };
-//}
-//
+void MapPainter::setDrawSettings(DrawSettingsPtr draw_settings) {
+    draw_settings_ = std::move(draw_settings);
+}
+
+
 
 template <typename T1, typename T2, typename T3>
 inline void setPixels(uchar* pix, int& pixIdx, const T1& r, const T2& g, const T3& b) {
@@ -40,6 +32,8 @@ inline void setPixels(uchar* pix, int& pixIdx, const T1& r, const T2& g, const T
     pix[pixIdx + 2] = static_cast<uchar>(r);
     pixIdx += 4;
 }
+
+
 
 void MapPainter::paintMap(QPainter &painter, QPaintEvent* event, Camera camera) {
     int elapsedSinceLastRender = last_render_time_.restart();
@@ -50,55 +44,99 @@ void MapPainter::paintMap(QPainter &painter, QPaintEvent* event, Camera camera) 
     avg_fps_ = currentFps * 0.3 + avg_fps_ * 0.7;
 
 //    painter.fillRect(event->rect(), background);
-    if (!map_) {
+    if (!map_ || !draw_settings_) {
+        painter.setPen(textPen);
+        painter.setFont(textFont);
+        painter.drawText(10, 10,  QString::fromStdString(fmt::format("No map or draw settings")));
         return;
     }
 
     // everything in coordinate system relative to screen
     PointI screenSize {event->rect().width(), event->rect().height()};
     Coord mapSize {map_->road_dir.sizeX(),  map_->road_dir.sizeY()};
+
+//    mapSize.y = screenSize.y() * 1. * mapSize.x  / screenSize.x();
+    mapSize.x = screenSize.x() * 1. * mapSize.y  / screenSize.y();
+
     Coord onScreenMapSize {camera.size * mapSize};
     Coord cameraCenter {camera.center * mapSize};
     Coord cameraCorner {cameraCenter - onScreenMapSize / 2};
 
-    PointI cameraCornerI {cameraCorner.asI()};
+    PointI cameraCornerI {cameraCorner.asPointI()};
 
     Coord rescaleCoef {onScreenMapSize / Coord{screenSize}};
 
-    if (img.width() != screenSize.x || img.height() != screenSize.y()) {
-        img = QImage{screenSize.x, screenSize.y(),  QImage::Format::Format_RGB32};
+    if (img.width() != screenSize.x() || img.height() != screenSize.y()) {
+        img = QImage{screenSize.x(), screenSize.y(),  QImage::Format::Format_RGB32};
     }
+
+    const DrawSettings cur_draw_settings = *draw_settings_;
 
     int pixIdx = 0;
     uchar* pix = img.bits();
     for (int y = 0; y < screenSize.y(); y++) {
-        for (int x = 0; x < screenSize.x; x++) {
-            const PointI screenCoord{x, y};
-//            const Coord imageCoord = screenCoord * rescaleCoef + cameraCorner;
-//
-//            const int imageX = static_cast<int>(imageCoord.x);
-//            const int imageY = static_cast<int>(imageCoord.y());
+        for (int x = 0; x < screenSize.x(); x++) {
+            const int imageX = static_cast<int>(x * rescaleCoef.x) + cameraCornerI.x();
+            const int imageY = static_cast<int>((y * rescaleCoef.y) + cameraCornerI.y());
+
+            if (cur_draw_settings.draw_decision1) {
 
 
-            const int imageX = static_cast<int>(x * rescaleCoef.x) + cameraCornerI.x;
-            const int imageY = static_cast<int>(y * rescaleCoef.y()) + cameraCornerI.y();
-
-            const auto road_dir = map_->road_dir.getOrDefault(imageX, imageY, {0, 0});
-            if (road_dir != Coord{0, 0}) {
-                setPixels(pix, pixIdx, road_dir.x * 127 + 127, road_dir.y() * 127 + 127, 0);
-                continue;
+                const auto decision1 = map_->decision1.getOrDefault(imageX, imageY, {0, 0});
+                if (decision1 != Coord{0, 0}) {
+                    setPixels(pix, pixIdx, decision1.x * 127 + 127, decision1.y * 127 + 127, 0);
+                    continue;
+                }
             }
-//pixIdx % 100 < 0 ? 100 : 200
+
+            if (cur_draw_settings.draw_decision2) {
+                const auto decision2 = map_->decision2.getOrDefault(imageX, imageY, {0, 0});
+                if (decision2 != Coord{0, 0}) {
+                    setPixels(pix, pixIdx, decision2.x * 127 + 127, decision2.y * 127 + 127, 0);
+                    continue;
+                }
+            }
+
+            if (cur_draw_settings.draw_road_dir) {
+                const auto road_dir = map_->road_dir.getOrDefault(imageX, imageY/*map_->road_dir.sizeY()- imageY - 1*/, {0, 0});
+                if (road_dir != Coord{0, 0}) {
+                    setPixels(pix, pixIdx, road_dir.x * 127 + 127,  (road_dir.y * 127 + 127), 0);
+                    continue;
+                }
+            }
+
+
+
             setPixels(pix, pixIdx, 0, 0, 0);
-//            pixData[x] =  qRgb(100, 0, 0);
         }
     }
 
     painter.drawImage(event->rect(), img);
 
+
+
     painter.setPen(textPen);
     painter.setFont(textFont);
-    painter.drawText(10, 10,  QString::fromStdString(fmt::format("FPS: {:.2f}", avg_fps_)));
+    painter.drawText(10, 10,  QString::fromStdString(fmt::format("FPS: {:.2f}", currentFps)));
+    painter.drawText(10, 25,  QString::fromStdString("Directions:"));
+
+
+
+    if (directionsCircleImg.width() != 40) {
+        directionsCircleImg = QImage{40, 40, QImage::Format::Format_ARGB32};
+        directionsCircleImg.fill(QColor{0, 0, 0, 0});
+        for (double angle = 0; angle < 2 * M_PI; angle += 2. * M_PI / 200.) {
+            const Coord dir {sin(angle), cos(angle)};
+            const Coord dir2 {sin(angle + M_PI / 2), cos(angle + M_PI / 2)};
+            for (double i = 5; i < 15; i += 0.5) {
+                const auto pos = (Coord{20 + dir2.x * i, 20 + dir2.y * i}).asPointI();
+                directionsCircleImg.setPixelColor(pos.x(), pos.y(), QColor(dir.x * 127 + 127, dir.y * 127 + 127, 0));
+            }
+        }
+    }
+
+    painter.drawImage(QPoint{10, 30}, directionsCircleImg);
+
     //    painter.translate(100, 100);
 
 //    static int elapsed = 4;

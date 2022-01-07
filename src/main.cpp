@@ -27,6 +27,7 @@ int main(int argc, char *argv[])
     w.show();
 
     w.getUI()->openGLWidget->setPainter(map_painter);
+    map_painter->setDrawSettings(w.getDrawSettings());
 
     return a.exec();
 

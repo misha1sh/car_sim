@@ -457,6 +457,12 @@
 			null
 		],
 		[
+			"/home/misha-sh/course/src/ui/draw_settings.h",
+			"MU",
+			"YPKJ5OE7LN/moc_draw_settings.cpp",
+			null
+		],
+		[
 			"/home/misha-sh/course/src/ui/main_window.h",
 			"MU",
 			"YPKJ5OE7LN/moc_main_window.cpp",

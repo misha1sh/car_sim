@@ -9,6 +9,7 @@
 #include <cstring>
 #include <unordered_set>
 #include <filesystem>
+#include <QElapsedTimer>
 
 inline bool contains_string(const char* str, const std::vector<const char*>& strs) {
     return std::ranges::any_of(strs, [&](const char* other_str) {
@@ -19,7 +20,7 @@ inline bool contains_string(const char* str, const std::vector<const char*>& str
 bool is_road(const osmium::Way& way) {
     thread_local std::vector<const char*> suitable_tags = {
             "primary", "secondary", "tertiary", "motorway", "trunk",
-            "unclassified",
+            "unclassified", // residential
             "primary_link", "secondary_link", "tertiary_link", "motorway_link", "trunk_link"
     };
     const char* tag = way.tags()["highway"];
@@ -96,10 +97,13 @@ struct RoadsMapExtractor : public osmium::handler::Handler {
 
 RoadsVectorMapPtr RoadsMapReader::ReadRoads(const std::filesystem::path& osm_input_file_path) {
     osmium::io::Reader reader{osm_input_file_path, osmium::osm_entity_bits::node | osmium::osm_entity_bits::way};
+    QElapsedTimer timer;
+    timer.start();
 
     RoadsMapExtractor extractor;
     osmium::apply(reader, extractor);
     extractor.printReport();
+    fmt::print("Extraction took {} ms\n", timer.restart());
 
-    return RoadsVectorMap::Create(std::move(extractor.nodes), std::move(extractor.roads));;
+    return RoadsVectorMap::Create(std::move(extractor.nodes), std::move(extractor.roads));
 }

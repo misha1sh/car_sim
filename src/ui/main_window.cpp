@@ -3,10 +3,15 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    draw_settings_(std::make_shared<DrawSettings>())
 {
     ui->setupUi(this);
     setAnimated(true);
+
+    connect(ui->drawRoadDirCheckBox, SIGNAL(clicked(bool)), this, SLOT(on_drawRoadDirCheckBox_clicked(bool)));
+    connect(ui->drawDecision1CheckBox, SIGNAL(clicked(bool)), this, SLOT(on_drawDecision1CheckBox_clicked(bool)));
+    connect(ui->drawDecision2CheckBox, SIGNAL(clicked(bool)), this, SLOT(on_drawDecision2CheckBox_clicked(bool)));
 }
 
 MainWindow::~MainWindow()
@@ -17,4 +22,16 @@ MainWindow::~MainWindow()
 void MainWindow::on_actionExit_triggered()
 {
     this->close();
+}
+
+void MainWindow::on_drawRoadDirCheckBox_clicked(bool value) {
+    draw_settings_->draw_road_dir = value;
+}
+
+void MainWindow::on_drawDecision1CheckBox_clicked(bool value) {
+    draw_settings_->draw_decision1 = value;
+}
+
+void MainWindow::on_drawDecision2CheckBox_clicked(bool value) {
+    draw_settings_->draw_decision2 = value;
 }

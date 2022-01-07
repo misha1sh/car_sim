@@ -53,7 +53,7 @@ private:
                 roads_for_node[road.nodes[i]].push_back({
                     road_id,
                     i + 1 < road.nodes.size()?
-                        std::make_optional(road.nodes[i]) :
+                        std::make_optional(road.nodes[i + 1]) :
                         std::nullopt
                 });
             }

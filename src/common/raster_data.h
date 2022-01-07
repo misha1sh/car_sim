@@ -39,7 +39,7 @@ public:
         // TODO: add support for inners()
         std::vector<cv::Point> points = polygon.outer() |
                 ranges::views::transform([](const auto& pointI) {
-                    return cv::Point{pointI.x(), pointI.y};
+                    return cv::Point{pointI.x(), pointI.y()};
                 }) | ranges::to_vector;
 
 //        for (const auto& point : points) {

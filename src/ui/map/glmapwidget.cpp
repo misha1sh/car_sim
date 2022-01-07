@@ -8,7 +8,7 @@ GLMapWidget::GLMapWidget(QWidget *parent) :
     frame_update_timer(this) {
     setAutoFillBackground(false);
     connect(&frame_update_timer, &QTimer::timeout, this, &GLMapWidget::animate);
-    frame_update_timer.start(1000 / 30);
+    frame_update_timer.start(1000 / 300);
 
 //    this->installEventFilter(this);
 }
@@ -40,7 +40,7 @@ void GLMapWidget::wheelEvent(QWheelEvent *event) {
     const Coord oldRightBorder = camera_.center + camera_.size / 2.;
 
 
-    const Coord mousePos{event->position().x, event->position().y()};
+    const Coord mousePos{event->position().x(), event->position().y()};
     const Coord zoomCenterOnScreen = mousePos / Coord{size().width(), size().height()};
     const Coord zoomCenter = oldLeftBorder + (oldRightBorder - oldLeftBorder) * zoomCenterOnScreen;
 
@@ -55,13 +55,13 @@ void GLMapWidget::wheelEvent(QWheelEvent *event) {
     const Coord newLeftBorder = (oldLeftBorder + leftCoef * zoomDelta).Crop(-0.5, 1.5);
     const Coord newRightBorder = (oldRightBorder - rightCoef * zoomDelta).Crop(-0.5, 1.5);
 
-    if (newRightBorder.x - newLeftBorder.x < 0.001 || newRightBorder.y() - newLeftBorder.y() < 0.001) {
+    if (newRightBorder.x - newLeftBorder.x < 0.001 || newRightBorder.y - newLeftBorder.y < 0.001) {
         return;
     }
 
     camera_.center = (newRightBorder + newLeftBorder) / 2.;
     camera_.size = (newRightBorder - newLeftBorder);
-    const double sz = std::max(camera_.size.x, camera_.size.y());
+    const double sz = std::max(camera_.size.x, camera_.size.y);
     camera_.size = {sz, sz};
 //    camera_.cameraSize =
 //            (camera_.cameraSize - delta * zoomSpeed).Crop(0.00001, 1);
@@ -69,7 +69,7 @@ void GLMapWidget::wheelEvent(QWheelEvent *event) {
 
 void GLMapWidget::mouseMoveEvent(QMouseEvent *event) {
     if (event->buttons().testFlag(Qt::LeftButton) && mouse_dragging_) {
-        const Coord cur_mouse_pos = {event->pos().x, event->pos().y()};
+        const Coord cur_mouse_pos = {event->pos().x(), event->pos().y()};
         const Coord delta = cur_mouse_pos - dragging_mouse_start_pos_;
 
         const Coord deltaPercent = delta / Coord{size().width(), size().height()};
@@ -82,7 +82,7 @@ void GLMapWidget::mouseMoveEvent(QMouseEvent *event) {
 void GLMapWidget::mousePressEvent(QMouseEvent *event) {
     if (event->buttons().testFlag(Qt::LeftButton)) {
         mouse_dragging_ = true;
-        dragging_mouse_start_pos_ = {event->pos().x, event->pos().y()};
+        dragging_mouse_start_pos_ = {event->pos().x(), event->pos().y()};
         dragging_camera_start_pos_ = camera_.center;
     }
 }

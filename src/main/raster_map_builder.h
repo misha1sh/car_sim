@@ -6,7 +6,7 @@
 
 class RasterMapBuilder {
 public:
-    explicit RasterMapBuilder(size_t x_len, size_t y_len);
+    explicit RasterMapBuilder(double pixels_per_meter);
 
     void CreateRoadsMap(std::filesystem::path osm_input_file_path);
     inline std::shared_ptr<RasterMap>& GetMap() {
@@ -15,4 +15,5 @@ public:
 
 private:
     std::shared_ptr<RasterMap> map_;
+    double pixels_per_meter_;
 };

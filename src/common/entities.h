@@ -23,7 +23,8 @@ typedef boost::geometry::model::linestring<PointI> PolylineI;
 typedef boost::geometry::model::multi_polygon<PolygonI> MultiPolygonI;
 
 struct Coord {
-    double x, y;
+    double x = 0;
+    double y = 0;
 
     Coord(int _x, int _y) : x(_x), y(_y) {}
     Coord(double _x, double _y): x(_x), y(_y) {}
@@ -32,9 +33,9 @@ struct Coord {
     explicit Coord(const osmium::Location& location) :
             Coord(location.lon_without_check(), location.lat_without_check()) {}
     explicit Coord(PointF pp) :
-            Coord(pp.x, pp.y) {}
+            Coord(pp.x(), pp.y()) {}
     explicit Coord(PointI pp) :
-            Coord(pp.x, pp.y) {}
+            Coord(pp.x(), pp.y()) {}
 
     Coord() = default;
     Coord(const Coord& coord) = default;
@@ -118,7 +119,11 @@ struct Coord {
         return x != other.x || y != other.y;
     }
 
-    inline PointI asI() const {
+    inline PointI asPointI() const {
+        return {static_cast<int>(x), static_cast<int>(y)};
+    }
+
+    inline PointF asPointF() const {
         return {x, y};
     }
 };

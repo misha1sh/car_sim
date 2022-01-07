@@ -22,8 +22,8 @@ inline PointIType projectValue(const double value,
 
 PointI MetersToImageProjector::project(const PointF& coord) const {
     return {
-            projectValue(coord.x, min_corner_.x, max_corner_.x, 0, image_x_size_),
-            projectValue(coord.y(), min_corner_.y(), max_corner_.y(), 0, image_y_size_)
+            projectValue(coord.x(), min_corner_.x, max_corner_.x, 0, image_x_size_),
+            projectValue(coord.y(), min_corner_.y, max_corner_.y, 0, image_y_size_)
     };
 }
 
