@@ -1,62 +1,155 @@
-Performing C++ SOURCE FILE Test RANGES_HAS_FMACRO_BACKTRACE_LIMIT failed with the following output:
+Performing C++ SOURCE FILE Test RANGES_HAS_WERROR failed with the following output:
 Change Dir: /home/misha-sh/course/cmake-build-release/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/ninja/linux/ninja cmTC_8da35 && [1/2] Building CXX object CMakeFiles/cmTC_8da35.dir/src.cxx.o
-FAILED: CMakeFiles/cmTC_8da35.dir/src.cxx.o 
-/usr/bin/c++ -DRANGES_HAS_FMACRO_BACKTRACE_LIMIT  -fuse-ld=lld    -fmacro-backtrace-limit=1 -o CMakeFiles/cmTC_8da35.dir/src.cxx.o -c /home/misha-sh/course/cmake-build-release/CMakeFiles/CMakeTmp/src.cxx
-c++: error: unrecognized command-line option '-fmacro-backtrace-limit=1'; did you mean '-ftemplate-backtrace-limit='?
+Run Build Command(s):/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/ninja/linux/ninja cmTC_fb13b && [1/2] Building CXX object CMakeFiles/cmTC_fb13b.dir/src.cxx.o
+FAILED: CMakeFiles/cmTC_fb13b.dir/src.cxx.o 
+/usr/bin/clang++-13 -DRANGES_HAS_WERROR  -fuse-ld=lld    -Werror -MD -MT CMakeFiles/cmTC_fb13b.dir/src.cxx.o -MF CMakeFiles/cmTC_fb13b.dir/src.cxx.o.d -o CMakeFiles/cmTC_fb13b.dir/src.cxx.o -c /home/misha-sh/course/cmake-build-release/CMakeFiles/CMakeTmp/src.cxx
+clang: error: argument unused during compilation: '-fuse-ld=lld' [-Werror,-Wunused-command-line-argument]
 ninja: build stopped: subcommand failed.
 
 
 Source file was:
 int main() { return 0; }
-Performing C++ SOURCE FILE Test RANGES_HAS_STRICT_VTABLE_POINTERS failed with the following output:
+Performing C++ SOURCE FILE Test RANGES_HAS_FCOROUTINES_TS failed with the following output:
 Change Dir: /home/misha-sh/course/cmake-build-release/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/ninja/linux/ninja cmTC_1ebd2 && [1/2] Building CXX object CMakeFiles/cmTC_1ebd2.dir/src.cxx.o
-FAILED: CMakeFiles/cmTC_1ebd2.dir/src.cxx.o 
-/usr/bin/c++ -DRANGES_HAS_STRICT_VTABLE_POINTERS  -fuse-ld=lld    -fstrict-vtable-pointers -o CMakeFiles/cmTC_1ebd2.dir/src.cxx.o -c /home/misha-sh/course/cmake-build-release/CMakeFiles/CMakeTmp/src.cxx
-c++: error: unrecognized command-line option '-fstrict-vtable-pointers'
+Run Build Command(s):/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/ninja/linux/ninja cmTC_e877a && [1/2] Building CXX object CMakeFiles/cmTC_e877a.dir/src.cxx.o
+FAILED: CMakeFiles/cmTC_e877a.dir/src.cxx.o 
+/usr/bin/clang++-13 -DRANGES_HAS_FCOROUTINES_TS  -fuse-ld=lld -fcoroutines-ts -std=c++2a -MD -MT CMakeFiles/cmTC_e877a.dir/src.cxx.o -MF CMakeFiles/cmTC_e877a.dir/src.cxx.o.d -o CMakeFiles/cmTC_e877a.dir/src.cxx.o -c /home/misha-sh/course/cmake-build-release/CMakeFiles/CMakeTmp/src.cxx
+clang: warning: argument unused during compilation: '-fuse-ld=lld' [-Wunused-command-line-argument]
+In file included from /home/misha-sh/course/cmake-build-release/CMakeFiles/CMakeTmp/src.cxx:3:
+/usr/bin/../lib/gcc/x86_64-linux-gnu/10/../../../../include/c++/10/coroutine:295:2: error: "the coroutine header requires -fcoroutines"
+#error "the coroutine header requires -fcoroutines"
+ ^
+/home/misha-sh/course/cmake-build-release/CMakeFiles/CMakeTmp/src.cxx:22:19: error: no type named 'suspend_never' in namespace 'std'
+        std_coro::suspend_never initial_suspend() { return {}; }
+        ~~~~~~~~~~^
+/home/misha-sh/course/cmake-build-release/CMakeFiles/CMakeTmp/src.cxx:23:19: error: no type named 'suspend_never' in namespace 'std'
+        std_coro::suspend_never final_suspend() noexcept { return {}; }
+        ~~~~~~~~~~^
+/home/misha-sh/course/cmake-build-release/CMakeFiles/CMakeTmp/src.cxx:31:34: error: no template named 'coroutine_handle' in namespace 'std'
+    void await_suspend(std_coro::coroutine_handle<>) const {}
+                       ~~~~~~~~~~^
+/home/misha-sh/course/cmake-build-release/CMakeFiles/CMakeTmp/src.cxx:38:9: error: std::experimental::coroutine_traits type was not found; include <experimental/coroutine> before defining a coroutine
+        co_return 1;
+        ^
+5 errors generated.
 ninja: build stopped: subcommand failed.
 
 
 Source file was:
-int main() { return 0; }
-Performing C++ SOURCE FILE Test RANGES_HAS_VECTORIZE failed with the following output:
+#if defined(__cpp_coroutines) && defined(__has_include)
+#if __has_include(<coroutine>)
+#include <coroutine>
+namespace std_coro = std;
+#elif __has_include(<experimental/coroutine>)
+#include <experimental/coroutine>
+namespace std_coro = std::experimental;
+#else
+#error Either the compiler or the library lacks support for coroutines
+#endif
+#else
+#error Either the compiler or the library lacks support for coroutines
+#endif
+
+struct present
+{
+    struct promise_type
+    {
+        int result;
+
+        present get_return_object() { return {*this}; }
+        std_coro::suspend_never initial_suspend() { return {}; }
+        std_coro::suspend_never final_suspend() noexcept { return {}; }
+        void return_value(int i) { result = i; }
+        void unhandled_exception() {}
+    };
+
+    promise_type& promise;
+
+    bool await_ready() const { return true; }
+    void await_suspend(std_coro::coroutine_handle<>) const {}
+    int await_resume() const { return promise.result; }
+};
+
+present f(int n)
+{
+    if (n < 2)
+        co_return 1;
+    else
+        co_return n * co_await f(n - 1);
+}
+
+int main()
+{
+    return f(5).promise.result != 120;
+}
+
+Performing C++ SOURCE FILE Test RANGE_V3_HAS_FCONCEPTS failed with the following output:
 Change Dir: /home/misha-sh/course/cmake-build-release/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/ninja/linux/ninja cmTC_ff152 && [1/2] Building CXX object CMakeFiles/cmTC_ff152.dir/src.cxx.o
-FAILED: CMakeFiles/cmTC_ff152.dir/src.cxx.o 
-/usr/bin/c++ -DRANGES_HAS_VECTORIZE  -fuse-ld=lld    -fvectorize -o CMakeFiles/cmTC_ff152.dir/src.cxx.o -c /home/misha-sh/course/cmake-build-release/CMakeFiles/CMakeTmp/src.cxx
-c++: error: unrecognized command-line option '-fvectorize'
+Run Build Command(s):/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/ninja/linux/ninja cmTC_2c798 && [1/2] Building CXX object CMakeFiles/cmTC_2c798.dir/src.cxx.o
+FAILED: CMakeFiles/cmTC_2c798.dir/src.cxx.o 
+/usr/bin/clang++-13 -DRANGE_V3_HAS_FCONCEPTS  -fuse-ld=lld -fconcepts -std=c++2a -MD -MT CMakeFiles/cmTC_2c798.dir/src.cxx.o -MF CMakeFiles/cmTC_2c798.dir/src.cxx.o.d -o CMakeFiles/cmTC_2c798.dir/src.cxx.o -c /home/misha-sh/course/cmake-build-release/CMakeFiles/CMakeTmp/src.cxx
+clang: error: unknown argument: '-fconcepts'
 ninja: build stopped: subcommand failed.
 
 
 Source file was:
-int main() { return 0; }
+#if !defined(__cpp_concepts) || __cpp_concepts == 0
+#error "Sorry, Charlie. No concepts"
+#else
+#if __cpp_concepts <= 201507L
+#define concept concept bool
+#endif
+
+template<class>
+concept True = true;
+
+template<class T>
+constexpr bool test(T)
+{
+    return false;
+}
+
+template<class T>
+    requires True<T>
+constexpr bool test(T)
+{
+    return true;
+}
+
+int main()
+{
+    static_assert(::test(42), "");
+}
+
+#endif
+
 Performing C++ SOURCE FILE Test CMAKE_HAVE_LIBC_PTHREAD failed with the following output:
 Change Dir: /home/misha-sh/course/cmake-build-release/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/ninja/linux/ninja cmTC_931fe && [1/2] Building CXX object CMakeFiles/cmTC_931fe.dir/src.cxx.o
-[2/2] Linking CXX executable cmTC_931fe
-FAILED: cmTC_931fe 
-: && /usr/bin/c++ -fuse-ld=lld  CMakeFiles/cmTC_931fe.dir/src.cxx.o -o cmTC_931fe   && :
+Run Build Command(s):/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/ninja/linux/ninja cmTC_4dcc9 && [1/2] Building CXX object CMakeFiles/cmTC_4dcc9.dir/src.cxx.o
+clang: warning: argument unused during compilation: '-fuse-ld=lld' [-Wunused-command-line-argument]
+[2/2] Linking CXX executable cmTC_4dcc9
+FAILED: cmTC_4dcc9 
+: && /usr/bin/clang++-13 -fuse-ld=lld  CMakeFiles/cmTC_4dcc9.dir/src.cxx.o -o cmTC_4dcc9   && :
 ld.lld: error: undefined symbol: pthread_create
 >>> referenced by src.cxx
->>>               CMakeFiles/cmTC_931fe.dir/src.cxx.o:(main)
+>>>               CMakeFiles/cmTC_4dcc9.dir/src.cxx.o:(main)
 
 ld.lld: error: undefined symbol: pthread_detach
 >>> referenced by src.cxx
->>>               CMakeFiles/cmTC_931fe.dir/src.cxx.o:(main)
+>>>               CMakeFiles/cmTC_4dcc9.dir/src.cxx.o:(main)
 
 ld.lld: error: undefined symbol: pthread_cancel
 >>> referenced by src.cxx
->>>               CMakeFiles/cmTC_931fe.dir/src.cxx.o:(main)
+>>>               CMakeFiles/cmTC_4dcc9.dir/src.cxx.o:(main)
 
 ld.lld: error: undefined symbol: pthread_join
 >>> referenced by src.cxx
->>>               CMakeFiles/cmTC_931fe.dir/src.cxx.o:(main)
-collect2: error: ld returned 1 exit status
+>>>               CMakeFiles/cmTC_4dcc9.dir/src.cxx.o:(main)
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
 ninja: build stopped: subcommand failed.
 
 
@@ -84,12 +177,13 @@ int main(void)
 Determining if the function pthread_create exists in the pthreads failed with the following output:
 Change Dir: /home/misha-sh/course/cmake-build-release/CMakeFiles/CMakeTmp
 
-Run Build Command(s):/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/ninja/linux/ninja cmTC_f983c && [1/2] Building CXX object CMakeFiles/cmTC_f983c.dir/CheckFunctionExists.cxx.o
-[2/2] Linking CXX executable cmTC_f983c
-FAILED: cmTC_f983c 
-: && /usr/bin/c++ -fuse-ld=lld -DCHECK_FUNCTION_EXISTS=pthread_create -rdynamic CMakeFiles/cmTC_f983c.dir/CheckFunctionExists.cxx.o -o cmTC_f983c  -lpthreads && :
+Run Build Command(s):/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/ninja/linux/ninja cmTC_3dc66 && [1/2] Building CXX object CMakeFiles/cmTC_3dc66.dir/CheckFunctionExists.cxx.o
+clang: warning: argument unused during compilation: '-fuse-ld=lld' [-Wunused-command-line-argument]
+[2/2] Linking CXX executable cmTC_3dc66
+FAILED: cmTC_3dc66 
+: && /usr/bin/clang++-13 -fuse-ld=lld -DCHECK_FUNCTION_EXISTS=pthread_create -rdynamic CMakeFiles/cmTC_3dc66.dir/CheckFunctionExists.cxx.o -o cmTC_3dc66  -lpthreads && :
 ld.lld: error: unable to find library -lpthreads
-collect2: error: ld returned 1 exit status
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
 ninja: build stopped: subcommand failed.
 
 

@@ -38,7 +38,7 @@ int find_lanes_count(const osmium::Way& way) {
 
 bool is_one_way(const osmium::Way& way) {
     const char* oneway_str = way.tags()["oneway"];
-    return oneway_str && strcmp(oneway_str, "true") == 0;
+    return oneway_str && (strcmp(oneway_str, "true") == 0 || strcmp(oneway_str, "yes") == 0);
 }
 
 std::vector<ID> extract_nodes(const osmium::Way& way) {

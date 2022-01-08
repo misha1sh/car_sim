@@ -13,7 +13,6 @@
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qarraydataops.h \
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qarraydatapointer.h \
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qatomic.h \
-  /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qatomic_cxx11.h \
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qbasicatomic.h \
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qbasictimer.h \
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qbindingstorage.h \
@@ -34,7 +33,6 @@
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qdebug.h \
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qelapsedtimer.h \
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qflags.h \
-  /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qgenericatomic.h \
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qglobal.h \
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qglobalstatic.h \
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qhash.h \
@@ -418,6 +416,7 @@
   /home/misha-sh/course/src/common/entities.h \
   /home/misha-sh/course/src/common/raster_data.h \
   /home/misha-sh/course/src/common/raster_map.h \
+  /home/misha-sh/course/src/ui/draw_settings.h \
   /home/misha-sh/course/src/ui/map/camera.h \
   /home/misha-sh/course/src/ui/map/map_painter.h \
   /home/misha-sh/course/src/utils/math_utils.h \
@@ -526,6 +525,11 @@
   /usr/include/boost/container/options.hpp \
   /usr/include/boost/container/throw_exception.hpp \
   /usr/include/boost/container/vector.hpp \
+  /usr/include/boost/container_hash/detail/float_functions.hpp \
+  /usr/include/boost/container_hash/detail/hash_float.hpp \
+  /usr/include/boost/container_hash/detail/limits.hpp \
+  /usr/include/boost/container_hash/extensions.hpp \
+  /usr/include/boost/container_hash/hash.hpp \
   /usr/include/boost/container_hash/hash_fwd.hpp \
   /usr/include/boost/core/addressof.hpp \
   /usr/include/boost/core/checked_delete.hpp \
@@ -542,6 +546,7 @@
   /usr/include/boost/current_function.hpp \
   /usr/include/boost/detail/basic_pointerbuf.hpp \
   /usr/include/boost/detail/call_traits.hpp \
+  /usr/include/boost/detail/container_fwd.hpp \
   /usr/include/boost/detail/indirect_traits.hpp \
   /usr/include/boost/detail/lcast_precision.hpp \
   /usr/include/boost/detail/no_exceptions_support.hpp \
@@ -1233,6 +1238,7 @@
   /usr/include/boost/integer.hpp \
   /usr/include/boost/integer/common_factor_ct.hpp \
   /usr/include/boost/integer/common_factor_rt.hpp \
+  /usr/include/boost/integer/static_log2.hpp \
   /usr/include/boost/integer_fwd.hpp \
   /usr/include/boost/integer_traits.hpp \
   /usr/include/boost/intrusive/detail/algorithm.hpp \
@@ -1885,6 +1891,7 @@
   /usr/include/boost/type_traits/make_signed.hpp \
   /usr/include/boost/type_traits/make_unsigned.hpp \
   /usr/include/boost/type_traits/make_void.hpp \
+  /usr/include/boost/type_traits/remove_all_extents.hpp \
   /usr/include/boost/type_traits/remove_const.hpp \
   /usr/include/boost/type_traits/remove_cv.hpp \
   /usr/include/boost/type_traits/remove_pointer.hpp \
@@ -1930,7 +1937,6 @@
   /usr/include/boost/version.hpp \
   /usr/include/c++/10/algorithm \
   /usr/include/c++/10/array \
-  /usr/include/c++/10/atomic \
   /usr/include/c++/10/backward/auto_ptr.h \
   /usr/include/c++/10/backward/binders.h \
   /usr/include/c++/10/bit \
@@ -2032,6 +2038,7 @@
   /usr/include/c++/10/bits/unique_ptr.h \
   /usr/include/c++/10/bits/uses_allocator.h \
   /usr/include/c++/10/bits/vector.tcc \
+  /usr/include/c++/10/bitset \
   /usr/include/c++/10/cassert \
   /usr/include/c++/10/cctype \
   /usr/include/c++/10/cerrno \
@@ -2051,6 +2058,7 @@
   /usr/include/c++/10/ctime \
   /usr/include/c++/10/cwchar \
   /usr/include/c++/10/cwctype \
+  /usr/include/c++/10/cxxabi.h \
   /usr/include/c++/10/debug/assertions.h \
   /usr/include/c++/10/debug/debug.h \
   /usr/include/c++/10/deque \
@@ -2096,6 +2104,7 @@
   /usr/include/c++/10/streambuf \
   /usr/include/c++/10/string \
   /usr/include/c++/10/string_view \
+  /usr/include/c++/10/system_error \
   /usr/include/c++/10/tr1/bessel_function.tcc \
   /usr/include/c++/10/tr1/beta_function.tcc \
   /usr/include/c++/10/tr1/ell_integral.tcc \
@@ -2110,6 +2119,7 @@
   /usr/include/c++/10/tr1/special_function_util.h \
   /usr/include/c++/10/tuple \
   /usr/include/c++/10/type_traits \
+  /usr/include/c++/10/typeindex \
   /usr/include/c++/10/typeinfo \
   /usr/include/c++/10/unordered_map \
   /usr/include/c++/10/utility \
@@ -2317,6 +2327,7 @@
   /usr/include/x86_64-linux-gnu/c++/10/bits/cpu_defines.h \
   /usr/include/x86_64-linux-gnu/c++/10/bits/ctype_base.h \
   /usr/include/x86_64-linux-gnu/c++/10/bits/ctype_inline.h \
+  /usr/include/x86_64-linux-gnu/c++/10/bits/cxxabi_tweaks.h \
   /usr/include/x86_64-linux-gnu/c++/10/bits/gthr-default.h \
   /usr/include/x86_64-linux-gnu/c++/10/bits/gthr.h \
   /usr/include/x86_64-linux-gnu/c++/10/bits/messages_members.h \
@@ -2327,10 +2338,10 @@
   /usr/include/x86_64-linux-gnu/sys/cdefs.h \
   /usr/include/x86_64-linux-gnu/sys/select.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
-  /usr/lib/gcc/x86_64-linux-gnu/10/include/emmintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/10/include/float.h \
-  /usr/lib/gcc/x86_64-linux-gnu/10/include/mm_malloc.h \
-  /usr/lib/gcc/x86_64-linux-gnu/10/include/mmintrin.h \
-  /usr/lib/gcc/x86_64-linux-gnu/10/include/stdarg.h \
-  /usr/lib/gcc/x86_64-linux-gnu/10/include/stddef.h \
-  /usr/lib/gcc/x86_64-linux-gnu/10/include/xmmintrin.h
+  /usr/lib/llvm-13/lib/clang/13.0.1/include/emmintrin.h \
+  /usr/lib/llvm-13/lib/clang/13.0.1/include/float.h \
+  /usr/lib/llvm-13/lib/clang/13.0.1/include/mm_malloc.h \
+  /usr/lib/llvm-13/lib/clang/13.0.1/include/mmintrin.h \
+  /usr/lib/llvm-13/lib/clang/13.0.1/include/stdarg.h \
+  /usr/lib/llvm-13/lib/clang/13.0.1/include/stddef.h \
+  /usr/lib/llvm-13/lib/clang/13.0.1/include/xmmintrin.h

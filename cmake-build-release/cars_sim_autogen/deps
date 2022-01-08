@@ -1,24 +1,81 @@
 cars_sim_autogen/timestamp: \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CMakeCXXCompiler.cmake.in \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CMakeCXXCompilerABI.cpp \
 	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CMakeCXXInformation.cmake \
 	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CMakeCommonLanguageInclude.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CMakeCompilerIdDetection.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CMakeConfigurableFile.in \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CMakeDetermineCXXCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CMakeDetermineCompileFeatures.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CMakeDetermineCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CMakeDetermineCompilerABI.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CMakeDetermineCompilerId.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CMakeDetermineSystem.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CMakeFindBinUtils.cmake \
 	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CMakeFindDependencyMacro.cmake \
 	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CMakeGenericSystem.cmake \
 	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CMakeInitializeConfigs.cmake \
 	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CMakeLanguageInformation.cmake \
 	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CMakeParseArguments.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CMakeParseImplicitIncludeInfo.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CMakeParseImplicitLinkInfo.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CMakeParseLibraryArchitecture.cmake \
 	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CMakePushCheckState.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CMakeSystem.cmake.in \
 	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CMakeSystemSpecificInformation.cmake \
 	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CMakeSystemSpecificInitialize.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CMakeTestCXXCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CMakeTestCompilerCommon.cmake \
 	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CPack.cmake \
 	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CPackComponent.cmake \
 	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CheckCXXCompilerFlag.cmake \
 	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CheckCXXSourceCompiles.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CheckForPthreads.c \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CheckFunctionExists.c \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CheckIncludeFile.cxx.in \
 	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CheckIncludeFileCXX.cmake \
 	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CheckLibraryExists.cmake \
 	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CheckSymbolExists.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/ADSP-DetermineCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/ARMCC-DetermineCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/ARMClang-DetermineCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/AppleClang-DetermineCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/Borland-DetermineCompiler.cmake \
 	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/CMakeCommonCompilerMacros.cmake \
-	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/GNU-CXX.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/Clang-CXX.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/Clang-DetermineCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/Clang-DetermineCompilerInternal.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/Clang-FindBinUtils.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/Clang.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/Comeau-CXX-DetermineCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/Compaq-CXX-DetermineCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/Cray-DetermineCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/Embarcadero-DetermineCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/Fujitsu-DetermineCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/FujitsuClang-DetermineCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/GHS-DetermineCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/GNU-CXX-DetermineCompiler.cmake \
 	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/GNU.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/HP-CXX-DetermineCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/IAR-DetermineCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/IBMCPP-CXX-DetermineVersionInternal.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/Intel-DetermineCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/IntelLLVM-DetermineCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/MSVC-DetermineCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/NVHPC-DetermineCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/NVIDIA-DetermineCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/OpenWatcom-DetermineCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/PGI-DetermineCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/PathScale-DetermineCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/ROCMClang-DetermineCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/SCO-DetermineCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/SunPro-CXX-DetermineCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/TI-DetermineCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/VisualAge-CXX-DetermineCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/Watcom-DetermineCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/XL-CXX-DetermineCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/XLClang-CXX-DetermineCompiler.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Compiler/zOS-CXX-DetermineCompiler.cmake \
 	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/FeatureSummary.cmake \
 	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/FindBZip2.cmake \
 	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/FindBoost.cmake \
@@ -31,7 +88,10 @@ cars_sim_autogen/timestamp: \
 	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/FindThreads.cmake \
 	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/FindVulkan.cmake \
 	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/FindZLIB.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Internal/FeatureTesting.cmake \
 	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/MacroAddFileDependencies.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Platform/Linux-Clang-CXX.cmake \
+	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Platform/Linux-Determine-CXX.cmake \
 	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Platform/Linux-GNU-CXX.cmake \
 	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Platform/Linux-GNU.cmake \
 	/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/Platform/Linux.cmake \
@@ -51,7 +111,6 @@ cars_sim_autogen/timestamp: \
 	/home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qarraydataops.h \
 	/home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qarraydatapointer.h \
 	/home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qatomic.h \
-	/home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qatomic_cxx11.h \
 	/home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qbasicatomic.h \
 	/home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qbasictimer.h \
 	/home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qbindingstorage.h \
@@ -72,7 +131,6 @@ cars_sim_autogen/timestamp: \
 	/home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qdebug.h \
 	/home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qelapsedtimer.h \
 	/home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qflags.h \
-	/home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qgenericatomic.h \
 	/home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qglobal.h \
 	/home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qglobalstatic.h \
 	/home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qhash.h \
@@ -291,6 +349,8 @@ cars_sim_autogen/timestamp: \
 	/home/misha-sh/course/CMakeLists.txt \
 	/home/misha-sh/course/cmake-build-release/CMakeFiles/3.21.1/CMakeCXXCompiler.cmake \
 	/home/misha-sh/course/cmake-build-release/CMakeFiles/3.21.1/CMakeSystem.cmake \
+	/home/misha-sh/course/cmake-build-release/CMakeFiles/CheckLibraryExists/CheckFunctionExists.cxx \
+	/home/misha-sh/course/cmake-build-release/CMakeFiles/FindThreads/CheckForPthreads.cxx \
 	/home/misha-sh/course/cmake-build-release/cars_sim_autogen/moc_predefs.h \
 	/home/misha-sh/course/cmake/FindOsmium.cmake \
 	/home/misha-sh/course/cmake/FindProtozero.cmake \
@@ -584,6 +644,7 @@ cars_sim_autogen/timestamp: \
 	/home/misha-sh/course/src/rasterize/roads_map_reader.h \
 	/home/misha-sh/course/src/rasterize/roads_rasterizer.cpp \
 	/home/misha-sh/course/src/rasterize/roads_rasterizer.h \
+	/home/misha-sh/course/src/ui/draw_settings.h \
 	/home/misha-sh/course/src/ui/main_window.cpp \
 	/home/misha-sh/course/src/ui/main_window.h \
 	/home/misha-sh/course/src/ui/map/camera.h \
@@ -698,6 +759,11 @@ cars_sim_autogen/timestamp: \
 	/usr/include/boost/container/options.hpp \
 	/usr/include/boost/container/throw_exception.hpp \
 	/usr/include/boost/container/vector.hpp \
+	/usr/include/boost/container_hash/detail/float_functions.hpp \
+	/usr/include/boost/container_hash/detail/hash_float.hpp \
+	/usr/include/boost/container_hash/detail/limits.hpp \
+	/usr/include/boost/container_hash/extensions.hpp \
+	/usr/include/boost/container_hash/hash.hpp \
 	/usr/include/boost/container_hash/hash_fwd.hpp \
 	/usr/include/boost/core/addressof.hpp \
 	/usr/include/boost/core/checked_delete.hpp \
@@ -714,6 +780,7 @@ cars_sim_autogen/timestamp: \
 	/usr/include/boost/current_function.hpp \
 	/usr/include/boost/detail/basic_pointerbuf.hpp \
 	/usr/include/boost/detail/call_traits.hpp \
+	/usr/include/boost/detail/container_fwd.hpp \
 	/usr/include/boost/detail/indirect_traits.hpp \
 	/usr/include/boost/detail/lcast_precision.hpp \
 	/usr/include/boost/detail/no_exceptions_support.hpp \
@@ -1405,6 +1472,7 @@ cars_sim_autogen/timestamp: \
 	/usr/include/boost/integer.hpp \
 	/usr/include/boost/integer/common_factor_ct.hpp \
 	/usr/include/boost/integer/common_factor_rt.hpp \
+	/usr/include/boost/integer/static_log2.hpp \
 	/usr/include/boost/integer_fwd.hpp \
 	/usr/include/boost/integer_traits.hpp \
 	/usr/include/boost/intrusive/detail/algorithm.hpp \
@@ -2057,6 +2125,7 @@ cars_sim_autogen/timestamp: \
 	/usr/include/boost/type_traits/make_signed.hpp \
 	/usr/include/boost/type_traits/make_unsigned.hpp \
 	/usr/include/boost/type_traits/make_void.hpp \
+	/usr/include/boost/type_traits/remove_all_extents.hpp \
 	/usr/include/boost/type_traits/remove_const.hpp \
 	/usr/include/boost/type_traits/remove_cv.hpp \
 	/usr/include/boost/type_traits/remove_pointer.hpp \
@@ -2102,7 +2171,6 @@ cars_sim_autogen/timestamp: \
 	/usr/include/boost/version.hpp \
 	/usr/include/c++/10/algorithm \
 	/usr/include/c++/10/array \
-	/usr/include/c++/10/atomic \
 	/usr/include/c++/10/backward/auto_ptr.h \
 	/usr/include/c++/10/backward/binders.h \
 	/usr/include/c++/10/bit \
@@ -2204,6 +2272,7 @@ cars_sim_autogen/timestamp: \
 	/usr/include/c++/10/bits/unique_ptr.h \
 	/usr/include/c++/10/bits/uses_allocator.h \
 	/usr/include/c++/10/bits/vector.tcc \
+	/usr/include/c++/10/bitset \
 	/usr/include/c++/10/cassert \
 	/usr/include/c++/10/cctype \
 	/usr/include/c++/10/cerrno \
@@ -2223,6 +2292,7 @@ cars_sim_autogen/timestamp: \
 	/usr/include/c++/10/ctime \
 	/usr/include/c++/10/cwchar \
 	/usr/include/c++/10/cwctype \
+	/usr/include/c++/10/cxxabi.h \
 	/usr/include/c++/10/debug/assertions.h \
 	/usr/include/c++/10/debug/debug.h \
 	/usr/include/c++/10/deque \
@@ -2268,6 +2338,7 @@ cars_sim_autogen/timestamp: \
 	/usr/include/c++/10/streambuf \
 	/usr/include/c++/10/string \
 	/usr/include/c++/10/string_view \
+	/usr/include/c++/10/system_error \
 	/usr/include/c++/10/tr1/bessel_function.tcc \
 	/usr/include/c++/10/tr1/beta_function.tcc \
 	/usr/include/c++/10/tr1/ell_integral.tcc \
@@ -2282,6 +2353,7 @@ cars_sim_autogen/timestamp: \
 	/usr/include/c++/10/tr1/special_function_util.h \
 	/usr/include/c++/10/tuple \
 	/usr/include/c++/10/type_traits \
+	/usr/include/c++/10/typeindex \
 	/usr/include/c++/10/typeinfo \
 	/usr/include/c++/10/unordered_map \
 	/usr/include/c++/10/utility \
@@ -2489,6 +2561,7 @@ cars_sim_autogen/timestamp: \
 	/usr/include/x86_64-linux-gnu/c++/10/bits/cpu_defines.h \
 	/usr/include/x86_64-linux-gnu/c++/10/bits/ctype_base.h \
 	/usr/include/x86_64-linux-gnu/c++/10/bits/ctype_inline.h \
+	/usr/include/x86_64-linux-gnu/c++/10/bits/cxxabi_tweaks.h \
 	/usr/include/x86_64-linux-gnu/c++/10/bits/gthr-default.h \
 	/usr/include/x86_64-linux-gnu/c++/10/bits/gthr.h \
 	/usr/include/x86_64-linux-gnu/c++/10/bits/messages_members.h \
@@ -2499,13 +2572,13 @@ cars_sim_autogen/timestamp: \
 	/usr/include/x86_64-linux-gnu/sys/cdefs.h \
 	/usr/include/x86_64-linux-gnu/sys/select.h \
 	/usr/include/x86_64-linux-gnu/sys/types.h \
-	/usr/lib/gcc/x86_64-linux-gnu/10/include/emmintrin.h \
-	/usr/lib/gcc/x86_64-linux-gnu/10/include/float.h \
-	/usr/lib/gcc/x86_64-linux-gnu/10/include/mm_malloc.h \
-	/usr/lib/gcc/x86_64-linux-gnu/10/include/mmintrin.h \
-	/usr/lib/gcc/x86_64-linux-gnu/10/include/stdarg.h \
-	/usr/lib/gcc/x86_64-linux-gnu/10/include/stddef.h \
-	/usr/lib/gcc/x86_64-linux-gnu/10/include/xmmintrin.h \
+	/usr/lib/llvm-13/lib/clang/13.0.1/include/emmintrin.h \
+	/usr/lib/llvm-13/lib/clang/13.0.1/include/float.h \
+	/usr/lib/llvm-13/lib/clang/13.0.1/include/mm_malloc.h \
+	/usr/lib/llvm-13/lib/clang/13.0.1/include/mmintrin.h \
+	/usr/lib/llvm-13/lib/clang/13.0.1/include/stdarg.h \
+	/usr/lib/llvm-13/lib/clang/13.0.1/include/stddef.h \
+	/usr/lib/llvm-13/lib/clang/13.0.1/include/xmmintrin.h \
 	/usr/lib/x86_64-linux-gnu/cmake/Boost-1.74.0/BoostConfig.cmake \
 	/usr/lib/x86_64-linux-gnu/cmake/Boost-1.74.0/BoostConfigVersion.cmake \
 	/usr/lib/x86_64-linux-gnu/cmake/boost_headers-1.74.0/boost_headers-config-version.cmake \

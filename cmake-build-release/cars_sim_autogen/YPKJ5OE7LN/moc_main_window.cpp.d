@@ -6,7 +6,6 @@
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qarraydataops.h \
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qarraydatapointer.h \
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qatomic.h \
-  /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qatomic_cxx11.h \
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qbasicatomic.h \
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qbindingstorage.h \
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qbytearray.h \
@@ -22,7 +21,6 @@
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qcontainertools_impl.h \
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qdatastream.h \
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qflags.h \
-  /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qgenericatomic.h \
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qglobal.h \
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qglobalstatic.h \
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qhashfunctions.h \
@@ -100,11 +98,11 @@
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtWidgets/qtwidgets-config.h \
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtWidgets/qtwidgetsglobal.h \
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtWidgets/qwidget.h \
+  /home/misha-sh/course/src/ui/draw_settings.h \
   /usr/include/alloca.h \
   /usr/include/assert.h \
   /usr/include/c++/10/algorithm \
   /usr/include/c++/10/array \
-  /usr/include/c++/10/atomic \
   /usr/include/c++/10/backward/auto_ptr.h \
   /usr/include/c++/10/backward/binders.h \
   /usr/include/c++/10/bit \
@@ -343,5 +341,5 @@
   /usr/include/x86_64-linux-gnu/sys/cdefs.h \
   /usr/include/x86_64-linux-gnu/sys/select.h \
   /usr/include/x86_64-linux-gnu/sys/types.h \
-  /usr/lib/gcc/x86_64-linux-gnu/10/include/stdarg.h \
-  /usr/lib/gcc/x86_64-linux-gnu/10/include/stddef.h
+  /usr/lib/llvm-13/lib/clang/13.0.1/include/stdarg.h \
+  /usr/lib/llvm-13/lib/clang/13.0.1/include/stddef.h

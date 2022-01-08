@@ -26,6 +26,8 @@ public:
         if (x < 0 || y < 0 || x >= len_x_ || y >= len_y_) {
             return default_value;
         }
+
+//        return {0.5 + x / len_x_ / 2., 0.5 + y / len_y_ / 2.};
         return (*this)(x, y);
     }
 

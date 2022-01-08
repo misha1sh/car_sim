@@ -26,8 +26,10 @@ struct Coord {
     double x = 0;
     double y = 0;
 
-    Coord(int _x, int _y) : x(_x), y(_y) {}
-    Coord(double _x, double _y): x(_x), y(_y) {}
+    template <typename TNum1, typename TNum2>
+    Coord(TNum1 _x, TNum2 _y) : x(_x), y(_y) {}
+//    Coord(int _x, int _y) : x(_x), y(_y) {}
+//    Coord(double _x, double _y): x(_x), y(_y) {}
     explicit Coord(const osmium::geom::Coordinates& coord) :
             Coord(coord.x, coord.y) {}
     explicit Coord(const osmium::Location& location) :
@@ -90,12 +92,42 @@ struct Coord {
         return sqrt(SqrLen());
     }
 
-    inline Coord Norm() {
+    inline Coord Norm() const {
         const double len = Len();
         if (len < 0.0000001) {
             return {1, 0};
         }
         return (*this) / len;
+    }
+
+    inline double AngleDenormalized(const Coord& other) const {
+        const double dot = x*other.x + y*other.y;
+        const double det = x*other.y - y*other.x;
+        return atan2(det, dot);
+    }
+
+    // (-pi, pi]
+    inline double Angle(const Coord& other) const {
+        double angle = AngleDenormalized(other);
+        if (angle > M_PI) {
+            angle -= 2 * M_PI;
+        } else if (angle <= -M_PI) {
+            angle += 2 * M_PI;
+        }
+        return angle;
+    }
+
+    // [0, pi]
+    inline double AngleAbs(const Coord& other) const {
+        return std::abs(Angle(other));
+    }
+
+    inline Coord RightPerpendicular() const {
+        return Coord{y, -x}.Norm();
+    }
+
+    inline Coord LeftPerpendicular() const {
+        return -RightPerpendicular();
     }
 
     inline Coord Crop(const Coord& min_val, const Coord& max_val) const {
@@ -110,18 +142,47 @@ struct Coord {
                     {max_val, max_val});
     }
 
-    inline bool operator==(const Coord& other) {
+    inline bool operator==(const Coord& other) const {
         return x == other.x && y == other.y;
     }
 
 
-    inline bool operator!=(const Coord& other) {
+    inline bool operator!=(const Coord& other) const {
         return x != other.x || y != other.y;
+    }
+
+    inline Coord& operator+=(const Coord& other) {
+        x += other.x;
+        y += other.y;
+        return *this;
+    }
+
+    inline Coord& operator-=(const Coord& other) {
+        x -= other.x;
+        y -= other.y;
+        return *this;
+    }
+
+    inline Coord& operator*=(const Coord& other) {
+        x *= other.x;
+        y *= other.y;
+        return *this;
+    }
+
+    inline Coord& operator/=(const Coord& other) {
+        x /= other.x;
+        y /= other.y;
+        return *this;
+    }
+
+    inline Coord operator-() const {
+        return {-x, -y};
     }
 
     inline PointI asPointI() const {
         return {static_cast<int>(x), static_cast<int>(y)};
     }
+
 
     inline PointF asPointF() const {
         return {x, y};

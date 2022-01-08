@@ -14,7 +14,13 @@ GLMapWidget::GLMapWidget(QWidget *parent) :
 }
 
 void GLMapWidget::setPainter(MapPainterPtr map_painter) {
-    map_painter_ = map_painter;
+    map_painter_ = std::move(map_painter);
+}
+
+void GLMapWidget::setMapSize(Coord map_size) {
+    map_size_ = map_size;
+    camera_.camera0 = Coord(0., map_size.y - height());
+    camera_.camera1 = Coord(width(), map_size.y);
 }
 
 void GLMapWidget::animate() {
@@ -36,8 +42,8 @@ void GLMapWidget::wheelEvent(QWheelEvent *event) {
     if (mouse_dragging_) {
         return;
     }
-    const Coord oldLeftBorder = camera_.center - camera_.size / 2.;
-    const Coord oldRightBorder = camera_.center + camera_.size / 2.;
+    const Coord oldLeftBorder = camera_.camera0;//camera_.center - camera_.size / 2.;
+    const Coord oldRightBorder = camera_.camera1; //camera_.center + camera_.size / 2.;
 
 
     const Coord mousePos{event->position().x(), event->position().y()};
@@ -45,24 +51,33 @@ void GLMapWidget::wheelEvent(QWheelEvent *event) {
     const Coord zoomCenter = oldLeftBorder + (oldRightBorder - oldLeftBorder) * zoomCenterOnScreen;
 
     const double mouseDelta = event->angleDelta().y();
-    const double zoomSpeed = 0.0004;
+    const double zoomSpeed = 0.4;
+
+//    const double additionalSpeedCoef = pow((oldRightBorder.x - oldLeftBorder.x) / map_size_.x, 1.5 );
 
     const double zoomDelta = zoomSpeed * mouseDelta;
 
-    const Coord leftCoef = (zoomCenter - oldLeftBorder) / (oldRightBorder - oldLeftBorder);
-    const Coord rightCoef = Coord{1, 1} - leftCoef;
+    Coord leftCoef = (zoomCenter - oldLeftBorder) / (oldRightBorder - oldLeftBorder);
+    Coord rightCoef = Coord{1, 1} - leftCoef;
 
-    const Coord newLeftBorder = (oldLeftBorder + leftCoef * zoomDelta).Crop(-0.5, 1.5);
-    const Coord newRightBorder = (oldRightBorder - rightCoef * zoomDelta).Crop(-0.5, 1.5);
+    const double resCoef = width() * 1. / height();
+    leftCoef.y /= resCoef;
+    rightCoef.y /= resCoef;
 
-    if (newRightBorder.x - newLeftBorder.x < 0.001 || newRightBorder.y - newLeftBorder.y < 0.001) {
+    const Coord newLeftBorder = (oldLeftBorder + leftCoef * zoomDelta );
+    const Coord newRightBorder = (oldRightBorder - rightCoef * zoomDelta );
+
+    if (newRightBorder.x - newLeftBorder.x < 40. || newRightBorder.y - newLeftBorder.y < 40.) {
         return;
     }
 
-    camera_.center = (newRightBorder + newLeftBorder) / 2.;
-    camera_.size = (newRightBorder - newLeftBorder);
-    const double sz = std::max(camera_.size.x, camera_.size.y);
-    camera_.size = {sz, sz};
+    camera_.camera0 = newLeftBorder;
+    camera_.camera1 = newRightBorder;
+
+//    camera_.center = (newRightBorder + newLeftBorder) / 2.;
+//    camera_.size = (newRightBorder - newLeftBorder);
+//    const double sz = std::max(camera_.size.x, camera_.size.y);
+//    camera_.size = {sz, sz};
 //    camera_.cameraSize =
 //            (camera_.cameraSize - delta * zoomSpeed).Crop(0.00001, 1);
 }
@@ -73,7 +88,11 @@ void GLMapWidget::mouseMoveEvent(QMouseEvent *event) {
         const Coord delta = cur_mouse_pos - dragging_mouse_start_pos_;
 
         const Coord deltaPercent = delta / Coord{size().width(), size().height()};
-        camera_.center = (dragging_camera_start_pos_ - deltaPercent * camera_.size).Crop(0, 1);
+        const Coord deltaCoord = deltaPercent * (camera_.camera1 - camera_.camera0);
+
+        camera_.camera0 = dragging_camera_start_pos0_ - deltaCoord;
+        camera_.camera1 = dragging_camera_start_pos1_ - deltaCoord;
+//        camera_.center = (dragging_camera_start_pos_ - deltaPercent * camera_.size).Crop(0, 1);
     } else {
         mouse_dragging_ = false;
     }
@@ -83,7 +102,8 @@ void GLMapWidget::mousePressEvent(QMouseEvent *event) {
     if (event->buttons().testFlag(Qt::LeftButton)) {
         mouse_dragging_ = true;
         dragging_mouse_start_pos_ = {event->pos().x(), event->pos().y()};
-        dragging_camera_start_pos_ = camera_.center;
+        dragging_camera_start_pos0_ = camera_.camera0;
+        dragging_camera_start_pos1_ = camera_.camera1;
     }
 }
 

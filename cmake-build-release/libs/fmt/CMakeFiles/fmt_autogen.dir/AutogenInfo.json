@@ -14,7 +14,8 @@
 		"/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CheckCXXCompilerFlag.cmake",
 		"/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CheckCXXCompilerFlag.cmake",
 		"/home/misha-sh/course/libs/fmt/support/cmake/JoinPaths.cmake",
-		"/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CheckSymbolExists.cmake"
+		"/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CheckSymbolExists.cmake",
+		"/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/share/cmake-3.21/Modules/CMakeConfigurableFile.in"
 	],
 	"CMAKE_SOURCE_DIR" : "/home/misha-sh/course",
 	"DEP_FILE" : "/home/misha-sh/course/cmake-build-release/libs/fmt/fmt_autogen/deps",
@@ -117,7 +118,7 @@
 		"/usr/include/c++/10",
 		"/usr/include/x86_64-linux-gnu/c++/10",
 		"/usr/include/c++/10/backward",
-		"/usr/lib/gcc/x86_64-linux-gnu/10/include",
+		"/usr/lib/llvm-13/lib/clang/13.0.1/include",
 		"/usr/local/include",
 		"/usr/include/x86_64-linux-gnu",
 		"/usr/include"
@@ -127,7 +128,7 @@
 	"MOC_PATH_PREFIX" : false,
 	"MOC_PREDEFS_CMD" : 
 	[
-		"/usr/bin/c++",
+		"/usr/bin/clang++-13",
 		"-dM",
 		"-E",
 		"-c",

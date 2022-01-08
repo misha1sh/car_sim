@@ -76,7 +76,7 @@
 					"fragment" : "-fuse-ld=lld -O3"
 				},
 				{
-					"fragment" : "-std=gnu++2a"
+					"fragment" : "-std=gnu++20"
 				}
 			],
 			"defines" : 

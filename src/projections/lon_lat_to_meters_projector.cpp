@@ -5,8 +5,8 @@
 
 
 LonLatToMetersProjector::LonLatToMetersProjector(Coord center) {
-    C_ = proj_context_create();
-    proj_string_ = fmt::format("+proj=tmerc +lon_0={} +lat_0={} +units=m", center.x, center.y);
+    C_ = proj_context_create(); // tmerc
+    proj_string_ = fmt::format("+proj=ortho +lon_0={} +lat_0={} +units=m", center.x, center.y);
     P_ = proj_create_crs_to_crs (static_cast<PJ_CONTEXT*>(C_),
                                 "EPSG:4326",
                                 proj_string_.c_str(),

@@ -56,11 +56,11 @@ void MapPainter::paintMap(QPainter &painter, QPaintEvent* event, Camera camera) 
     Coord mapSize {map_->road_dir.sizeX(),  map_->road_dir.sizeY()};
 
 //    mapSize.y = screenSize.y() * 1. * mapSize.x  / screenSize.x();
-    mapSize.x = screenSize.x() * 1. * mapSize.y  / screenSize.y();
+//    mapSize.x = screenSize.x() * 1. * mapSize.y  / screenSize.y();
 
-    Coord onScreenMapSize {camera.size * mapSize};
-    Coord cameraCenter {camera.center * mapSize};
-    Coord cameraCorner {cameraCenter - onScreenMapSize / 2};
+//    Coord onScreenMapSize {camera.size * mapSize};
+    Coord onScreenMapSize {camera.camera1 - camera.camera0};
+    Coord cameraCorner {camera.camera0};
 
     PointI cameraCornerI {cameraCorner.asPointI()};
 
@@ -71,18 +71,19 @@ void MapPainter::paintMap(QPainter &painter, QPaintEvent* event, Camera camera) 
     }
 
     const DrawSettings cur_draw_settings = *draw_settings_;
+    const int y_size =  map_->size.y;
 
     int pixIdx = 0;
     uchar* pix = img.bits();
     for (int y = 0; y < screenSize.y(); y++) {
         for (int x = 0; x < screenSize.x(); x++) {
-            const int imageX = static_cast<int>(x * rescaleCoef.x) + cameraCornerI.x();
-            const int imageY = static_cast<int>((y * rescaleCoef.y) + cameraCornerI.y());
+            const int imageX = static_cast<int>(x * rescaleCoef.x + cameraCornerI.x());
+            const int imageY = static_cast<int>((y) * rescaleCoef.y + cameraCornerI.y());
 
             if (cur_draw_settings.draw_decision1) {
 
 
-                const auto decision1 = map_->decision1.getOrDefault(imageX, imageY, {0, 0});
+                const auto decision1 = map_->decision1.getOrDefault(imageX, y_size - imageY, {0, 0});
                 if (decision1 != Coord{0, 0}) {
                     setPixels(pix, pixIdx, decision1.x * 127 + 127, decision1.y * 127 + 127, 0);
                     continue;
@@ -90,7 +91,7 @@ void MapPainter::paintMap(QPainter &painter, QPaintEvent* event, Camera camera) 
             }
 
             if (cur_draw_settings.draw_decision2) {
-                const auto decision2 = map_->decision2.getOrDefault(imageX, imageY, {0, 0});
+                const auto decision2 = map_->decision2.getOrDefault(imageX, y_size - imageY, {0, 0});
                 if (decision2 != Coord{0, 0}) {
                     setPixels(pix, pixIdx, decision2.x * 127 + 127, decision2.y * 127 + 127, 0);
                     continue;
@@ -98,7 +99,7 @@ void MapPainter::paintMap(QPainter &painter, QPaintEvent* event, Camera camera) 
             }
 
             if (cur_draw_settings.draw_road_dir) {
-                const auto road_dir = map_->road_dir.getOrDefault(imageX, imageY/*map_->road_dir.sizeY()- imageY - 1*/, {0, 0});
+                const auto road_dir = map_->road_dir.getOrDefault(imageX, y_size - imageY, {0, 0});
                 if (road_dir != Coord{0, 0}) {
                     setPixels(pix, pixIdx, road_dir.x * 127 + 127,  (road_dir.y * 127 + 127), 0);
                     continue;

@@ -13,6 +13,7 @@ class GLMapWidget : public QOpenGLWidget
 public:
     explicit GLMapWidget(QWidget *parent);
     void setPainter(MapPainterPtr map_painter);
+    void setMapSize(Coord size);
 
 public slots:
     void animate();
@@ -27,9 +28,11 @@ protected:
 private:
     bool mouse_dragging_{false};
     Coord dragging_mouse_start_pos_{0, 0};
-    Coord dragging_camera_start_pos_{0, 0};
+    Coord dragging_camera_start_pos0_{0, 0};
+    Coord dragging_camera_start_pos1_{0, 0};
     MapPainterPtr map_painter_;
     QTimer frame_update_timer;
     Camera camera_{};
+    Coord map_size_{};
 
 };

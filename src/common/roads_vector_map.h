@@ -23,6 +23,7 @@ struct RoadsVectorMap {
 
     struct RoadForNode {
         ID road_id{};
+        std::optional<ID> prev_node{};
         std::optional<ID> next_node{};
     };
     std::unordered_map<ID, std::vector<RoadForNode>> roads_for_node{};
@@ -34,13 +35,15 @@ struct RoadsVectorMap {
     } stats{};
 
 public:
-    static RoadsVectorMapPtr Create(std::unordered_map<ID, Node> nodes, std::unordered_map<ID, Road> roads) {
+    static RoadsVectorMapPtr Create(std::unordered_map<ID, Node> nodes, std::unordered_map<ID, Road> roads, bool project_meters=true) {
         auto res = std::make_shared<RoadsVectorMap>();
         res->nodes = std::move(nodes);
         res->roads = std::move(roads);
         res->BuildIndex();
 
-        res->ProjectToMeters();
+        if (project_meters) {
+            res->ProjectToMeters();
+        }
         res->CalcBounds();
 
         return res;
@@ -52,6 +55,9 @@ private:
             for (int i = 0; i < road.nodes.size(); i++) {
                 roads_for_node[road.nodes[i]].push_back({
                     road_id,
+                    i > 0?
+                        std::make_optional(road.nodes[i - 1]) :
+                        std::nullopt,
                     i + 1 < road.nodes.size()?
                         std::make_optional(road.nodes[i + 1]) :
                         std::nullopt
@@ -59,6 +65,7 @@ private:
             }
         }
     }
+
 
     Coord FindCenter() const {
         const auto sum = std::accumulate(nodes.begin(), nodes.end(),
@@ -88,8 +95,8 @@ private:
 //        }));
 
 
-        stats.min_xy = {min_x, min_y};
-        stats.max_xy = {max_x, max_y};
+        stats.min_xy = {min_x - 200., min_y - 200.};
+        stats.max_xy = {max_x + 200., max_y + 200.};
     }
 
     void ProjectToMeters() {
