@@ -36,6 +36,10 @@ public:
 //        return reinterpret_cast<const T&>(data_.at(x, y));
 //    }
 
+    void fill(const T& value) {
+        data_.setTo(toCV(value));
+    }
+
     void fill(const PolygonI& polygon, const T& value) {
         // TODO: can be optimized
         // TODO: add support for inners()
@@ -52,6 +56,18 @@ public:
                        points,
                        toCV(value),
                        cv::LineTypes::LINE_4);
+    }
+
+    void fillConvex(const PolygonI& polygon, const T& value) {
+        // TODO: add support for inners()
+        std::vector<cv::Point> points = polygon.outer() |
+                                        ranges::views::transform([](const auto& pointI) {
+                                            return cv::Point{pointI.x(), pointI.y()};
+                                        }) | ranges::to_vector;
+        cv::fillConvexPoly(data_,
+                     points,
+                     toCV(value),
+                     cv::LineTypes::LINE_4);
     }
 
     inline int sizeX() {

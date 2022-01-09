@@ -23,14 +23,53 @@ void MapPainter::setDrawSettings(DrawSettingsPtr draw_settings) {
     draw_settings_ = std::move(draw_settings);
 }
 
-
+struct Color {
+    uchar r, g, b;
+};
 
 template <typename T1, typename T2, typename T3>
-inline void setPixels(uchar* pix, int& pixIdx, const T1& r, const T2& g, const T3& b) {
-    pix[pixIdx] = static_cast<uchar>(b);
-    pix[pixIdx + 1] = static_cast<uchar>(g);
-    pix[pixIdx + 2] = static_cast<uchar>(r);
+inline Color RGB(const T1& r, const T2& g, const T3& b) {
+    return Color {
+            static_cast<uchar>(r),
+            static_cast<uchar>(g),
+            static_cast<uchar>(b)
+    };
+}
+
+inline void setPixels(uchar* pix, int& pixIdx, const Color& color) {
+    pix[pixIdx] = color.b;
+    pix[pixIdx + 1] = color.g;
+    pix[pixIdx + 2] = color.r;
     pixIdx += 4;
+}
+
+inline Color DirToRGB(const Coord& dir) {
+    return RGB(dir.x * 127 + 127, dir.y * 127 + 127, 0);
+}
+
+inline Color CarTypeToRGB(const Coord& dir) {
+    return RGB(dir.x * 127 + 127, dir.y * 127 + 127, 0);
+}
+
+
+inline bool DrawDir(RasterDataPoint& data, int imageX, int imageY, int& pixIdx, uchar* pix) {
+    const auto dir = data.getOrDefault(imageX, imageY, {0, 0});
+    if (dir != Coord{0, 0}) {
+        setPixels(pix, pixIdx, DirToRGB(dir));
+        return true;
+    }
+
+    return false;
+}
+
+inline bool DrawCarType(RasterDataEnum<CarCellType>* data, int imageX, int imageY, int& pixIdx, uchar* pix) {
+    const auto dir = data.getOrDefault(imageX, imageY, {0, 0});
+    if (dir != Coord{0, 0}) {
+        setPixels(pix, pixIdx, DirToRGB(dir));
+        return true;
+    }
+
+    return false;
 }
 
 
@@ -78,37 +117,32 @@ void MapPainter::paintMap(QPainter &painter, QPaintEvent* event, Camera camera) 
     for (int y = 0; y < screenSize.y(); y++) {
         for (int x = 0; x < screenSize.x(); x++) {
             const int imageX = static_cast<int>(x * rescaleCoef.x + cameraCornerI.x());
-            const int imageY = static_cast<int>((y) * rescaleCoef.y + cameraCornerI.y());
+            const int imageY = y_size - (static_cast<int>((y) * rescaleCoef.y + cameraCornerI.y()));
+
+            if (cur_draw_settings.draw_prev_car_type) {
+                const auto prev_car_type = map_->pre
+            }
 
             if (cur_draw_settings.draw_decision1) {
-
-
-                const auto decision1 = map_->decision1.getOrDefault(imageX, y_size - imageY, {0, 0});
-                if (decision1 != Coord{0, 0}) {
-                    setPixels(pix, pixIdx, decision1.x * 127 + 127, decision1.y * 127 + 127, 0);
+                if (DrawDir(map_->decision1, imageX, imageY, pixIdx, pix)) {
                     continue;
                 }
             }
 
             if (cur_draw_settings.draw_decision2) {
-                const auto decision2 = map_->decision2.getOrDefault(imageX, y_size - imageY, {0, 0});
-                if (decision2 != Coord{0, 0}) {
-                    setPixels(pix, pixIdx, decision2.x * 127 + 127, decision2.y * 127 + 127, 0);
+                if (DrawDir(map_->decision2, imageX, imageY, pixIdx, pix)) {
                     continue;
                 }
             }
 
             if (cur_draw_settings.draw_road_dir) {
-                const auto road_dir = map_->road_dir.getOrDefault(imageX, y_size - imageY, {0, 0});
-                if (road_dir != Coord{0, 0}) {
-                    setPixels(pix, pixIdx, road_dir.x * 127 + 127,  (road_dir.y * 127 + 127), 0);
+                if (DrawDir(map_->road_dir, imageX, imageY, pixIdx, pix)) {
                     continue;
                 }
             }
 
 
-
-            setPixels(pix, pixIdx, 0, 0, 0);
+            setPixels(pix, pixIdx, {0, 0, 0});
         }
     }
 

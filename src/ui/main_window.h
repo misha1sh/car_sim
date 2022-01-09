@@ -32,6 +32,10 @@ private slots:
     void on_drawRoadDirCheckBox_clicked(bool value);
     void on_drawDecision1CheckBox_clicked(bool value);
     void on_drawDecision2CheckBox_clicked(bool value);
+    void on_drawCarTypeCheckBox_clicked(bool value);
+    void on_drawPrevCarTypeCheckBox_clicked(bool value);
+    void on_drawCarDataCheckBox_clicked(bool value);
+    void on_drawPrevCarDataCheckBox_clicked(bool value);
 
 private:
     Ui::MainWindow *ui;

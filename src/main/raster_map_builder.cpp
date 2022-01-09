@@ -33,15 +33,15 @@ void RasterMapBuilder::CreateRoadsMap(std::filesystem::path osm_input_file_path)
 
     if (image_size.x > 7000 || image_size.y > 7000) {
         const auto new_image_size = image_size.Crop(0, 7000.);
-        fmt::print(stderr, "Image too big: {}x{} px. It will be cropped to {}x{} px\n", image_size.x, image_size.y, new_image_size.x, new_image_size.y);
+        fmt::print(stderr, "Image too big: {:.2f}x{:.2f} px. It will be cropped to {}x{} px\n", image_size.x, image_size.y, new_image_size.x, new_image_size.y);
         image_size = new_image_size;
     }
 
 //    VERIFY(image_size.x < 10000 && image_size.y < 10000);
 
-    map_ = std::make_shared<RasterMap>(image_size.x, image_size.y);
+    map_ = std::make_shared<RasterMap>(image_size.x, image_size.y, pixels_per_meter_);
 
-    RoadsRasterizer rasterizer;
-    rasterizer.RasterizeRoads(roads_vector_map, *map_);
+    RoadsRasterizer rasterizer(roads_vector_map);
+    rasterizer.RasterizeRoads(*map_);
 }
 

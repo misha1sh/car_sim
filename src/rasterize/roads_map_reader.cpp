@@ -20,7 +20,7 @@ inline bool contains_string(const char* str, const std::vector<const char*>& str
 bool is_road(const osmium::Way& way) {
     thread_local std::vector<const char*> suitable_tags = {
             "primary", "secondary", "tertiary", "motorway", "trunk",
-            "unclassified", // residential
+            "unclassified", "tertiary", "residential", "unclassified",
             "primary_link", "secondary_link", "tertiary_link", "motorway_link", "trunk_link"
     };
     const char* tag = way.tags()["highway"];

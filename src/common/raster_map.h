@@ -19,20 +19,25 @@ struct RasterMap {
     RasterDataPoint decision1;
     RasterDataPoint decision2;
 
-//    RasterDataEnum<CarCellType> car_cells;
+    RasterDataEnum<CarCellType> car_cells;
+    RasterDataPoint car_data;
 
-    // direction and speed of car
-    RasterDataPoint car_speed;
+    RasterDataEnum<CarCellType> new_car_cells;
+    RasterDataPoint new_car_data;
 
     Coord size;
+    double pixels_per_meter;
 
-    RasterMap(int x_len, int y_len):
+    RasterMap(int x_len, int y_len, double pixels_per_meter_):
             road_dir(x_len, y_len, {0, 0}),
             decision1(x_len, y_len, {0, 0}),
             decision2(x_len, y_len, {0, 0}),
-//            car_cells(x_len, y_len, CarCellType::NONE),
-            car_speed(x_len, y_len, {0, 0}),
-            size(x_len, y_len)
+            car_cells(x_len, y_len, CarCellType::NONE),
+            car_data(x_len, y_len, {0, 0}),
+            new_car_cells(x_len, y_len, CarCellType::NONE),
+            new_car_data(x_len, y_len, {0, 0}),
+            size(x_len, y_len),
+            pixels_per_meter(pixels_per_meter_)
     {
     }
 };

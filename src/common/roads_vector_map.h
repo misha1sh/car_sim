@@ -5,6 +5,7 @@
 #include "projections/meters_to_image_projector.h"
 
 #include <range/v3/all.hpp>
+#include <fmt/core.h>
 
 #include <memory>
 #include <optional>
@@ -39,11 +40,15 @@ public:
         auto res = std::make_shared<RoadsVectorMap>();
         res->nodes = std::move(nodes);
         res->roads = std::move(roads);
-        res->BuildIndex();
 
         if (project_meters) {
             res->ProjectToMeters();
         }
+        res->BuildIndex();
+        res->ReduceNodesCount();
+        res->BuildIndex();
+
+
         res->CalcBounds();
 
         return res;
@@ -51,6 +56,7 @@ public:
 
 private:
     void BuildIndex() {
+        roads_for_node.clear();
         for (const auto& [road_id, road] : roads) {
             for (int i = 0; i < road.nodes.size(); i++) {
                 roads_for_node[road.nodes[i]].push_back({
@@ -105,6 +111,45 @@ private:
         for (auto& [node_id, node] : nodes) {
             node.c = projector.project(node.c);
         }
+    }
+
+    void ReduceNodesCount() {
+        int reduced_nodes_cnt = 0;
+        for (auto& [road_id, road] : roads) {
+            if (road.nodes.empty()) {
+                continue;
+            }
+
+
+            std::vector<ID> new_nodes;
+            for (int i = 0; i < road.nodes.size(); i++) {
+                const ID node_id = road.nodes[i];
+                if (i == road.nodes.size() - 1 || i == 0 || roads_for_node[node_id].size() > 1) {
+                    new_nodes.push_back(node_id);
+                }
+                const auto prev_node = nodes[road.nodes[i - 1]].c;
+                const auto next_node = nodes[road.nodes[i - 1]].c;
+                if ((prev_node - next_node).Len() < 200.) {
+                    reduced_nodes_cnt++;
+                    continue;
+                } // TODO: better algo
+                new_nodes.push_back(node_id);
+            }
+            road.nodes = new_nodes;
+
+//            auto prev_node = nodes[road.nodes[0]].c;
+//            for (int i = 1; i < road.nodes.size(); i++) {
+//                const auto cur_node = nodes[node_id].c;
+//                if (roads_for_node[node_id].size() <= 1 &&
+//                    (prev_node - cur_node).Len() < 40.) {
+//                    continue;
+//                }
+//                new_nodes.push_back()
+//            }
+        }
+
+        fmt::print("Reduced {} nodes, which were too close\n", reduced_nodes_cnt);
+
     }
 };
 

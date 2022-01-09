@@ -88,6 +88,10 @@
 					"fragment" : "-fPIC"
 				},
 				{
+					"backtrace" : 2,
+					"fragment" : "-pthread"
+				},
+				{
 					"fragment" : "-std=gnu++20"
 				}
 			],
@@ -279,7 +283,7 @@
 			},
 			{
 				"backtrace" : 2,
-				"fragment" : "-lpthread",
+				"fragment" : "-pthread",
 				"role" : "libraries"
 			},
 			{
@@ -478,16 +482,16 @@
 				"role" : "libraries"
 			},
 			{
+				"backtrace" : 2,
+				"fragment" : "-pthread",
+				"role" : "libraries"
+			},
+			{
 				"fragment" : "/usr/lib/x86_64-linux-gnu/libGLX.so",
 				"role" : "libraries"
 			},
 			{
 				"fragment" : "/usr/lib/x86_64-linux-gnu/libOpenGL.so",
-				"role" : "libraries"
-			},
-			{
-				"backtrace" : 2,
-				"fragment" : "-lpthread",
 				"role" : "libraries"
 			},
 			{
