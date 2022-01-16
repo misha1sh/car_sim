@@ -16,7 +16,7 @@ LonLatToMetersProjector::LonLatToMetersProjector(Coord center) {
 Coord LonLatToMetersProjector::project(const Coord &coord) const {
     const auto xy = proj_coord(coord.y, coord.x, 0, 0);
     const auto projection = proj_trans(static_cast<PJ*>(P_), PJ_FWD, xy);
-    return {projection.xy.x, projection.xy.y};
+    return {projection.xy.y, projection.xy.x};
 }
 
 LonLatToMetersProjector::~LonLatToMetersProjector() {

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QtCore>
 #include "common/entities.h"
 #include "common/raster_map.h"
 
@@ -10,7 +11,8 @@ struct Car {
     Coord size;
 };
 
-class Simulator {
+class Simulator : public QObject {
+Q_OBJECT
 public:
     enum class State {
         NO_MAP,
@@ -23,6 +25,8 @@ public:
     Car ReadCar(const PointI& pos);
     void WriteCar(const Car& car);
     void CreateMap();
+    void SpawnCars(int count);
+
     void RunTick();
     void SimulateCars(double delta);
 
@@ -31,6 +35,11 @@ public:
     inline const State& GetState() const {
         return state_;
     }
+
+public slots:
+    void RunTickSlot() {
+        RunTick();
+    };
 
 private:
     State state_{State::NO_MAP};

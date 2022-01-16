@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 {
     Simulator simulator;
     simulator.CreateMap();
-    simulator.RunTick();
+//    simulator.RunTick();
 
     MapPainterPtr map_painter = std::make_shared<MapPainter>();
     map_painter->setMap(simulator.GetMap());
@@ -28,6 +28,8 @@ int main(int argc, char *argv[])
 
     w.getUI()->openGLWidget->setPainter(map_painter);
     w.getUI()->openGLWidget->setMapSize(simulator.GetMap()->size);
+    w.SetRunTickHandler(simulator, &Simulator::RunTickSlot);
+
     map_painter->setDrawSettings(w.getDrawSettings());
 
     return a.exec();

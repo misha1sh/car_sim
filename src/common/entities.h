@@ -187,6 +187,11 @@ struct Coord {
     inline PointF asPointF() const {
         return {x, y};
     }
+
+    friend std::ostream& operator<< (std::ostream& stream, const Coord& coord) {
+        stream << std::fixed << std::setprecision( 6 ) << "(" << coord.x << " " << coord.y << ")";
+        return stream;
+    }
 };
 
 struct Node {

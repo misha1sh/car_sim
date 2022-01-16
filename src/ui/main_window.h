@@ -27,6 +27,11 @@ public:
         return draw_settings_;
     }
 
+    template <typename OBJ, typename SLOTT>
+    void SetRunTickHandler(const OBJ& obj, const SLOTT& slot) {
+        connect(ui->runOneTickButton, &QPushButton::clicked, &obj, slot);
+    }
+
 private slots:
     void on_actionExit_triggered();
     void on_drawRoadDirCheckBox_clicked(bool value);

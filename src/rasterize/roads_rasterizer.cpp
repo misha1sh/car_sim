@@ -160,14 +160,14 @@ void RoadsRasterizer::ConnectRoadSegmentEachToEach(const RoadSegment& ingoing_se
 
     Coord median_dir = outgoing_segment.dir - ingoing_segment.dir;
     if (median_dir == Coord{0, 0}) {
-        median_dir = outgoing_segment.dir.LeftPerpendicular();
-    } else if (ingoing_segment.dir.Angle(outgoing_segment.dir) < 0) { // left turns
+        median_dir = outgoing_segment.dir.RightPerpendicular();
+    } else if (ingoing_segment.dir.Angle(outgoing_segment.dir) > 0) { // left turns
         median_dir = -median_dir;
     }
     median_dir = median_dir.Norm();
 
-    const auto ingoing_perp = ingoing_segment.dir.LeftPerpendicular();
-    const auto outgoing_perp = outgoing_segment.dir.LeftPerpendicular();
+    const auto ingoing_perp = ingoing_segment.dir.RightPerpendicular();
+    const auto outgoing_perp = outgoing_segment.dir.RightPerpendicular();
 
     for (int i = 1; i <= std::min(ingoing_segment.road.lanes_count, outgoing_segment.road.lanes_count); i++) {
         const Coord pi = ingoing_segment.p1 + ingoing_perp * lane_width_ * i;
@@ -192,10 +192,10 @@ void RoadsRasterizer::ConnectRoadSegmentMainToIngoing(const RoadSegment& ingoing
                                                       const RoadSegment& outgoing_segment, RasterDataPoint* map_to_fill) {
     VERIFY(ingoing_segment.segment_group_id != outgoing_segment.segment_group_id);
 
-    Coord median_dir = outgoing_segment.dir.LeftPerpendicular();
+    Coord median_dir = outgoing_segment.dir.RightPerpendicular();
 
-    const auto ingoing_perp = ingoing_segment.dir.LeftPerpendicular();
-    const auto outgoing_perp = outgoing_segment.dir.LeftPerpendicular();
+    const auto ingoing_perp = ingoing_segment.dir.RightPerpendicular();
+    const auto outgoing_perp = outgoing_segment.dir.RightPerpendicular();
 
     for (int i = 1; i <= ingoing_segment.road.lanes_count; i++) {
         const Coord pi = ingoing_segment.p1 + ingoing_perp * lane_width_ * i;
@@ -231,10 +231,10 @@ void RoadsRasterizer::ConnectRoadSegmentMainToOutgoing(const RoadSegment& ingoin
                                                       const RoadSegment& outgoing_segment, RasterDataPoint* map_to_fill) {
     VERIFY(ingoing_segment.segment_group_id != outgoing_segment.segment_group_id);
 
-    Coord median_dir = ingoing_segment.dir.LeftPerpendicular();
+    Coord median_dir = ingoing_segment.dir.RightPerpendicular();
 
-    const auto ingoing_perp = ingoing_segment.dir.LeftPerpendicular();
-    const auto outgoing_perp = outgoing_segment.dir.LeftPerpendicular();
+    const auto ingoing_perp = ingoing_segment.dir.RightPerpendicular();
+    const auto outgoing_perp = outgoing_segment.dir.RightPerpendicular();
 
     for (int i = 1; i <= ingoing_segment.road.lanes_count; i++) {
         const Coord pi = ingoing_segment.p1 + ingoing_perp * lane_width_ * i;
@@ -293,18 +293,11 @@ void RoadsRasterizer::RasterizeRoads(RasterMap &map) {
         fmt::print("Rasterizing roads from {:.1f}x{:.1f} meters to {}x{} px\n", metersSize.x, metersSize.y, map.road_dir.sizeX(), map.road_dir.sizeY());
     }
 
-
     int not_enough_layers_cnt = 0;
 
     for (const auto& [node_id, roads_for_node] : vector_map_->roads_for_node) {
 
         const Node& center_node = nodes_.at(node_id);
-
-//        {
-//            const auto polygon = ExpandPoint(center_node.c.asPointF(), 1.);
-//            const PolygonI polygonImage = imageProjector.project(polygon);
-//            map.decision1.fill(polygonImage, {1, 0});
-//        }
 
 //        if (node_id != 60768222) {
 //            continue;
@@ -442,8 +435,11 @@ void RoadsRasterizer::RasterizeRoads(RasterMap &map) {
 
 
 
-
     }
+
+//    for (const auto& [node_id, node] : nodes_) {
+//        map.decision1(image_projector_->project(node.c.asPointF()).x(), image_projector_->project(node.c.asPointF()).y()) = {1, 1};
+//    }
 
 //    fmt::print("Got {} too big junctions \n", tooBigJunctionCount);
     fmt::print("Got {} not enough decision layers \n", not_enough_layers_cnt);

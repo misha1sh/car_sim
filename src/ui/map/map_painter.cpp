@@ -1,4 +1,7 @@
 #include "map_painter.h"
+
+#include "utils/verify.h"
+
 #include <fmt/core.h>
 
 
@@ -47,9 +50,16 @@ inline Color DirToRGB(const Coord& dir) {
     return RGB(dir.x * 127 + 127, dir.y * 127 + 127, 0);
 }
 
-inline Color CarTypeToRGB(const Coord& dir) {
-    return RGB(dir.x * 127 + 127, dir.y * 127 + 127, 0);
+inline Color CarTypeToRGB(const CarCellType& car_type) {
+    if (car_type == CarCellType::CENTER) {
+        return RGB(0, 0, 255);
+    }
+    if (car_type == CarCellType::BODY) {
+        return RGB(0, 0, 128);
+    }
+    VERIFY(false && "Unknown car cell type");
 }
+
 
 
 inline bool DrawDir(RasterDataPoint& data, int imageX, int imageY, int& pixIdx, uchar* pix) {
@@ -62,10 +72,10 @@ inline bool DrawDir(RasterDataPoint& data, int imageX, int imageY, int& pixIdx, 
     return false;
 }
 
-inline bool DrawCarType(RasterDataEnum<CarCellType>* data, int imageX, int imageY, int& pixIdx, uchar* pix) {
-    const auto dir = data.getOrDefault(imageX, imageY, {0, 0});
-    if (dir != Coord{0, 0}) {
-        setPixels(pix, pixIdx, DirToRGB(dir));
+inline bool DrawCarType(RasterDataEnum<CarCellType>& data, int imageX, int imageY, int& pixIdx, uchar* pix) {
+    const auto car_type = data.getOrDefault(imageX, imageY, CarCellType::NONE);
+    if (car_type != CarCellType::NONE) {
+        setPixels(pix, pixIdx, CarTypeToRGB(car_type));
         return true;
     }
 
@@ -112,6 +122,12 @@ void MapPainter::paintMap(QPainter &painter, QPaintEvent* event, Camera camera) 
     const DrawSettings cur_draw_settings = *draw_settings_;
     const int y_size =  map_->size.y;
 
+//    static int ff = 0;
+//    if (ff % 100 == 0) {
+//        map_->new_car_cells.writeToFile("new_car_cells" + std::to_string(ff)+".bmp");
+//    }
+//    ff++;
+
     int pixIdx = 0;
     uchar* pix = img.bits();
     for (int y = 0; y < screenSize.y(); y++) {
@@ -119,8 +135,36 @@ void MapPainter::paintMap(QPainter &painter, QPaintEvent* event, Camera camera) 
             const int imageX = static_cast<int>(x * rescaleCoef.x + cameraCornerI.x());
             const int imageY = y_size - (static_cast<int>((y) * rescaleCoef.y + cameraCornerI.y()));
 
+            if ((-10 <= imageX && imageX <= -1) ||
+                (-10 <= imageY && imageY <= -1) ||
+                (mapSize.x <= imageX && imageX <= mapSize.x + 10) ||
+                (mapSize.y <= imageY && imageY <= mapSize.y + 10)) {
+                setPixels(pix, pixIdx, RGB(255, 255, 255));
+                continue;
+            }
+
+            if (cur_draw_settings.draw_prev_car_data) {
+                if (DrawDir(map_->new_car_data, imageX, imageY, pixIdx, pix)) {
+                    continue;
+                }
+            }
+
+            if (cur_draw_settings.draw_car_data) {
+                if (DrawDir(map_->car_data, imageX, imageY, pixIdx, pix)) {
+                    continue;
+                }
+            }
+
             if (cur_draw_settings.draw_prev_car_type) {
-                const auto prev_car_type = map_->pre
+                if (DrawCarType(map_->new_car_cells, imageX, imageY, pixIdx, pix)) {
+                    continue;
+                }
+            }
+
+            if (cur_draw_settings.draw_car_type) {
+                if (DrawCarType(map_->car_cells, imageX, imageY, pixIdx, pix)) {
+                    continue;
+                }
             }
 
             if (cur_draw_settings.draw_decision1) {
@@ -164,7 +208,7 @@ void MapPainter::paintMap(QPainter &painter, QPaintEvent* event, Camera camera) 
             const Coord dir {sin(angle), cos(angle)};
             const Coord dir2 {sin(angle + M_PI / 2), cos(angle + M_PI / 2)};
             for (double i = 5; i < 15; i += 0.5) {
-                const auto pos = (Coord{20 + dir2.x * i, 20 + dir2.y * i}).asPointI();
+                const auto pos = (Coord{20 + dir.x * i, 20 + dir.y * i}).asPointI(); // dir2
                 directionsCircleImg.setPixelColor(pos.x(), pos.y(), QColor(dir.x * 127 + 127, dir.y * 127 + 127, 0));
             }
         }

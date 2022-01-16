@@ -13,12 +13,13 @@ public:
     explicit RasterData(int len_x, int len_y, const T& default_value) :
         len_x_(len_x),
         len_y_(len_y),
-        data_(len_x, len_y, toCV(default_value))
+        data_(len_y, len_x, toCV(default_value)) // swap to view mem
     {
     }
 
     inline T& operator()(int x, int y) {
-        CV_T& t = data_.template at<CV_T>(x, y);
+        // y x swapped
+        CV_T& t = data_.template at<CV_T>(y, x);
         return *reinterpret_cast<T*>(&t);
     }
 
@@ -78,6 +79,36 @@ public:
         return len_y_;
     }
 
+    void show() {
+        cv::imshow("test", data_);
+        cv::waitKey(0);
+    }
+
+    void writeToFile(const std::string& path) {
+        auto img = data_.clone();
+//        std::cerr << img.channels() << std::endl;
+//        for (int i = 0; i  < 10; i++) {
+//            for (int j = 0; j < 10; j++) {
+//                std::cerr << (int)(*this)(i, j) << " ";
+//            }
+//            std::cerr << std::endl;
+//        }
+//        std::cerr << std::endl;
+
+
+        if (img.channels() == 2) {
+            std::vector<cv::Mat> channels(2);
+            cv::split(img, channels);
+            channels.push_back(channels.back());
+            channels.back().setTo(0);
+            cv::Mat res;
+            cv::merge(channels, res);
+            cv::imwrite(path, res);
+            return;
+        }
+        cv::imwrite(path, img);
+    }
+
 private:
     int len_x_, len_y_;
     cv::Mat_<CV_T> data_;
@@ -97,4 +128,4 @@ private:
 using RasterDataPoint = RasterData<Coord, cv::Vec2d>;
 
 template <typename T>
-using RasterDataEnum = RasterData<T, char>;
+using RasterDataEnum = RasterData<T, unsigned char>;

@@ -45,8 +45,8 @@ public:
             res->ProjectToMeters();
         }
         res->BuildIndex();
-        res->ReduceNodesCount();
-        res->BuildIndex();
+//        res->ReduceNodesCount();
+//        res->BuildIndex();
 
 
         res->CalcBounds();
@@ -82,27 +82,27 @@ private:
     }
 
     void CalcBounds() {
-        double min_x = +std::numeric_limits<double>::infinity();
-        double min_y = +std::numeric_limits<double>::infinity();
-        double max_x = -std::numeric_limits<double>::infinity();
-        double max_y = -std::numeric_limits<double>::infinity();
-        for (const auto& [node_id_with_road, _] : roads_for_node) {
-            const auto& c = nodes[node_id_with_road].c;
-            min_x = std::min(min_x, c.x);
-            min_y = std::min(min_y, c.y);
-            max_x = std::max(max_x, c.x);
-            max_y = std::max(max_y, c.y);
-        }
-//        const auto [min_x, max_x] = ranges::minmax(nodes | ranges::views::values | ranges::views::transform([](const auto& node) {
-//            return node.c.x;
-//        }));
-//        const auto [min_y, max_y] = ranges::minmax(nodes | ranges::views::values | ranges::views::transform([](const auto& node) {
-//            return node.c.y;
-//        }));
+//        double min_x = +std::numeric_limits<double>::infinity();
+//        double min_y = +std::numeric_limits<double>::infinity();
+//        double max_x = -std::numeric_limits<double>::infinity();
+//        double max_y = -std::numeric_limits<double>::infinity();
+//        for (const auto& [node_id_with_road, _] : roads_for_node) {
+//            const auto& c = nodes[node_id_with_road].c;
+//            min_x = std::min(min_x, c.x);
+//            min_y = std::min(min_y, c.y);
+//            max_x = std::max(max_x, c.x);
+//            max_y = std::max(max_y, c.y);
+//        }
+        const auto [min_x, max_x] = ranges::minmax(nodes | ranges::views::values | ranges::views::transform([](const auto& node) {
+            return node.c.x;
+        }));
+        const auto [min_y, max_y] = ranges::minmax(nodes | ranges::views::values | ranges::views::transform([](const auto& node) {
+            return node.c.y;
+        }));
 
 
-        stats.min_xy = {min_x - 200., min_y - 200.};
-        stats.max_xy = {max_x + 200., max_y + 200.};
+        stats.min_xy = {min_x - 30., min_y - 30.};
+        stats.max_xy = {max_x + 30., max_y + 30.};
     }
 
     void ProjectToMeters() {

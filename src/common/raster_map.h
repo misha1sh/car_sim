@@ -4,10 +4,10 @@
 #include "raster_data.h"
 
 
-enum class CarCellType : char {
+enum class CarCellType : unsigned char {
     NONE = 0,
-    CENTER,
-    BODY,
+    CENTER = 128,
+    BODY = 254,
 };
 
 struct RasterMap {

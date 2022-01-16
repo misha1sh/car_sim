@@ -12,14 +12,14 @@ RasterMapBuilder::RasterMapBuilder(double pixels_per_meter) :
 
 void RasterMapBuilder::CreateRoadsMap(std::filesystem::path osm_input_file_path) {
     RoadsMapReader reader;
-    auto roads_vector_map = reader.ReadRoads(osm_input_file_path);
+//    auto roads_vector_map = reader.ReadRoads(osm_input_file_path);
 
 //    auto roads_vector_map = RoadsVectorMap::Create(
 //            {{1, Node{1, {0, 300}}},
 //             {2, Node{2, {100, 300}}},
 //             {3, Node{3, {200, 300}}},
 //             {4, Node{4, {200, 0}}},
-//             {5, Node{5, {200, 600}}}
+//             {5, Node{5, {200, 400}}}
 //            },
 //            {
 //                    {1, Road{1, 3, false, {1, 2}}},
@@ -28,6 +28,34 @@ void RasterMapBuilder::CreateRoadsMap(std::filesystem::path osm_input_file_path)
 //            },
 //            false
 //            );
+//
+//
+
+
+
+    auto roads_vector_map = RoadsVectorMap::Create(
+            {{1, Node{1, {0, 300}}},
+             {2, Node{2, {100, 300}}},
+             {3, Node{3, {200, 300}}},
+             {4, Node{4, {200, 0}}},
+            },
+            {
+                    {1, Road{1, 3, false, {1, 2}}},
+                    {2, Road{2, 2, false, {2, 3, 4}}},
+            },
+            false
+    );
+
+//    auto roads_vector_map = RoadsVectorMap::Create(
+//            {{1, Node{1, {0, 0}}},
+//             {2, Node{2, {200, 200}}},
+//             {3, Node{3, {300, 300}}},
+//            },
+//            {
+//                    {1, Road{2, 2, false, {1, 2, 3}}},
+//            },
+//            false
+//    );
 
     auto image_size = (roads_vector_map->stats.max_xy - roads_vector_map->stats.min_xy) * pixels_per_meter_ ;
 

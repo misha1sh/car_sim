@@ -41,17 +41,18 @@ void MainWindow::on_drawDecision2CheckBox_clicked(bool value) {
 }
 
 void MainWindow::on_drawCarTypeCheckBox_clicked(bool value) {
-    draw_settings_->draw_decision2 = value;
+    draw_settings_->draw_car_type = value;
 }
 
 void MainWindow::on_drawPrevCarTypeCheckBox_clicked(bool value) {
-    draw_settings_->draw_decision2 = value;
+    draw_settings_->draw_prev_car_type = value;
 }
 
 void MainWindow::on_drawCarDataCheckBox_clicked(bool value) {
-    draw_settings_->draw_decision2 = value;
+    draw_settings_->draw_car_data = value;
 }
 
 void MainWindow::on_drawPrevCarDataCheckBox_clicked(bool value) {
-    draw_settings_->draw_decision2 = value;
+    draw_settings_->draw_prev_car_data = value;
 }
+
