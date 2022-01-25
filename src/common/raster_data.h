@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/entities.h"
+#include "utils/verify.h"
 
 #include <range/v3/all.hpp>
 #include <opencv2/opencv.hpp>
@@ -22,6 +23,15 @@ public:
         CV_T& t = data_.template at<CV_T>(y, x);
         return *reinterpret_cast<T*>(&t);
     }
+
+    inline T& operator()(const PointI& p) {
+        return (*this)(p.x(), p.y());
+    }
+
+    inline T& operator()(const Coord& c) {
+        return (*this)(c.asPointI());
+    }
+
 
     inline T getOrDefault(int x, int y, T default_value) {
         if (x < 0 || y < 0 || x >= len_x_ || y >= len_y_) {
@@ -82,6 +92,11 @@ public:
     void show() {
         cv::imshow("test", data_);
         cv::waitKey(0);
+    }
+
+    void copyTo(RasterData<T, CV_T>& other) {
+        VERIFY(len_x_ == other.len_x_ && len_y_ == other.len_y_);
+        data_.copyTo(other.data_);
     }
 
     void writeToFile(const std::string& path) {

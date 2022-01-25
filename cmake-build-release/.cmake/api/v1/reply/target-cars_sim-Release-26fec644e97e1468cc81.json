@@ -623,7 +623,7 @@
 			"sourceIndexes" : 
 			[
 				4,
-				28
+				29
 			]
 		},
 		{
@@ -645,14 +645,15 @@
 				24,
 				25,
 				26,
-				27
+				27,
+				28
 			]
 		},
 		{
 			"name" : "CMake Rules",
 			"sourceIndexes" : 
 			[
-				29
+				30
 			]
 		}
 	],
@@ -803,6 +804,11 @@
 		{
 			"backtrace" : 1,
 			"path" : "src/ui/draw_settings.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "src/utils/guard_holder.h",
 			"sourceGroupIndex" : 2
 		},
 		{

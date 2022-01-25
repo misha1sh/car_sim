@@ -4,7 +4,8 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    draw_settings_(std::make_shared<DrawSettings>())
+    draw_settings_(std::make_shared<DrawSettings>()),
+    run_tick_timer_(this)
 {
     ui->setupUi(this);
     setAnimated(true);
@@ -16,6 +17,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->drawPrevCarTypeCheckBox, SIGNAL(clicked(bool)), this, SLOT(on_drawPrevCarTypeCheckBox_clicked(bool)));
     connect(ui->drawCarDataCheckBox, SIGNAL(clicked(bool)), this, SLOT(on_drawCarDataCheckBox_clicked(bool)));
     connect(ui->drawPrevCarDataCheckBox, SIGNAL(clicked(bool)), this, SLOT(on_drawPrevCarDataCheckBox_clicked(bool)));
+    connect(ui->simulationSpeedSlider, SIGNAL(valueChanged(int)), this, SLOT(on_simulationSpeedSlider_valueChanged(int)));
+    connect(ui->imageQualitySlider, SIGNAL(valueChanged(int)), this, SLOT(on_imageQualitySlider_valueChanged(int)));
 }
 
 MainWindow::~MainWindow()
@@ -56,3 +59,22 @@ void MainWindow::on_drawPrevCarDataCheckBox_clicked(bool value) {
     draw_settings_->draw_prev_car_data = value;
 }
 
+void MainWindow::on_imageQualitySlider_valueChanged(int value) {
+    draw_settings_->resoultion_coef = (100 - value) / 100. * 6;
+}
+
+void MainWindow::on_simulationSpeedSlider_valueChanged(int value) {
+    run_tick_timer_.setInterval(1500 / value);
+}
+
+void MainWindow::on_playButton_clicked() {
+    if (!run_tick_timer_.isActive()) {
+        run_tick_timer_.start(run_tick_timer_.interval());
+    }
+}
+
+void MainWindow::on_pauseButton_clicked() {
+    if (run_tick_timer_.isActive()) {
+        run_tick_timer_.stop();
+    }
+}

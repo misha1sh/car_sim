@@ -30,6 +30,7 @@ public:
     template <typename OBJ, typename SLOTT>
     void SetRunTickHandler(const OBJ& obj, const SLOTT& slot) {
         connect(ui->runOneTickButton, &QPushButton::clicked, &obj, slot);
+        run_tick_timer_.callOnTimeout(&obj, slot);
     }
 
 private slots:
@@ -41,8 +42,13 @@ private slots:
     void on_drawPrevCarTypeCheckBox_clicked(bool value);
     void on_drawCarDataCheckBox_clicked(bool value);
     void on_drawPrevCarDataCheckBox_clicked(bool value);
+    void on_simulationSpeedSlider_valueChanged(int value);
+    void on_imageQualitySlider_valueChanged(int value);
+    void on_playButton_clicked();
+    void on_pauseButton_clicked();
 
 private:
     Ui::MainWindow *ui;
     DrawSettingsPtr draw_settings_;
+    QTimer run_tick_timer_;
 };

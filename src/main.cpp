@@ -15,22 +15,35 @@
 
 int main(int argc, char *argv[])
 {
+    std::unique_ptr<QThread> simulator_thread = std::make_unique<QThread>();
+    simulator_thread->setObjectName("Simulator thread");
+
     Simulator simulator;
     simulator.CreateMap();
+
+    simulator.moveToThread(simulator_thread.get());
+
 //    simulator.RunTick();
 
     MapPainterPtr map_painter = std::make_shared<MapPainter>();
-    map_painter->setMap(simulator.GetMap());
+    map_painter->setMap(simulator.GetMapHolder());
 
     QApplication a(argc, argv);
     MainWindow w;
     w.show();
 
     w.getUI()->openGLWidget->setPainter(map_painter);
-    w.getUI()->openGLWidget->setMapSize(simulator.GetMap()->size);
+    {
+        RasterMapPtr map{};
+        auto guard = simulator.GetMapHolder().Get(map);
+        w.getUI()->openGLWidget->setMapSize(map->size);
+
+    }
     w.SetRunTickHandler(simulator, &Simulator::RunTickSlot);
 
     map_painter->setDrawSettings(w.getDrawSettings());
+
+    simulator_thread->start();
 
     return a.exec();
 

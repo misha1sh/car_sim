@@ -13,14 +13,15 @@
 class MapPainter {
 public:
     MapPainter();
-    void setMap(RasterMapPtr map);
+    void setMap(RasterMapHolder map);
     void setDrawSettings(DrawSettingsPtr draw_settings);
     void paintMap(QPainter& painter, QPaintEvent* event, Camera camera);
 
 private:
     QElapsedTimer last_render_time_{};
     double avg_fps_{0};
-    RasterMapPtr map_{nullptr};
+    RasterMapHolder map_holder_{};
+    std::unique_ptr<RasterMap> map_{nullptr};
     DrawSettingsPtr draw_settings_{};
 
     QBrush background;

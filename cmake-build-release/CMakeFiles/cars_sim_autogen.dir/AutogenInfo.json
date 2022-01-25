@@ -490,6 +490,12 @@
 			null
 		],
 		[
+			"/home/misha-sh/course/src/utils/guard_holder.h",
+			"MU",
+			"VSCBVMNR7M/moc_guard_holder.cpp",
+			null
+		],
+		[
 			"/home/misha-sh/course/src/utils/math_utils.h",
 			"MU",
 			"VSCBVMNR7M/moc_math_utils.cpp",

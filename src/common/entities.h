@@ -122,6 +122,26 @@ struct Coord {
         return std::abs(Angle(other));
     }
 
+    inline std::tuple<Coord, bool> RotateTowards(const Coord& other, const double angle_speed) {
+        double angle = Angle(other);
+
+        if (std::abs(angle) <= angle_speed) {
+            return {other, true};
+        }
+
+        angle = std::copysign(angle_speed, angle);
+
+        double c = cos(angle);
+        double s = sin(angle);
+        double xx = x * c + y * s;
+        double yy = y * c + x * s;
+
+        return {
+            {xx, yy},
+            false
+        };
+    }
+
     inline Coord RightPerpendicular() const {
         return Coord{y, -x}.Norm();
     }

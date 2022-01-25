@@ -18,8 +18,8 @@ MapPainter::MapPainter() {
     textFont.setPixelSize(12);
 }
 
-void MapPainter::setMap(RasterMapPtr map) {
-    map_ = std::move(map);
+void MapPainter::setMap(RasterMapHolder map) {
+    map_holder_ = std::move(map);
 }
 
 void MapPainter::setDrawSettings(DrawSettingsPtr draw_settings) {
@@ -57,7 +57,8 @@ inline Color CarTypeToRGB(const CarCellType& car_type) {
     if (car_type == CarCellType::BODY) {
         return RGB(0, 0, 128);
     }
-    VERIFY(false && "Unknown car cell type");
+    return RGB(0, 0, 0);
+    // VERIFY(false && "Unknown car cell type");
 }
 
 
@@ -83,6 +84,7 @@ inline bool DrawCarType(RasterDataEnum<CarCellType>& data, int imageX, int image
 }
 
 
+// #define STORE_IN_TEMP_MAP
 
 void MapPainter::paintMap(QPainter &painter, QPaintEvent* event, Camera camera) {
     int elapsedSinceLastRender = last_render_time_.restart();
@@ -93,100 +95,128 @@ void MapPainter::paintMap(QPainter &painter, QPaintEvent* event, Camera camera) 
     avg_fps_ = currentFps * 0.3 + avg_fps_ * 0.7;
 
 //    painter.fillRect(event->rect(), background);
-    if (!map_ || !draw_settings_) {
+    if (!map_holder_ || !draw_settings_) {
         painter.setPen(textPen);
         painter.setFont(textFont);
         painter.drawText(10, 10,  QString::fromStdString(fmt::format("No map or draw settings")));
         return;
     }
 
-    // everything in coordinate system relative to screen
-    PointI screenSize {event->rect().width(), event->rect().height()};
-    Coord mapSize {map_->road_dir.sizeX(),  map_->road_dir.sizeY()};
+    {
 
-//    mapSize.y = screenSize.y() * 1. * mapSize.x  / screenSize.x();
-//    mapSize.x = screenSize.x() * 1. * mapSize.y  / screenSize.y();
-
-//    Coord onScreenMapSize {camera.size * mapSize};
-    Coord onScreenMapSize {camera.camera1 - camera.camera0};
-    Coord cameraCorner {camera.camera0};
-
-    PointI cameraCornerI {cameraCorner.asPointI()};
-
-    Coord rescaleCoef {onScreenMapSize / Coord{screenSize}};
-
-    if (img.width() != screenSize.x() || img.height() != screenSize.y()) {
-        img = QImage{screenSize.x(), screenSize.y(),  QImage::Format::Format_RGB32};
-    }
-
-    const DrawSettings cur_draw_settings = *draw_settings_;
-    const int y_size =  map_->size.y;
-
-//    static int ff = 0;
-//    if (ff % 100 == 0) {
-//        map_->new_car_cells.writeToFile("new_car_cells" + std::to_string(ff)+".bmp");
-//    }
-//    ff++;
-
-    int pixIdx = 0;
-    uchar* pix = img.bits();
-    for (int y = 0; y < screenSize.y(); y++) {
-        for (int x = 0; x < screenSize.x(); x++) {
-            const int imageX = static_cast<int>(x * rescaleCoef.x + cameraCornerI.x());
-            const int imageY = y_size - (static_cast<int>((y) * rescaleCoef.y + cameraCornerI.y()));
-
-            if ((-10 <= imageX && imageX <= -1) ||
-                (-10 <= imageY && imageY <= -1) ||
-                (mapSize.x <= imageX && imageX <= mapSize.x + 10) ||
-                (mapSize.y <= imageY && imageY <= mapSize.y + 10)) {
-                setPixels(pix, pixIdx, RGB(255, 255, 255));
-                continue;
+    #ifdef STORE_IN_TEMP_MAP
+        {
+            std::unique_ptr<RasterMap> main_map;
+            auto guard = map_holder_.Get(main_map);
+            VERIFY(main_map);
+            if (!map_ || map_->size != main_map->size || map_->pixels_per_meter != main_map->pixels_per_meter) {
+                map_ = std::make_unique<RasterMap>(main_map->sizeI.x(), main_map->sizeI.y(), main_map->pixels_per_meter);
+                std::cerr << "Created map copy for rendering" << std::endl;
             }
+            main_map->CopyTo(*map_);
+        }
+    #else
+         auto guard = map_holder_.Get(map_);
+    #endif
 
-            if (cur_draw_settings.draw_prev_car_data) {
-                if (DrawDir(map_->new_car_data, imageX, imageY, pixIdx, pix)) {
+        const DrawSettings cur_draw_settings = *draw_settings_;
+
+
+        // everything in coordinate system relative to screen
+        PointI screenSize {event->rect().width() / cur_draw_settings.resoultion_coef, event->rect().height() / cur_draw_settings.resoultion_coef};
+        Coord mapSize {map_->road_dir.sizeX(),  map_->road_dir.sizeY()};
+
+    //    mapSize.y = screenSize.y() * 1. * mapSize.x  / screenSize.x();
+    //    mapSize.x = screenSize.x() * 1. * mapSize.y  / screenSize.y();
+
+    //    Coord onScreenMapSize {camera.size * mapSize};
+        Coord onScreenMapSize {camera.camera1 - camera.camera0};
+        Coord cameraCorner {camera.camera0};
+
+        PointI cameraCornerI {cameraCorner.asPointI()};
+
+        Coord rescaleCoef {onScreenMapSize / Coord{screenSize}};
+
+        if (img.width() != screenSize.x() || img.height() != screenSize.y()) {
+            img = QImage{screenSize.x(), screenSize.y(),  QImage::Format::Format_RGB32};
+        }
+
+        const int y_size =  map_->size.y;
+
+    //    static int ff = 0;
+    //    if (ff % 100 == 0) {
+    //        map_->new_car_cells.writeToFile("new_car_cells" + std::to_string(ff)+".bmp");
+    //    }
+    //    ff++;
+
+        auto& new_car_data = map_->new_car_data;
+        auto& car_data = map_->car_data;
+        auto& new_car_cells = map_->new_car_cells;
+        auto& car_cells = map_->car_cells;
+        auto& decision1 = map_->decision1;
+        auto& decision2 = map_->decision2;
+        auto& road_dir = map_->road_dir;
+
+        int pixIdx = 0;
+        uchar* pix = img.bits();
+        for (int y = 0; y < screenSize.y(); y++) {
+            for (int x = 0; x < screenSize.x(); x++) {
+                const int imageX = static_cast<int>(x * rescaleCoef.x + cameraCornerI.x());
+                const int imageY = y_size - (static_cast<int>((y) * rescaleCoef.y + cameraCornerI.y()));
+
+                if ((-10 <= imageX && imageX <= -1) ||
+                    (-10 <= imageY && imageY <= -1) ||
+                    (mapSize.x <= imageX && imageX <= mapSize.x + 10) ||
+                    (mapSize.y <= imageY && imageY <= mapSize.y + 10)) {
+                    setPixels(pix, pixIdx, RGB(255, 255, 255));
                     continue;
                 }
-            }
 
-            if (cur_draw_settings.draw_car_data) {
-                if (DrawDir(map_->car_data, imageX, imageY, pixIdx, pix)) {
-                    continue;
+                if (cur_draw_settings.draw_prev_car_data) {
+                    if (DrawDir(new_car_data, imageX, imageY, pixIdx, pix)) {
+                        continue;
+                    }
                 }
-            }
 
-            if (cur_draw_settings.draw_prev_car_type) {
-                if (DrawCarType(map_->new_car_cells, imageX, imageY, pixIdx, pix)) {
-                    continue;
+                if (cur_draw_settings.draw_car_data) {
+                    if (DrawDir(car_data, imageX, imageY, pixIdx, pix)) {
+                        continue;
+                    }
                 }
-            }
 
-            if (cur_draw_settings.draw_car_type) {
-                if (DrawCarType(map_->car_cells, imageX, imageY, pixIdx, pix)) {
-                    continue;
+                if (cur_draw_settings.draw_prev_car_type) {
+                    if (DrawCarType(new_car_cells, imageX, imageY, pixIdx, pix)) {
+                        continue;
+                    }
                 }
-            }
 
-            if (cur_draw_settings.draw_decision1) {
-                if (DrawDir(map_->decision1, imageX, imageY, pixIdx, pix)) {
-                    continue;
+                if (cur_draw_settings.draw_car_type) {
+                    if (DrawCarType(car_cells, imageX, imageY, pixIdx, pix)) {
+                        continue;
+                    }
                 }
-            }
 
-            if (cur_draw_settings.draw_decision2) {
-                if (DrawDir(map_->decision2, imageX, imageY, pixIdx, pix)) {
-                    continue;
+                if (cur_draw_settings.draw_decision1) {
+                    if (DrawDir(decision1, imageX, imageY, pixIdx, pix)) {
+                        continue;
+                    }
                 }
-            }
 
-            if (cur_draw_settings.draw_road_dir) {
-                if (DrawDir(map_->road_dir, imageX, imageY, pixIdx, pix)) {
-                    continue;
+                if (cur_draw_settings.draw_decision2) {
+                    if (DrawDir(decision2, imageX, imageY, pixIdx, pix)) {
+                        continue;
+                    }
                 }
+
+                if (cur_draw_settings.draw_road_dir) {
+                    if (DrawDir(road_dir, imageX, imageY, pixIdx, pix)) {
+                        continue;
+                    }
+                }
+
+
+                setPixels(pix, pixIdx, {0, 0, 0});
             }
-
-
-            setPixels(pix, pixIdx, {0, 0, 0});
         }
     }
 

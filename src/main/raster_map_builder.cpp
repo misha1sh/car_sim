@@ -6,13 +6,15 @@
 #include "utils/verify.h"
 
 RasterMapBuilder::RasterMapBuilder(double pixels_per_meter) :
+        map_holder_(),
+        map_(nullptr),
         pixels_per_meter_{pixels_per_meter}
 {
 }
 
 void RasterMapBuilder::CreateRoadsMap(std::filesystem::path osm_input_file_path) {
     RoadsMapReader reader;
-//    auto roads_vector_map = reader.ReadRoads(osm_input_file_path);
+    auto roads_vector_map = reader.ReadRoads(osm_input_file_path);
 
 //    auto roads_vector_map = RoadsVectorMap::Create(
 //            {{1, Node{1, {0, 300}}},
@@ -32,19 +34,19 @@ void RasterMapBuilder::CreateRoadsMap(std::filesystem::path osm_input_file_path)
 //
 
 
-
-    auto roads_vector_map = RoadsVectorMap::Create(
-            {{1, Node{1, {0, 300}}},
-             {2, Node{2, {100, 300}}},
-             {3, Node{3, {200, 300}}},
-             {4, Node{4, {200, 0}}},
-            },
-            {
-                    {1, Road{1, 3, false, {1, 2}}},
-                    {2, Road{2, 2, false, {2, 3, 4}}},
-            },
-            false
-    );
+// ALEST!!!!
+//    auto roads_vector_map = RoadsVectorMap::Create(
+//            {{1, Node{1, {0, 300}}},
+//             {2, Node{2, {100, 300}}},
+//             {3, Node{3, {200, 300}}},
+//             {4, Node{4, {200, 0}}},
+//            },
+//            {
+//                    {1, Road{1, 3, false, {1, 2}}},
+//                    {2, Road{2, 2, false, {2, 3, 4}}},
+//            },
+//            false
+//    );
 
 //    auto roads_vector_map = RoadsVectorMap::Create(
 //            {{1, Node{1, {0, 0}}},
@@ -67,7 +69,9 @@ void RasterMapBuilder::CreateRoadsMap(std::filesystem::path osm_input_file_path)
 
 //    VERIFY(image_size.x < 10000 && image_size.y < 10000);
 
-    map_ = std::make_shared<RasterMap>(image_size.x, image_size.y, pixels_per_meter_);
+    map_holder_.Init(std::make_unique<RasterMap>(image_size.x, image_size.y, pixels_per_meter_));
+
+    auto guard = map_holder_.Get(map_);
 
     RoadsRasterizer rasterizer(roads_vector_map);
     rasterizer.RasterizeRoads(*map_);

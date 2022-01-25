@@ -9,11 +9,12 @@ public:
     explicit RasterMapBuilder(double pixels_per_meter);
 
     void CreateRoadsMap(std::filesystem::path osm_input_file_path);
-    inline std::shared_ptr<RasterMap>& GetMap() {
-        return map_;
+    inline RasterMapHolder& GetMapHolder() {
+        return map_holder_;
     }
 
 private:
-    std::shared_ptr<RasterMap> map_;
-    double pixels_per_meter_;
+    RasterMapHolder map_holder_{};
+    std::unique_ptr<RasterMap> map_{nullptr};
+    double pixels_per_meter_{1.};
 };

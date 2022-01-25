@@ -16,25 +16,23 @@ void Simulator::CreateMap() {
     fmt::print("Building map\n");
 
     RasterMapBuilder builder(1  * 5);
-    builder.CreateRoadsMap("../data/moscow_hard.osm"); // easy
-    map_ = builder.GetMap();
-
+    builder.CreateRoadsMap("../data/moscow_easy.osm"); // moscow_easy moscow_hard
+    map_holder_ = builder.GetMapHolder();
     fmt::print("Building took {} ms\n", timer.restart());
 
-
-    const int cars_count = 1;
-    fmt::print("Spawning {} cars\n", cars_count);
-    SpawnCars(cars_count);
-//    map_->new_car_cells.fill(CarCellType::CENTER);
+    {
+        const auto guard = map_holder_.Get(map_);
+        const int cars_count = 1000;
+        fmt::print("Spawning {} cars\n", cars_count);
+        SpawnCars(cars_count);
 //    map_->new_car_cells.writeToFile("new_car_cells.bmp");
 //    map_->new_car_cells.writeToFile("new_car_cellsv2.bmp");
 //    map_->new_car_data.writeToFile("new_car_data.bmp");
-    std::swap(map_->car_data, map_->new_car_data);
-    std::swap(map_->car_cells, map_->new_car_cells);
-    std::swap(cars_, new_cars_);
-    fmt::print("Spawning cars took {} ms\n", timer.restart());
-
-
+        std::swap(map_->car_data, map_->new_car_data);
+        std::swap(map_->car_cells, map_->new_car_cells);
+        std::swap(cars_, new_cars_);
+        fmt::print("Spawning cars took {} ms\n", timer.restart());
+    }
 
     state_ = State::PAUSED;
 }
@@ -49,7 +47,7 @@ PolygonI BuildCarPolygon(Coord pos, Coord size, Coord dir) {
 //                             Coord(pos.x - 5, pos.y + 5).asPointI(),
 //                             Coord(pos.x - 5, pos.y - 5).asPointI(),
 //                             Coord(pos.x + 5, pos.y - 5).asPointI(),
-                             Coord(pos.x + 5, pos.y + 5).asPointI(),
+//                             Coord(pos.x + 5, pos.y + 5).asPointI(),
 
                              (pos + dir * size.y + perp * size.x).asPointI(),
                              (pos - dir * size.y + perp * size.x).asPointI(),
@@ -65,8 +63,9 @@ Car Simulator::ReadCar(const PointI& pos) {
 
     res.pos = map_->car_data(pos.x(), pos.y());
     res.dir = map_->car_data(pos.x(), pos.y() + 1);
-    res.speed = map_->car_data(pos.x() - 1, pos.y());
     res.size = map_->car_data(pos.x() + 1, pos.y());
+    res.speed = map_->car_data(pos.x() - 1, pos.y()).x;
+    res.decision_layer = (int) map_->car_data(pos.x() - 1, pos.y()).y;
 
     return res;
 }
@@ -77,8 +76,8 @@ void Simulator::WriteCar(const Car& car) {
 
     map_->new_car_data(pos.x(), pos.y()) = car.pos; // pos in absoulute coords
     map_->new_car_data(pos.x(), pos.y() + 1) = car.dir; // dir normalized
-    map_->new_car_data(pos.x() - 1, pos.y()) = car.speed; // speed in meters / second
     map_->new_car_data(pos.x() + 1, pos.y()) = car.size; // size in pixels (double)
+    map_->new_car_data(pos.x() - 1, pos.y()) = {car.speed, car.decision_layer}; // speed in meters / second
 
     PolygonI poly = BuildCarPolygon(car.pos, car.size, car.dir);
     // TODO : fill convex
@@ -87,6 +86,7 @@ void Simulator::WriteCar(const Car& car) {
 }
 
 void Simulator::SpawnCars(int count) {
+    VERIFY(map_);
     static int const_random_seed = 42;
     std::mt19937 rng(const_random_seed++);
     std::uniform_int_distribution<int> random_distribution(0, std::numeric_limits<int>::max());
@@ -120,7 +120,8 @@ void Simulator::SpawnCars(int count) {
             car.pos = {x, y};
             car.dir = road_dir.Norm();
             car.size = Coord{2, 4} * map_->pixels_per_meter;
-            car.speed = car.dir * 3;
+            car.speed = 3;
+            car.decision_layer = random_distribution(rng) % 2 + 1;
 
             WriteCar(car);
             new_cars_.push_back({x, y});
@@ -136,6 +137,9 @@ void Simulator::SpawnCars(int count) {
 }
 
 void Simulator::SimulateCars(double delta) {
+    auto guard = map_holder_.Get(map_);
+
+    VERIFY(map_);
     map_->new_car_cells.fill(CarCellType::NONE);
     map_->new_car_data.fill({0, 0});
     new_cars_.resize(0);
@@ -145,9 +149,61 @@ void Simulator::SimulateCars(double delta) {
             continue;
         }
         Car car = ReadCar(car_pos);
-        auto new_pos = car.pos + car.speed * map_->pixels_per_meter * delta;
-//        std::cerr << "car from " << car.pos << " to " << new_pos <<  " speed:" << car.speed <<" dir:" << car.dir << std::endl;
+        const auto car_front = car.pos + car.dir * car.size.y;
+        const auto perp = car.dir.RightPerpendicular();
+
+//        const auto road_dir_at_front = map_->road_dir(car_front);
+//        if (road_dir_at_front == Coord{0, 0}) {
+//
+//        }
+
+        Coord new_pos = car.pos + car.dir * (car.speed * map_->pixels_per_meter * delta);
+        Coord new_road_dir;
+        int try_number = 0;
+        while (true) {
+            new_road_dir = map_->road_dir(new_pos);
+            if (new_road_dir != Coord{0, 0}) {
+                break;
+            }
+
+            const Coord new_decision1 = map_->decision1(new_pos);
+            const Coord new_decision2 = map_->decision2(new_pos);
+            const bool no_decision1 = new_decision1 == Coord{0, 0};
+            const bool no_decision2 = new_decision2 == Coord{0, 0};
+            if (no_decision1 && no_decision2) {
+                if (try_number == 0) {
+                    new_pos = car.pos + perp + (car.dir) * (car.speed * map_->pixels_per_meter * delta);
+                } else if (try_number == 1) {
+                    new_pos = car.pos - perp + (car.dir) * (car.speed * map_->pixels_per_meter * delta);
+                } else {
+                    new_pos = car.pos;
+                    new_road_dir = car.dir;
+                    break;
+                }
+
+                try_number++;
+                continue;
+            } else if (no_decision2) {
+                car.decision_layer = 1;
+                new_road_dir = new_decision1;
+                break;
+            } else if (no_decision1) {
+                car.decision_layer = 2;
+                new_road_dir = new_decision2;
+                break;
+            } else if (car.decision_layer == 1) {
+                new_road_dir = new_decision1;
+                break;
+            } else if (car.decision_layer == 2) {
+                new_road_dir = new_decision2;
+                break;
+            } else {
+                VERIFY(false && "Unknown decision_layer");
+            }
+        }
+
         car.pos = new_pos;
+        car.dir = new_road_dir;
 
         WriteCar(car);
         new_cars_.emplace_back(car.pos.x, car.pos.y);
@@ -167,6 +223,6 @@ void Simulator::RunTick() {
     state_ = State::PAUSED;
 }
 
-RasterMapPtr Simulator::GetMap() {
-    return map_;
+RasterMapHolder Simulator::GetMapHolder() {
+    return map_holder_;
 }

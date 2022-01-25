@@ -2,6 +2,8 @@
   /home/misha-sh/course/cmake-build-release/cars_sim_autogen/moc_predefs.h \
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/QElapsedTimer \
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/QList \
+  /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/QMutex \
+  /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/QMutexLocker \
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/QObject \
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/QRect \
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/QSize \
@@ -50,6 +52,7 @@
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qmath.h \
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qmetacontainer.h \
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qmetatype.h \
+  /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qmutex.h \
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qnamespace.h \
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qnativeinterface.h \
   /home/misha-sh/Qt/6.2.2/gcc_64/include/QtCore/qnumeric.h \
@@ -419,7 +422,9 @@
   /home/misha-sh/course/src/ui/draw_settings.h \
   /home/misha-sh/course/src/ui/map/camera.h \
   /home/misha-sh/course/src/ui/map/map_painter.h \
+  /home/misha-sh/course/src/utils/guard_holder.h \
   /home/misha-sh/course/src/utils/math_utils.h \
+  /home/misha-sh/course/src/utils/verify.h \
   /usr/include/GL/gl.h \
   /usr/include/alloca.h \
   /usr/include/asm-generic/errno-base.h \

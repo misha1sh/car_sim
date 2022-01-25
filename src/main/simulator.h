@@ -7,8 +7,9 @@
 struct Car {
     Coord pos;
     Coord dir;
-    Coord speed;
     Coord size;
+    double speed;
+    int decision_layer;
 };
 
 class Simulator : public QObject {
@@ -30,7 +31,7 @@ public:
     void RunTick();
     void SimulateCars(double delta);
 
-    RasterMapPtr GetMap();
+    RasterMapHolder GetMapHolder();
 
     inline const State& GetState() const {
         return state_;
@@ -43,6 +44,7 @@ public slots:
 
 private:
     State state_{State::NO_MAP};
+    RasterMapHolder map_holder_{};
     RasterMapPtr map_{};
 
     std::vector<PointI> cars_;

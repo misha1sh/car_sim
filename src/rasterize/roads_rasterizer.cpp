@@ -183,7 +183,9 @@ void RoadsRasterizer::ConnectRoadSegmentEachToEach(const RoadSegment& ingoing_se
         const Coord pm = ingoing_segment.p2 /* equals outgoing_segment.p1 */ + median_dir * lane_width_ * i;
         const Coord po = outgoing_segment.p2 + outgoing_perp * lane_width_ * i;
 
-        const PolygonI polygonImage = image_projector_->project(ExpandPolyline({pm.asPointF(), po.asPointF()}, 0.5));
+        const Coord pm_overtake = pm - (po - pm).Norm() * 0.6; // TODO: figure coefficient
+
+        const PolygonI polygonImage = image_projector_->project(ExpandPolyline({pm_overtake.asPointF(), po.asPointF()}, 0.5));
         map_to_fill->fill(polygonImage, (po - pm).Norm());
     }
 }
@@ -304,11 +306,11 @@ void RoadsRasterizer::RasterizeRoads(RasterMap &map) {
 //        }
 
         const auto [ingoing_segments, outgoing_segments, segment_groups] = BuildIngoingAndOutgoingSegments(center_node, roads_for_node);
-        {
-            const auto polygon = ExpandPoint(center_node.c.asPointF(), 1.);
-            const PolygonI polygonImage = image_projector_->project(polygon);
-            map.decision2.fill(polygonImage, {1, 0});
-        }
+//        { DRAW DEBUG
+//            const auto polygon = ExpandPoint(center_node.c.asPointF(), 1.);
+//            const PolygonI polygonImage = image_projector_->project(polygon);
+//            map.decision2.fill(polygonImage, {1, 0});
+//        }
 
         // TODO : probably better to build some sort of return path??
         if (ingoing_segments.empty()  || outgoing_segments.empty() || segment_groups.size() <= 1) {
