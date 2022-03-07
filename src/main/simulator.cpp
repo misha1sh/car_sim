@@ -16,13 +16,13 @@ void Simulator::CreateMap() {
     fmt::print("Building map\n");
 
     RasterMapBuilder builder(1  * 5);
-    builder.CreateRoadsMap("../data/moscow_easy.osm"); // moscow_easy moscow_hard
+    builder.CreateRoadsMap("../data/moscow_hard.osm"); // moscow_easy moscow_hard
     map_holder_ = builder.GetMapHolder();
     fmt::print("Building took {} ms\n", timer.restart());
 
     {
         const auto guard = map_holder_.Get(map_);
-        const int cars_count = 1000;
+        const int cars_count = 100;
         fmt::print("Spawning {} cars\n", cars_count);
         SpawnCars(cars_count);
 //    map_->new_car_cells.writeToFile("new_car_cells.bmp");

@@ -61,6 +61,7 @@ void MainWindow::on_drawPrevCarDataCheckBox_clicked(bool value) {
 
 void MainWindow::on_imageQualitySlider_valueChanged(int value) {
     draw_settings_->resoultion_coef = (100 - value) / 100. * 6;
+    draw_settings_->resoultion_coef = std::max(1., draw_settings_->resoultion_coef);
 }
 
 void MainWindow::on_simulationSpeedSlider_valueChanged(int value) {
