@@ -94,6 +94,8 @@ public:
         cv::waitKey(0);
     }
 
+
+
     void copyTo(RasterData<T, CV_T>& other) {
         VERIFY(len_x_ == other.len_x_ && len_y_ == other.len_y_);
         data_.copyTo(other.data_);
@@ -141,6 +143,9 @@ private:
 };
 
 using RasterDataPoint = RasterData<Coord, cv::Vec2d>;
+
+template <typename T>
+using RasterDataT = RasterData<T, T>;
 
 template <typename T>
 using RasterDataEnum = RasterData<T, unsigned char>;

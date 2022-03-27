@@ -16,6 +16,7 @@ void RasterMapBuilder::CreateRoadsMap(std::filesystem::path osm_input_file_path)
     RoadsMapReader reader;
     auto roads_vector_map = reader.ReadRoads(osm_input_file_path);
 
+    /*
 //    auto roads_vector_map = RoadsVectorMap::Create(
 //            {{1, Node{1, {0, 300}}},
 //             {2, Node{2, {100, 300}}},
@@ -58,6 +59,7 @@ void RasterMapBuilder::CreateRoadsMap(std::filesystem::path osm_input_file_path)
 //            },
 //            false
 //    );
+*/
 
     auto image_size = (roads_vector_map->stats.max_xy - roads_vector_map->stats.min_xy) * pixels_per_meter_ ;
 

@@ -12,6 +12,16 @@ struct Car {
     int decision_layer;
 };
 
+struct SimulatorParams {
+    double pixels_per_meter = 5.;
+    std::string map_path = "../data/moscow_hard.osm";  // moscow_easy moscow_hard
+
+    bool enable_cars = true;
+    int cars_count = 100;
+
+    double delta_time_per_simulation = 0.1;
+};
+
 class Simulator : public QObject {
 Q_OBJECT
 public:
@@ -23,9 +33,12 @@ public:
         PAUSED
     };
 
+    explicit Simulator(const SimulatorParams& params);
+
+    void Initialize();
+
     Car ReadCar(const PointI& pos);
     void WriteCar(const Car& car);
-    void CreateMap();
     void SpawnCars(int count);
 
     void RunTick();
@@ -43,6 +56,7 @@ public slots:
     };
 
 private:
+    SimulatorParams params_{};
     State state_{State::NO_MAP};
     RasterMapHolder map_holder_{};
     RasterMapPtr map_{};

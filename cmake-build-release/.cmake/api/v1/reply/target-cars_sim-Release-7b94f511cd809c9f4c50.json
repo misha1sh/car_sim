@@ -623,7 +623,7 @@
 			"sourceIndexes" : 
 			[
 				4,
-				29
+				33
 			]
 		},
 		{
@@ -646,14 +646,18 @@
 				25,
 				26,
 				27,
-				28
+				28,
+				29,
+				30,
+				31,
+				32
 			]
 		},
 		{
 			"name" : "CMake Rules",
 			"sourceIndexes" : 
 			[
-				30
+				34
 			]
 		}
 	],
@@ -809,6 +813,26 @@
 		{
 			"backtrace" : 1,
 			"path" : "src/utils/guard_holder.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "src/rasterize/roads_rasterizer_utils.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "src/rasterize/roads_rasterizer_deprecated.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "src/rasterize/roads_rasterizer_segmenter.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "src/rasterize/roads_rasterizer_handler.h",
 			"sourceGroupIndex" : 2
 		},
 		{

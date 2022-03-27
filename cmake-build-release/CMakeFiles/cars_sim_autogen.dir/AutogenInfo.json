@@ -460,6 +460,30 @@
 			null
 		],
 		[
+			"/home/misha-sh/course/src/rasterize/roads_rasterizer_deprecated.h",
+			"MU",
+			"REDBW4G35V/moc_roads_rasterizer_deprecated.cpp",
+			null
+		],
+		[
+			"/home/misha-sh/course/src/rasterize/roads_rasterizer_handler.h",
+			"MU",
+			"REDBW4G35V/moc_roads_rasterizer_handler.cpp",
+			null
+		],
+		[
+			"/home/misha-sh/course/src/rasterize/roads_rasterizer_segmenter.h",
+			"MU",
+			"REDBW4G35V/moc_roads_rasterizer_segmenter.cpp",
+			null
+		],
+		[
+			"/home/misha-sh/course/src/rasterize/roads_rasterizer_utils.h",
+			"MU",
+			"REDBW4G35V/moc_roads_rasterizer_utils.cpp",
+			null
+		],
+		[
 			"/home/misha-sh/course/src/ui/draw_settings.h",
 			"MU",
 			"YPKJ5OE7LN/moc_draw_settings.cpp",

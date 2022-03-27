@@ -15,13 +15,10 @@ enum class CarCellType : unsigned char {
 };
 
 struct RasterMap {
-    // direction where road goes
-    // (0, 0) -- means no road
-    // length -- maximum allowed speed
-    RasterDataPoint road_dir;
-
-    RasterDataPoint decision1;
-    RasterDataPoint decision2;
+    // >0 = road_edge id
+    // -1 = crossroad
+    RasterDataT<int> lane_id;
+    std::unordered_map<int, Coord> lane_dir;
 
     RasterDataEnum<CarCellType> car_cells;
     RasterDataPoint car_data;
@@ -36,9 +33,8 @@ struct RasterMap {
     double pixels_per_meter;
 
     RasterMap(int x_len, int y_len, double pixels_per_meter_):
-            road_dir(x_len, y_len, {0, 0}),
-            decision1(x_len, y_len, {0, 0}),
-            decision2(x_len, y_len, {0, 0}),
+            lane_id(x_len, y_len, 0),
+            lane_dir{},
             car_cells(x_len, y_len, CarCellType::NONE),
             car_data(x_len, y_len, {0, 0}),
             new_car_cells(x_len, y_len, CarCellType::NONE),
@@ -54,9 +50,8 @@ struct RasterMap {
         VERIFY(sizeI.x() == other.sizeI.x() && sizeI.y() == other.sizeI.y());
         VERIFY(pixels_per_meter == other.pixels_per_meter);
 
-        road_dir.copyTo(other.road_dir);
-        decision1.copyTo(other.decision1);
-        decision2.copyTo(other.decision2);
+        lane_id.copyTo(other.lane_id);
+        other.lane_dir = lane_dir;
         car_cells.copyTo(other.car_cells);
         car_data.copyTo(other.car_data);
         new_car_cells.copyTo(other.new_car_cells);

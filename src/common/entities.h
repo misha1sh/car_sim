@@ -11,10 +11,12 @@
 
 typedef int64_t ID;
 
-typedef boost::geometry::model::d2::point_xy<double> PointF;
-typedef boost::geometry::model::polygon<PointF> PolygonF;
-typedef boost::geometry::model::linestring<PointF> PolylineF;
+
+typedef boost::geometry::model::d2::point_xy<double> BoostPointF;
+typedef boost::geometry::model::polygon<BoostPointF> PolygonF;
+typedef boost::geometry::model::linestring<BoostPointF> PolylineF;
 typedef boost::geometry::model::multi_polygon<PolygonF> MultiPolygonF;
+
 
 typedef int PointIType;
 typedef boost::geometry::model::d2::point_xy<PointIType> PointI;
@@ -22,65 +24,77 @@ typedef boost::geometry::model::polygon<PointI> PolygonI;
 typedef boost::geometry::model::linestring<PointI> PolylineI;
 typedef boost::geometry::model::multi_polygon<PolygonI> MultiPolygonI;
 
+
 struct Coord {
     double x = 0;
     double y = 0;
 
-    template <typename TNum1, typename TNum2>
+    template<typename TNum1, typename TNum2>
     Coord(TNum1 _x, TNum2 _y) : x(_x), y(_y) {}
+
 //    Coord(int _x, int _y) : x(_x), y(_y) {}
 //    Coord(double _x, double _y): x(_x), y(_y) {}
-    explicit Coord(const osmium::geom::Coordinates& coord) :
+    explicit Coord(const osmium::geom::Coordinates &coord) :
             Coord(coord.x, coord.y) {}
-    explicit Coord(const osmium::Location& location) :
+
+    explicit Coord(const osmium::Location &location) :
             Coord(location.lon_without_check(), location.lat_without_check()) {}
-    explicit Coord(PointF pp) :
-            Coord(pp.x(), pp.y()) {}
+
     explicit Coord(PointI pp) :
             Coord(pp.x(), pp.y()) {}
 
-    Coord() = default;
-    Coord(const Coord& coord) = default;
-    Coord(Coord&& coord) = default;
-    Coord& operator=(const Coord&) = default;
-    Coord& operator=(Coord&&) = default;
+    Coord(BoostPointF pp) :
+            Coord(pp.x(), pp.y()) {}
 
-    inline Coord operator+(const Coord& other) const {
+    operator BoostPointF() const {
+        return {x, y};
+    }
+
+    Coord() = default;
+
+    Coord(const Coord &coord) = default;
+
+    Coord(Coord &&coord) = default;
+
+    Coord &operator=(const Coord &) = default;
+
+    Coord &operator=(Coord &&) = default;
+
+    inline Coord operator+(const Coord &other) const {
         return {x + other.x, y + other.y};
     }
 
-    inline Coord operator-(const Coord& other) const {
+    inline Coord operator-(const Coord &other) const {
         return {x - other.x, y - other.y};
     }
 
 
-    inline Coord operator*(const Coord& other) const {
+    inline Coord operator*(const Coord &other) const {
         return {x * other.x, y * other.y};
     }
 
-    inline Coord operator/(const Coord& other) const {
+    inline Coord operator/(const Coord &other) const {
         return {x / other.x, y / other.y};
     }
 
 
-
-    template <typename T>
-    inline Coord operator+(const T& num) const {
+    template<typename T>
+    inline Coord operator+(const T &num) const {
         return {x + num, y + num};
     }
 
-    template <typename T>
-    inline Coord operator-(const T& num) const {
+    template<typename T>
+    inline Coord operator-(const T &num) const {
         return {x - num, y - num};
     }
 
-    template <typename T>
-    inline Coord operator*(const T& num) const {
+    template<typename T>
+    inline Coord operator*(const T &num) const {
         return {x * num, y * num};
     }
 
-    template <typename T>
-    inline Coord operator/(const T& num) const {
+    template<typename T>
+    inline Coord operator/(const T &num) const {
         return {x / num, y / num};
     }
 
@@ -100,14 +114,14 @@ struct Coord {
         return (*this) / len;
     }
 
-    inline double AngleDenormalized(const Coord& other) const {
-        const double dot = x*other.x + y*other.y;
-        const double det = x*other.y - y*other.x;
+    inline double AngleDenormalized(const Coord &other) const {
+        const double dot = x * other.x + y * other.y;
+        const double det = x * other.y - y * other.x;
         return atan2(det, dot);
     }
 
     // (-pi, pi]
-    inline double Angle(const Coord& other) const {
+    inline double Angle(const Coord &other) const {
         double angle = AngleDenormalized(other);
         if (angle > M_PI) {
             angle -= 2 * M_PI;
@@ -118,11 +132,11 @@ struct Coord {
     }
 
     // [0, pi]
-    inline double AngleAbs(const Coord& other) const {
+    inline double AngleAbs(const Coord &other) const {
         return std::abs(Angle(other));
     }
 
-    inline std::tuple<Coord, bool> RotateTowards(const Coord& other, const double angle_speed) {
+    inline std::tuple<Coord, bool> RotateTowards(const Coord &other, const double angle_speed) {
         double angle = Angle(other);
 
         if (std::abs(angle) <= angle_speed) {
@@ -137,8 +151,8 @@ struct Coord {
         double yy = y * c + x * s;
 
         return {
-            {xx, yy},
-            false
+                {xx, yy},
+                false
         };
     }
 
@@ -150,7 +164,7 @@ struct Coord {
         return -RightPerpendicular();
     }
 
-    inline Coord Crop(const Coord& min_val, const Coord& max_val) const {
+    inline Coord Crop(const Coord &min_val, const Coord &max_val) const {
         return {
                 math_utils::Crop(x, min_val.x, max_val.x),
                 math_utils::Crop(y, min_val.y, max_val.y),
@@ -162,34 +176,34 @@ struct Coord {
                     {max_val, max_val});
     }
 
-    inline bool operator==(const Coord& other) const {
+    inline bool operator==(const Coord &other) const {
         return x == other.x && y == other.y;
     }
 
 
-    inline bool operator!=(const Coord& other) const {
+    inline bool operator!=(const Coord &other) const {
         return x != other.x || y != other.y;
     }
 
-    inline Coord& operator+=(const Coord& other) {
+    inline Coord &operator+=(const Coord &other) {
         x += other.x;
         y += other.y;
         return *this;
     }
 
-    inline Coord& operator-=(const Coord& other) {
+    inline Coord &operator-=(const Coord &other) {
         x -= other.x;
         y -= other.y;
         return *this;
     }
 
-    inline Coord& operator*=(const Coord& other) {
+    inline Coord &operator*=(const Coord &other) {
         x *= other.x;
         y *= other.y;
         return *this;
     }
 
-    inline Coord& operator/=(const Coord& other) {
+    inline Coord &operator/=(const Coord &other) {
         x /= other.x;
         y /= other.y;
         return *this;
@@ -208,8 +222,8 @@ struct Coord {
         return {x, y};
     }
 
-    friend std::ostream& operator<< (std::ostream& stream, const Coord& coord) {
-        stream << std::fixed << std::setprecision( 6 ) << "(" << coord.x << " " << coord.y << ")";
+    friend std::ostream &operator<<(std::ostream &stream, const Coord &coord) {
+        stream << std::fixed << std::setprecision(6) << "(" << coord.x << " " << coord.y << ")";
         return stream;
     }
 };
@@ -221,7 +235,7 @@ struct Node {
 
 struct Road {
     ID id{-1};
-    int lanes_count =0;
+    int lanes_count = 0;
     bool is_one_way = false;
     std::vector<ID> nodes{};
 };

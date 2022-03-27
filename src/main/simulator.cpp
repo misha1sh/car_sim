@@ -6,8 +6,12 @@
 
 #include <fmt/core.h>
 
-void Simulator::CreateMap() {
-    VERIFY(state_ == State::NO_MAP || state_ == State::PAUSED);
+Simulator::Simulator(const SimulatorParams& params):
+        params_(params) {
+}
+
+void Simulator::Initialize() {
+    VERIFY(state_ == State::NO_MAP);
     state_ = State::LOADING_MAP;
 
     QElapsedTimer timer;
@@ -15,14 +19,14 @@ void Simulator::CreateMap() {
 
     fmt::print("Building map\n");
 
-    RasterMapBuilder builder(1  * 5);
-    builder.CreateRoadsMap("../data/moscow_hard.osm"); // moscow_easy moscow_hard
+    RasterMapBuilder builder(params_.pixels_per_meter);
+    builder.CreateRoadsMap(params_.map_path);
     map_holder_ = builder.GetMapHolder();
     fmt::print("Building took {} ms\n", timer.restart());
 
-    {
+    if (params_.enable_cars) {
         const auto guard = map_holder_.Get(map_);
-        const int cars_count = 100;
+        const int cars_count = params_.cars_count;
         fmt::print("Spawning {} cars\n", cars_count);
         SpawnCars(cars_count);
 //    map_->new_car_cells.writeToFile("new_car_cells.bmp");
@@ -218,7 +222,9 @@ void Simulator::RunTick() {
     VERIFY(state_ == State::PAUSED)
     state_ = State::RUNNING;
 
-    SimulateCars(0.1);
+    if (params_.enable_cars) {
+        SimulateCars(params_.delta_time_per_simulation);
+    }
 
     state_ = State::PAUSED;
 }
