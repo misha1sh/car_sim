@@ -11,20 +11,18 @@
 #include "main/simulator.h"
 
 
-
-
-int main(int argc, char *argv[])
-{
-    std::unique_ptr<QThread> simulator_thread = std::make_unique<QThread>();
+int main(int argc, char *argv[]) {
+//    std::unique_ptr<QThread> simulator_thread = std::make_unique<QThread>();
+    QThread* simulator_thread = new QThread();
     simulator_thread->setObjectName("Simulator thread");
 
-    SimulatorParams simulator_params {};
-    simulator_params.enable_cars = false;
+    SimulatorParams simulator_params{};
+    simulator_params.enable_cars = true;
 
     Simulator simulator(simulator_params);
     simulator.Initialize();
 
-    simulator.moveToThread(simulator_thread.get());
+    simulator.moveToThread(simulator_thread);
 
 //    simulator.RunTick();
 
@@ -46,7 +44,7 @@ int main(int argc, char *argv[])
 
     map_painter->setDrawSettings(w.getDrawSettings());
 
-//    simulator_thread->start();
+    simulator_thread->start();
 
     return a.exec();
 

@@ -37,7 +37,16 @@ add_executable(cars_sim
         src/ui/map/glmapwidget.cpp
         src/ui/main_window.ui
         src/ui/map/map_painter.cpp src/ui/map/map_painter.h src/rasterize/roads_map_reader.cpp src/rasterize/roads_map_reader.h
-        src/common/roads_vector_map.h src/projections/lon_lat_to_meters_projector.cpp src/projections/lon_lat_to_meters_projector.h src/common/entities.h src/common/raster_map.h src/common/raster_data.h src/rasterize/roads_rasterizer.cpp src/rasterize/roads_rasterizer.h src/projections/meters_to_image_projector.cpp src/projections/meters_to_image_projector.h src/main/raster_map_builder.cpp src/main/raster_map_builder.h src/main/simulator.cpp src/main/simulator.h src/utils/verify.h src/utils/math_utils.h src/ui/map/camera.h src/ui/draw_settings.h src/utils/guard_holder.h src/rasterize/roads_rasterizer_utils.h src/rasterize/roads_rasterizer_deprecated.h src/rasterize/roads_rasterizer_segmenter.h src/rasterize/roads_rasterizer_handler.h)
+        src/common/roads_vector_map.h src/projections/lon_lat_to_meters_projector.cpp src/projections/lon_lat_to_meters_projector.h
+        src/common/entities.h src/common/raster_map.h src/common/raster_data.h
+        src/rasterize/roads_rasterizer.cpp src/rasterize/roads_rasterizer.h
+        src/projections/meters_to_image_projector.cpp src/projections/meters_to_image_projector.h
+        src/main/raster_map_builder.cpp src/main/raster_map_builder.h src/main/simulator.cpp
+        src/main/simulator.h src/utils/verify.h src/utils/math_utils.h src/ui/map/camera.h
+        src/ui/draw_settings.h src/utils/guard_holder.h src/rasterize/roads_rasterizer_utils.h
+        src/rasterize/roads_rasterizer_deprecated.cpp
+        src/rasterize/roads_rasterizer_segmenter.cpp
+        src/rasterize/roads_rasterizer_handler.cpp src/utils/mutex_pimpl.h src/utils/mutex_pimpl.cpp src/common/geometry.h src/common/geometry.cpp)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
@@ -50,3 +59,6 @@ target_link_libraries(cars_sim PRIVATE
     Qt6::Widgets Qt6::OpenGL Qt6::OpenGLWidgets
     range-v3::range-v3 fmt::fmt-header-only
     ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${OSMIUM_LIBRARIES} ${BOOST_LIBRARIES} ${OpenCV_LIBS})
+
+#-DCMAKE_CXX_FLAGS="-fuse-ld=lld"
+

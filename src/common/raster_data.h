@@ -3,8 +3,12 @@
 #include "common/entities.h"
 #include "utils/verify.h"
 
-#include <range/v3/all.hpp>
-#include <opencv2/opencv.hpp>
+#include <range/v3/view/transform.hpp>
+#include <range/v3/range/conversion.hpp>
+
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/highgui.hpp>
 #include <vector>
 
 
@@ -25,21 +29,21 @@ public:
     }
 
     inline T& operator()(const PointI& p) {
-        return (*this)(p.x(), p.y());
+        return (*this)(p.x, p.y);
     }
 
-    inline T& operator()(const Coord& c) {
+    inline T& operator()(const PointF& c) {
         return (*this)(c.asPointI());
     }
 
 
-    inline T getOrDefault(int x, int y, T default_value) {
-        if (x < 0 || y < 0 || x >= len_x_ || y >= len_y_) {
+    inline T getOrDefault(const PointI& p, T default_value) {
+        if (p.x < 0 || p.y < 0 || p.x >= len_x_ || p.y >= len_y_) {
             return default_value;
         }
 
 //        return {0.5 + x / len_x_ / 2., 0.5 + y / len_y_ / 2.};
-        return (*this)(x, y);
+        return (*this)(p);
     }
 
 
@@ -142,7 +146,7 @@ private:
     //    std::vector<T> data_;
 };
 
-using RasterDataPoint = RasterData<Coord, cv::Vec2d>;
+using RasterDataPoint = RasterData<PointF, cv::Vec2d>;
 
 template <typename T>
 using RasterDataT = RasterData<T, T>;

@@ -2,7 +2,7 @@
 
 #include "common/entities.h"
 
-
+#include "utils/verify.h"
 
 PolygonF ExpandPolyline(const PolylineF& polyline, double width) {
     const int points_per_circle = 4;

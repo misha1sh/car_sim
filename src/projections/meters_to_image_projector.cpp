@@ -4,7 +4,7 @@
 
 #include "meters_to_image_projector.h"
 
-MetersToImageProjector:: MetersToImageProjector(Coord min_corner, Coord max_corner,
+MetersToImageProjector:: MetersToImageProjector(PointF min_corner, PointF max_corner,
                                                 int image_x_size, int image_y_size) :
         min_corner_(min_corner),
         max_corner_(max_corner),
@@ -22,8 +22,8 @@ inline PointIType projectValue(const double value,
 
 PointI MetersToImageProjector::project(const PointF& coord) const {
     return {
-            projectValue(coord.x(), min_corner_.x, max_corner_.x, 0, image_x_size_),
-            projectValue(coord.y(), min_corner_.y, max_corner_.y, 0, image_y_size_)
+            projectValue(coord.x, min_corner_.x, max_corner_.x, 0, image_x_size_),
+            projectValue(coord.y, min_corner_.y, max_corner_.y, 0, image_y_size_)
     };
 }
 

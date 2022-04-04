@@ -37,45 +37,13 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>10</y>
+       <y>40</y>
        <width>85</width>
        <height>20</height>
       </rect>
      </property>
      <property name="text">
       <string>road dir</string>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QCheckBox" name="drawDecision1CheckBox">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>30</y>
-       <width>85</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>decision 1</string>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QCheckBox" name="drawDecision2CheckBox">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>50</y>
-       <width>85</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>decision 2</string>
      </property>
      <property name="checked">
       <bool>true</bool>
@@ -258,6 +226,25 @@
      </property>
      <property name="text">
       <string>image quality:</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="drawRoadIdCheckBox">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>85</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>road id</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
      </property>
     </widget>
    </widget>

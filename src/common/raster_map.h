@@ -3,6 +3,7 @@
 #include "entities.h"
 #include "raster_data.h"
 
+#include "projections/meters_to_image_projector.h"
 #include "utils/guard_holder.h"
 #include "utils/verify.h"
 
@@ -18,7 +19,7 @@ struct RasterMap {
     // >0 = road_edge id
     // -1 = crossroad
     RasterDataT<int> lane_id;
-    std::unordered_map<int, Coord> lane_dir;
+    std::unordered_map<int, PointF> lane_dir;
 
     RasterDataEnum<CarCellType> car_cells;
     RasterDataPoint car_data;
@@ -28,11 +29,14 @@ struct RasterMap {
 
     // IMPORTANT : DO NOT FORGET TO ADD TO COPY
 
-    Coord size;
+    PointF size;
     PointI sizeI;
     double pixels_per_meter;
 
-    RasterMap(int x_len, int y_len, double pixels_per_meter_):
+    MetersToImageProjector image_projector;
+
+    RasterMap(int x_len, int y_len, double pixels_per_meter_,
+              MetersToImageProjector image_projector_):
             lane_id(x_len, y_len, 0),
             lane_dir{},
             car_cells(x_len, y_len, CarCellType::NONE),
@@ -42,12 +46,13 @@ struct RasterMap {
             // IMPORTANT : DO NOT FORGET TO ADD TO COPY
             size(x_len, y_len),
             sizeI(x_len, y_len),
-            pixels_per_meter(pixels_per_meter_)
+            pixels_per_meter(pixels_per_meter_),
+            image_projector(image_projector_)
     {
     }
 
     void CopyTo(RasterMap& other) {
-        VERIFY(sizeI.x() == other.sizeI.x() && sizeI.y() == other.sizeI.y());
+        VERIFY(sizeI == other.sizeI);
         VERIFY(pixels_per_meter == other.pixels_per_meter);
 
         lane_id.copyTo(other.lane_id);

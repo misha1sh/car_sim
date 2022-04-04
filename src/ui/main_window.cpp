@@ -11,8 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
     setAnimated(true);
 
     connect(ui->drawRoadDirCheckBox, SIGNAL(clicked(bool)), this, SLOT(on_drawRoadDirCheckBox_clicked(bool)));
-    connect(ui->drawDecision1CheckBox, SIGNAL(clicked(bool)), this, SLOT(on_drawDecision1CheckBox_clicked(bool)));
-    connect(ui->drawDecision2CheckBox, SIGNAL(clicked(bool)), this, SLOT(on_drawDecision2CheckBox_clicked(bool)));
+    connect(ui->drawRoadIdCheckBox, SIGNAL(clicked(bool)), this, SLOT(on_drawRoadIdCheckBox_clicked(bool)));
     connect(ui->drawCarTypeCheckBox, SIGNAL(clicked(bool)), this, SLOT(on_drawCarTypeCheckBox_clicked(bool)));
     connect(ui->drawPrevCarTypeCheckBox, SIGNAL(clicked(bool)), this, SLOT(on_drawPrevCarTypeCheckBox_clicked(bool)));
     connect(ui->drawCarDataCheckBox, SIGNAL(clicked(bool)), this, SLOT(on_drawCarDataCheckBox_clicked(bool)));
@@ -35,12 +34,8 @@ void MainWindow::on_drawRoadDirCheckBox_clicked(bool value) {
     draw_settings_->draw_road_dir = value;
 }
 
-void MainWindow::on_drawDecision1CheckBox_clicked(bool value) {
-    draw_settings_->draw_decision1 = value;
-}
-
-void MainWindow::on_drawDecision2CheckBox_clicked(bool value) {
-    draw_settings_->draw_decision2 = value;
+void MainWindow::on_drawRoadIdCheckBox_clicked(bool value) {
+    draw_settings_->draw_road_id = value;
 }
 
 void MainWindow::on_drawCarTypeCheckBox_clicked(bool value) {

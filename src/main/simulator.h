@@ -5,15 +5,15 @@
 #include "common/raster_map.h"
 
 struct Car {
-    Coord pos;
-    Coord dir;
-    Coord size;
+    PointF pos;
+    PointF dir;
+    PointF size;
     double speed;
     int decision_layer;
 };
 
 struct SimulatorParams {
-    double pixels_per_meter = 5.;
+    double pixels_per_meter = 1;
     std::string map_path = "../data/moscow_hard.osm";  // moscow_easy moscow_hard
 
     bool enable_cars = true;

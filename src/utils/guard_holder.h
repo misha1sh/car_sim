@@ -1,8 +1,6 @@
 #pragma once
 
-#include <QMutex>
-#include <QMutexLocker>
-
+#include "utils/mutex_pimpl.h"
 #include <memory>
 
 namespace guard_holder {
@@ -10,7 +8,8 @@ namespace guard_holder {
 template <typename T>
 struct GuardHolderInnerData {
     std::unique_ptr<T> value{nullptr};
-    QMutex mutex{};
+    Mutex mutex{};
+
 };
 
 template <typename T>
@@ -45,7 +44,7 @@ public:
 private:
     GuardHolderInnerDataPtr<T> data_;
     std::unique_ptr<T>& place_where_was_moved_;
-    QMutexLocker<QMutex> locker_;
+    MutexLocker locker_;
 };
 
 template <typename T>
@@ -55,7 +54,7 @@ public:
         VERIFY(data_ == nullptr);
 
         data_ = std::make_shared<GuardHolderInnerData<T>>();
-        QMutexLocker<QMutex> locker(&data_->mutex);
+        MutexLocker locker(&data_->mutex);
         data_->value = std::move(value);
     }
 

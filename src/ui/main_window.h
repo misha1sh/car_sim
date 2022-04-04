@@ -36,8 +36,7 @@ public:
 private slots:
     void on_actionExit_triggered();
     void on_drawRoadDirCheckBox_clicked(bool value);
-    void on_drawDecision1CheckBox_clicked(bool value);
-    void on_drawDecision2CheckBox_clicked(bool value);
+    void on_drawRoadIdCheckBox_clicked(bool value);
     void on_drawCarTypeCheckBox_clicked(bool value);
     void on_drawPrevCarTypeCheckBox_clicked(bool value);
     void on_drawCarDataCheckBox_clicked(bool value);

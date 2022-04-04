@@ -6,8 +6,8 @@
 
 class LonLatToMetersProjector final {
 public:
-    explicit LonLatToMetersProjector(Coord center);
-    Coord project(const Coord& coord) const;
+    explicit LonLatToMetersProjector(PointF center);
+    PointF project(const PointF& coord) const;
     ~LonLatToMetersProjector();
 
 private:

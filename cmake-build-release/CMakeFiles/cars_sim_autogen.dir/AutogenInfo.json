@@ -406,6 +406,12 @@
 			null
 		],
 		[
+			"/home/misha-sh/course/src/common/geometry.h",
+			"MU",
+			"2PZEZPHIBF/moc_geometry.cpp",
+			null
+		],
+		[
 			"/home/misha-sh/course/src/common/raster_data.h",
 			"MU",
 			"2PZEZPHIBF/moc_raster_data.cpp",
@@ -460,24 +466,6 @@
 			null
 		],
 		[
-			"/home/misha-sh/course/src/rasterize/roads_rasterizer_deprecated.h",
-			"MU",
-			"REDBW4G35V/moc_roads_rasterizer_deprecated.cpp",
-			null
-		],
-		[
-			"/home/misha-sh/course/src/rasterize/roads_rasterizer_handler.h",
-			"MU",
-			"REDBW4G35V/moc_roads_rasterizer_handler.cpp",
-			null
-		],
-		[
-			"/home/misha-sh/course/src/rasterize/roads_rasterizer_segmenter.h",
-			"MU",
-			"REDBW4G35V/moc_roads_rasterizer_segmenter.cpp",
-			null
-		],
-		[
 			"/home/misha-sh/course/src/rasterize/roads_rasterizer_utils.h",
 			"MU",
 			"REDBW4G35V/moc_roads_rasterizer_utils.cpp",
@@ -523,6 +511,12 @@
 			"/home/misha-sh/course/src/utils/math_utils.h",
 			"MU",
 			"VSCBVMNR7M/moc_math_utils.cpp",
+			null
+		],
+		[
+			"/home/misha-sh/course/src/utils/mutex_pimpl.h",
+			"MU",
+			"VSCBVMNR7M/moc_mutex_pimpl.cpp",
 			null
 		],
 		[
@@ -600,6 +594,7 @@
 	"SETTINGS_FILE" : "/home/misha-sh/course/cmake-build-release/CMakeFiles/cars_sim_autogen.dir/AutogenUsed.txt",
 	"SOURCES" : 
 	[
+		[ "/home/misha-sh/course/src/common/geometry.cpp", "MU", null ],
 		[ "/home/misha-sh/course/src/main.cpp", "MU", null ],
 		[ "/home/misha-sh/course/src/main/raster_map_builder.cpp", "MU", null ],
 		[ "/home/misha-sh/course/src/main/simulator.cpp", "MU", null ],
@@ -623,9 +618,25 @@
 			"MU",
 			null
 		],
+		[
+			"/home/misha-sh/course/src/rasterize/roads_rasterizer_deprecated.cpp",
+			"MU",
+			null
+		],
+		[
+			"/home/misha-sh/course/src/rasterize/roads_rasterizer_handler.cpp",
+			"MU",
+			null
+		],
+		[
+			"/home/misha-sh/course/src/rasterize/roads_rasterizer_segmenter.cpp",
+			"MU",
+			null
+		],
 		[ "/home/misha-sh/course/src/ui/main_window.cpp", "MU", null ],
 		[ "/home/misha-sh/course/src/ui/map/glmapwidget.cpp", "MU", null ],
-		[ "/home/misha-sh/course/src/ui/map/map_painter.cpp", "MU", null ]
+		[ "/home/misha-sh/course/src/ui/map/map_painter.cpp", "MU", null ],
+		[ "/home/misha-sh/course/src/utils/mutex_pimpl.cpp", "MU", null ]
 	],
 	"UIC_OPTIONS" : [],
 	"UIC_SEARCH_PATHS" : [],

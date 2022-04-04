@@ -4,7 +4,10 @@
 #include "projections/lon_lat_to_meters_projector.h"
 #include "projections/meters_to_image_projector.h"
 
-#include <range/v3/all.hpp>
+//#include <range/v3/view/transform.hpp>
+//#include <range/v3/view/map.hpp>
+//#include <range/v3/algorithm/minmax.hpp>
+//#include <range/v3/view/all.hpp>
 #include <fmt/core.h>
 
 #include <memory>
@@ -30,9 +33,9 @@ struct RoadsVectorMap {
     std::unordered_map<ID, std::vector<RoadForNode>> roads_for_node{};
 
     struct Stats{
-        Coord center{};
-        Coord min_xy{};
-        Coord max_xy{};
+        PointF center{};
+        PointF min_xy{};
+        PointF max_xy{};
     } stats{};
 
 public:
@@ -73,32 +76,37 @@ private:
     }
 
 
-    Coord FindCenter() const {
+    PointF FindCenter() const {
         const auto sum = std::accumulate(nodes.begin(), nodes.end(),
-                               Coord{0, 0}, [](const Coord& coord, const auto& node) {
+                               PointF{0, 0}, [](const PointF& coord, const auto& node) {
                     return node.second.c + coord;
                 });
         return sum / nodes.size();
     }
 
     void CalcBounds() {
-//        double min_x = +std::numeric_limits<double>::infinity();
-//        double min_y = +std::numeric_limits<double>::infinity();
-//        double max_x = -std::numeric_limits<double>::infinity();
-//        double max_y = -std::numeric_limits<double>::infinity();
-//        for (const auto& [node_id_with_road, _] : roads_for_node) {
-//            const auto& c = nodes[node_id_with_road].c;
-//            min_x = std::min(min_x, c.x);
-//            min_y = std::min(min_y, c.y);
-//            max_x = std::max(max_x, c.x);
-//            max_y = std::max(max_y, c.y);
-//        }
-        const auto [min_x, max_x] = ranges::minmax(nodes | ranges::views::values | ranges::views::transform([](const auto& node) {
-            return node.c.x;
-        }));
-        const auto [min_y, max_y] = ranges::minmax(nodes | ranges::views::values | ranges::views::transform([](const auto& node) {
-            return node.c.y;
-        }));
+        double min_x = +std::numeric_limits<double>::infinity();
+        double min_y = +std::numeric_limits<double>::infinity();
+        double max_x = -std::numeric_limits<double>::infinity();
+        double max_y = -std::numeric_limits<double>::infinity();
+        for (const auto& [node_id_with_road, _] : roads_for_node) {
+            const auto& c = nodes[node_id_with_road].c;
+            min_x = std::min(min_x, c.x);
+            min_y = std::min(min_y, c.y);
+            max_x = std::max(max_x, c.x);
+            max_y = std::max(max_y, c.y);
+        }
+
+//        const auto good_nodes = roads_for_node | ranges::views::remove_if([](const auto& node) {
+//            return node.first;
+//        }) | ranges::views::values | ranges::to_vector;
+//
+//        const auto [min_x, max_x] = ranges::minmax( | ranges::views::transform([](const auto& node) {
+//            return node.c.x;
+//        }));
+//        const auto [min_y, max_y] = ranges::minmax(nodes | ranges::views::values | ranges::views::transform([](const auto& node) {
+//            return node.c.y;
+//        }));
 
 
         stats.min_xy = {min_x - 30., min_y - 30.};

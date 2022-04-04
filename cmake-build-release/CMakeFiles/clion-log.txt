@@ -1,4 +1,4 @@
-/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_MAKE_PROGRAM=/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/ninja/linux/ninja -DCMAKE_C_COMPILER=/usr/bin/clang-13 -DCMAKE_CXX_COMPILER=/usr/bin/clang++-13 -DCMAKE_CXX_FLAGS=-fuse-ld=lld -G Ninja /home/misha-sh/course
+/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_MAKE_PROGRAM=/home/misha-sh/.local/share/JetBrains/Toolbox/apps/CLion/ch-0/213.6461.75/bin/ninja/linux/ninja -DCMAKE_C_COMPILER=/usr/bin/clang-13 -DCMAKE_CXX_COMPILER=/usr/bin/clang++-13 -G Ninja -DCMAKE_CXX_FLAGS=-fuse-ld=lld /home/misha-sh/course
 -- Could NOT find Doxygen (missing: DOXYGEN_EXECUTABLE) 
 -- [range-v3]: C++ std=2a
 -- Module support is disabled.

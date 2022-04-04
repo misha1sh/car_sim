@@ -17,10 +17,10 @@ void GLMapWidget::setPainter(MapPainterPtr map_painter) {
     map_painter_ = std::move(map_painter);
 }
 
-void GLMapWidget::setMapSize(Coord map_size) {
+void GLMapWidget::setMapSize(PointF map_size) {
     map_size_ = map_size;
-    camera_.camera0 = Coord(0., map_size.y - height());
-    camera_.camera1 = Coord(width(), map_size.y);
+    camera_.camera0 = PointF(0., map_size.y - height());
+    camera_.camera1 = PointF(width(), map_size.y);
 }
 
 void GLMapWidget::animate() {
@@ -42,13 +42,13 @@ void GLMapWidget::wheelEvent(QWheelEvent *event) {
     if (mouse_dragging_) {
         return;
     }
-    const Coord oldLeftBorder = camera_.camera0;//camera_.center - camera_.size / 2.;
-    const Coord oldRightBorder = camera_.camera1; //camera_.center + camera_.size / 2.;
+    const PointF oldLeftBorder = camera_.camera0;//camera_.center - camera_.size / 2.;
+    const PointF oldRightBorder = camera_.camera1; //camera_.center + camera_.size / 2.;
 
 
-    const Coord mousePos{event->position().x(), event->position().y()};
-    const Coord zoomCenterOnScreen = mousePos / Coord{size().width(), size().height()};
-    const Coord zoomCenter = oldLeftBorder + (oldRightBorder - oldLeftBorder) * zoomCenterOnScreen;
+    const PointF mousePos{event->position().x(), event->position().y()};
+    const PointF zoomCenterOnScreen = mousePos / PointF{size().width(), size().height()};
+    const PointF zoomCenter = oldLeftBorder + (oldRightBorder - oldLeftBorder) * zoomCenterOnScreen;
 
     const double mouseDelta = event->angleDelta().y();
     const double zoomSpeed = 0.4;
@@ -57,15 +57,15 @@ void GLMapWidget::wheelEvent(QWheelEvent *event) {
 
     const double zoomDelta = zoomSpeed * mouseDelta;
 
-    Coord leftCoef = (zoomCenter - oldLeftBorder) / (oldRightBorder - oldLeftBorder);
-    Coord rightCoef = Coord{1, 1} - leftCoef;
+    PointF leftCoef = (zoomCenter - oldLeftBorder) / (oldRightBorder - oldLeftBorder);
+    PointF rightCoef = PointF{1, 1} - leftCoef;
 
     const double resCoef = width() * 1. / height();
     leftCoef.y /= resCoef;
     rightCoef.y /= resCoef;
 
-    const Coord newLeftBorder = (oldLeftBorder + leftCoef * zoomDelta );
-    const Coord newRightBorder = (oldRightBorder - rightCoef * zoomDelta );
+    const PointF newLeftBorder = (oldLeftBorder + leftCoef * zoomDelta );
+    const PointF newRightBorder = (oldRightBorder - rightCoef * zoomDelta );
 
     if (newRightBorder.x - newLeftBorder.x < 40. || newRightBorder.y - newLeftBorder.y < 40.) {
         return;
@@ -84,11 +84,11 @@ void GLMapWidget::wheelEvent(QWheelEvent *event) {
 
 void GLMapWidget::mouseMoveEvent(QMouseEvent *event) {
     if (event->buttons().testFlag(Qt::LeftButton) && mouse_dragging_) {
-        const Coord cur_mouse_pos = {event->pos().x(), event->pos().y()};
-        const Coord delta = cur_mouse_pos - dragging_mouse_start_pos_;
+        const PointF cur_mouse_pos = {event->pos().x(), event->pos().y()};
+        const PointF delta = cur_mouse_pos - dragging_mouse_start_pos_;
 
-        const Coord deltaPercent = delta / Coord{size().width(), size().height()};
-        const Coord deltaCoord = deltaPercent * (camera_.camera1 - camera_.camera0);
+        const PointF deltaPercent = delta / PointF{size().width(), size().height()};
+        const PointF deltaCoord = deltaPercent * (camera_.camera1 - camera_.camera0);
 
         camera_.camera0 = dragging_camera_start_pos0_ - deltaCoord;
         camera_.camera1 = dragging_camera_start_pos1_ - deltaCoord;

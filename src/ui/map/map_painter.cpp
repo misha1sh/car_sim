@@ -46,8 +46,20 @@ inline void setPixels(uchar* pix, int& pixIdx, const Color& color) {
     pixIdx += 4;
 }
 
-inline Color DirToRGB(const Coord& dir) {
+inline Color DirToRGB(const PointF& dir) {
     return RGB(dir.x * 127 + 127, dir.y * 127 + 127, 0);
+}
+
+unsigned int IntHash(unsigned int x) {
+    x = ((x >> 16) ^ x) * 0x45d9f3b;
+    x = ((x >> 16) ^ x) * 0x45d9f3b;
+    x = (x >> 16) ^ x;
+    return x;
+}
+
+inline Color IdToRGB(int id) {
+    unsigned int hash = IntHash(static_cast<unsigned int>(id));
+    return RGB(hash & 0x0000ff, (hash & 0x00ff00) >> 2, (hash & 0xff0000) >> 4);
 }
 
 inline Color CarTypeToRGB(const CarCellType& car_type) {
@@ -64,8 +76,8 @@ inline Color CarTypeToRGB(const CarCellType& car_type) {
 
 
 inline bool DrawDir(RasterDataPoint& data, int imageX, int imageY, int& pixIdx, uchar* pix) {
-    const auto dir = data.getOrDefault(imageX, imageY, {0, 0});
-    if (dir != Coord{0, 0}) {
+    const auto dir = data.getOrDefault({imageX, imageY}, {0, 0});
+    if (dir != PointF{0, 0}) {
         setPixels(pix, pixIdx, DirToRGB(dir));
         return true;
     }
@@ -74,7 +86,7 @@ inline bool DrawDir(RasterDataPoint& data, int imageX, int imageY, int& pixIdx, 
 }
 
 inline bool DrawCarType(RasterDataEnum<CarCellType>& data, int imageX, int imageY, int& pixIdx, uchar* pix) {
-    const auto car_type = data.getOrDefault(imageX, imageY, CarCellType::NONE);
+    const auto car_type = data.getOrDefault({imageX, imageY}, CarCellType::NONE);
     if (car_type != CarCellType::NONE) {
         setPixels(pix, pixIdx, CarTypeToRGB(car_type));
         return true;
@@ -83,7 +95,25 @@ inline bool DrawCarType(RasterDataEnum<CarCellType>& data, int imageX, int image
     return false;
 }
 
+inline bool DrawBorder(const PointI& mapSizeI, const int imageX, const int imageY, int& pixIdx, uchar* pix) {
+    if (0 <= imageX && imageX < mapSizeI.x &&
+        0 <= imageY && imageY < mapSizeI.y) {
+        return false;
+    }
 
+    if ((-10 <= imageX && imageX <= -1) ||
+        (-10 <= imageY && imageY <= -1) ||
+        (mapSizeI.x <= imageX && imageX <= mapSizeI.x + 10) ||
+        (mapSizeI.y <= imageY && imageY <= mapSizeI.y + 10)) {
+        // border
+        setPixels(pix, pixIdx, RGB(255, 255, 255));
+    } else {
+        // outer space
+        setPixels(pix, pixIdx, RGB(10, 10, 10));
+    }
+
+    return true;
+}
 // #define STORE_IN_TEMP_MAP
 
 void MapPainter::paintMap(QPainter &painter, QPaintEvent* event, Camera camera) {
@@ -123,22 +153,25 @@ void MapPainter::paintMap(QPainter &painter, QPaintEvent* event, Camera camera) 
 
 
         // everything in coordinate system relative to screen
-        PointI screenSize {event->rect().width() / cur_draw_settings.resoultion_coef, event->rect().height() / cur_draw_settings.resoultion_coef};
-        Coord mapSize {map_->road_dir.sizeX(),  map_->road_dir.sizeY()};
+        PointF screenSizeF {event->rect().width() / cur_draw_settings.resoultion_coef,
+                           event->rect().height() / cur_draw_settings.resoultion_coef};
+        PointI screenSize {screenSizeF.asPointI()};
+        PointF mapSize {map_->size};
+        PointI mapSizeI {map_->sizeI};
 
     //    mapSize.y = screenSize.y() * 1. * mapSize.x  / screenSize.x();
     //    mapSize.x = screenSize.x() * 1. * mapSize.y  / screenSize.y();
 
-    //    Coord onScreenMapSize {camera.size * mapSize};
-        Coord onScreenMapSize {camera.camera1 - camera.camera0};
-        Coord cameraCorner {camera.camera0};
+    //    PointF onScreenMapSize {camera.size * mapSize};
+        PointF onScreenMapSize {camera.camera1 - camera.camera0};
+        PointF cameraCorner {camera.camera0};
 
         PointI cameraCornerI {cameraCorner.asPointI()};
 
-        Coord rescaleCoef {onScreenMapSize / Coord{screenSize}};
+        PointF rescaleCoef {onScreenMapSize / PointF{screenSize}};
 
-        if (img.width() != screenSize.x() || img.height() != screenSize.y()) {
-            img = QImage{screenSize.x(), screenSize.y(),  QImage::Format::Format_RGB32};
+        if (img.width() != screenSize.x || img.height() != screenSize.y) {
+            img = QImage{screenSize.x, screenSize.y,  QImage::Format::Format_RGB32};
         }
 
         const int y_size =  map_->size.y;
@@ -153,22 +186,17 @@ void MapPainter::paintMap(QPainter &painter, QPaintEvent* event, Camera camera) 
         auto& car_data = map_->car_data;
         auto& new_car_cells = map_->new_car_cells;
         auto& car_cells = map_->car_cells;
-        auto& decision1 = map_->decision1;
-        auto& decision2 = map_->decision2;
-        auto& road_dir = map_->road_dir;
+        auto& lane_id = map_->lane_id;
+        auto& lane_dir = map_->lane_dir;
 
         int pixIdx = 0;
         uchar* pix = img.bits();
-        for (int y = 0; y < screenSize.y(); y++) {
-            for (int x = 0; x < screenSize.x(); x++) {
-                const int imageX = static_cast<int>(x * rescaleCoef.x + cameraCornerI.x());
-                const int imageY = y_size - (static_cast<int>((y) * rescaleCoef.y + cameraCornerI.y()));
+        for (int y = 0; y < screenSize.y; y++) {
+            for (int x = 0; x < screenSize.x; x++) {
+                const int imageX = static_cast<int>(x * rescaleCoef.x + cameraCornerI.x);
+                const int imageY = y_size - (static_cast<int>((y) * rescaleCoef.y + cameraCornerI.y));
 
-                if ((-10 <= imageX && imageX <= -1) ||
-                    (-10 <= imageY && imageY <= -1) ||
-                    (mapSize.x <= imageX && imageX <= mapSize.x + 10) ||
-                    (mapSize.y <= imageY && imageY <= mapSize.y + 10)) {
-                    setPixels(pix, pixIdx, RGB(255, 255, 255));
+                if (DrawBorder(mapSizeI, imageX, imageY, pixIdx, pix)) {
                     continue;
                 }
 
@@ -196,21 +224,18 @@ void MapPainter::paintMap(QPainter &painter, QPaintEvent* event, Camera camera) 
                     }
                 }
 
-                if (cur_draw_settings.draw_decision1) {
-                    if (DrawDir(decision1, imageX, imageY, pixIdx, pix)) {
-                        continue;
-                    }
-                }
-
-                if (cur_draw_settings.draw_decision2) {
-                    if (DrawDir(decision2, imageX, imageY, pixIdx, pix)) {
-                        continue;
-                    }
-                }
-
-                if (cur_draw_settings.draw_road_dir) {
-                    if (DrawDir(road_dir, imageX, imageY, pixIdx, pix)) {
-                        continue;
+                if (cur_draw_settings.draw_road_dir || cur_draw_settings.draw_road_id) {
+                    const auto id = lane_id(imageX, imageY);
+                    if (id != 0) {
+                        if (cur_draw_settings.draw_road_id) {
+                            setPixels(pix, pixIdx, IdToRGB(id));
+                            continue;
+                        }
+                        if (cur_draw_settings.draw_road_dir) {
+                            const auto dir = lane_dir.at(id);
+                            setPixels(pix, pixIdx, DirToRGB(dir));
+                            continue;
+                        }
                     }
                 }
 
@@ -235,11 +260,11 @@ void MapPainter::paintMap(QPainter &painter, QPaintEvent* event, Camera camera) 
         directionsCircleImg = QImage{40, 40, QImage::Format::Format_ARGB32};
         directionsCircleImg.fill(QColor{0, 0, 0, 0});
         for (double angle = 0; angle < 2 * M_PI; angle += 2. * M_PI / 200.) {
-            const Coord dir {sin(angle), cos(angle)};
-            const Coord dir2 {sin(angle + M_PI / 2), cos(angle + M_PI / 2)};
+            const PointF dir {sin(angle), cos(angle)};
+            const PointF dir2 {sin(angle + M_PI / 2), cos(angle + M_PI / 2)};
             for (double i = 5; i < 15; i += 0.5) {
-                const auto pos = (Coord{20 + dir.x * i, 20 + dir.y * i}).asPointI(); // dir2
-                directionsCircleImg.setPixelColor(pos.x(), pos.y(), QColor(dir.x * 127 + 127, dir.y * 127 + 127, 0));
+                const auto pos = (PointF{20 + dir.x * i, 20 + dir.y * i}).asPointI(); // dir2
+                directionsCircleImg.setPixelColor(pos.x, pos.y, QColor(dir.x * 127 + 127, dir.y * 127 + 127, 0));
             }
         }
     }
