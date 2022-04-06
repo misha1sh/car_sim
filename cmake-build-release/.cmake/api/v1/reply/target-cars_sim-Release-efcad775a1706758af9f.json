@@ -226,7 +226,8 @@
 				30,
 				31,
 				33,
-				35
+				35,
+				36
 			]
 		}
 	],
@@ -625,7 +626,8 @@
 				30,
 				31,
 				33,
-				35
+				35,
+				36
 			]
 		},
 		{
@@ -633,7 +635,7 @@
 			"sourceIndexes" : 
 			[
 				4,
-				37
+				38
 			]
 		},
 		{
@@ -659,14 +661,14 @@
 				28,
 				32,
 				34,
-				36
+				37
 			]
 		},
 		{
 			"name" : "CMake Rules",
 			"sourceIndexes" : 
 			[
-				38
+				39
 			]
 		}
 	],
@@ -867,6 +869,12 @@
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
 			"path" : "src/common/geometry.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/rasterize/roads_rasterizer_utils.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{

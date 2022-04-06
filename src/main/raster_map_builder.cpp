@@ -24,7 +24,7 @@ PointI CropImageSize(PointI image_size) {
 
 void RasterMapBuilder::CreateRoadsMap(std::filesystem::path osm_input_file_path) {
     RoadsMapReader reader;
-//    auto roads_vector_map = reader.ReadRoads(osm_input_file_path);
+    auto roads_vector_map = reader.ReadRoads(osm_input_file_path);
 
 
 //    auto roads_vector_map = RoadsVectorMap::Create(
@@ -83,20 +83,20 @@ void RasterMapBuilder::CreateRoadsMap(std::filesystem::path osm_input_file_path)
 //            false
 //    );
 
-    auto roads_vector_map = RoadsVectorMap::Create(
-            {{1, Node{1, {0, 0}}},
-             {2, Node{2, {100, 0}}},
-             {3, Node{3, {-100, 0}}},
-             {4, Node{4, {0, 100}}},
-             {5, Node{5, {-40, 70}}}
-            },
-            {
-                    {1, Road{/*id*/ 1, /*lanes_count*/ 2, /* is_oneway */ false, {2, 1, 3}}},
-                    {2, Road{/*id*/ 2, /*lanes_count*/ 6, /* is_oneway */ true, {1, 4}}},
-                    {3, Road{3, 1, false, {1, 5}}}
-            },
-            false
-    );
+//    auto roads_vector_map = RoadsVectorMap::Create(
+//            {{1, Node{1, {0, 0}}},
+//             {2, Node{2, {100, 0}}},
+//             {3, Node{3, {-100, 0}}},
+//             {4, Node{4, {0, 100}}},
+//             {5, Node{5, {-40, 70}}}
+//            },
+//            {
+//                    {1, Road{/*id*/ 1, /*lanes_count*/ 2, /* is_oneway */ false, {2, 1, 3}}},
+//                    {2, Road{/*id*/ 2, /*lanes_count*/ 6, /* is_oneway */ true, {1, 4}}},
+//                    {3, Road{3, 1, false, {1, 5}}}
+//            },
+//            false
+//    );
 
     const auto image_size = ((roads_vector_map->stats.max_xy - roads_vector_map->stats.min_xy) * pixels_per_meter_).asPointI() ;
 

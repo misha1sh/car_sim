@@ -188,6 +188,7 @@ void MapPainter::paintMap(QPainter &painter, QPaintEvent* event, Camera camera) 
         auto& car_cells = map_->car_cells;
         auto& lane_id = map_->lane_id;
         auto& lane_dir = map_->lane_dir;
+        auto& debug = map_->debug;
 
         int pixIdx = 0;
         uchar* pix = img.bits();
@@ -198,6 +199,16 @@ void MapPainter::paintMap(QPainter &painter, QPaintEvent* event, Camera camera) 
 
                 if (DrawBorder(mapSizeI, imageX, imageY, pixIdx, pix)) {
                     continue;
+                }
+
+                if (cur_draw_settings.draw_debug) {
+                    const unsigned int value = debug(imageX, imageY);
+                    if (value != 0) {
+                        setPixels(pix, pixIdx, RGB((value & 0xff0000) >> 12,
+                                                   (value & 0x00ff00) >> 4,
+                                                   (value & 0x0000ff)));
+                        continue;
+                    }
                 }
 
                 if (cur_draw_settings.draw_prev_car_data) {

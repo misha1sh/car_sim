@@ -41,6 +41,7 @@ private slots:
     void on_drawPrevCarTypeCheckBox_clicked(bool value);
     void on_drawCarDataCheckBox_clicked(bool value);
     void on_drawPrevCarDataCheckBox_clicked(bool value);
+    void on_drawDebugCheckBox_clicked(bool value);
     void on_simulationSpeedSlider_valueChanged(int value);
     void on_imageQualitySlider_valueChanged(int value);
     void on_playButton_clicked();

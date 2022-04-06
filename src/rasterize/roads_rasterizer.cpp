@@ -2,6 +2,7 @@
 
 #include "common/entities.h"
 #include "common/geometry.h"
+#include "roads_rasterizer_utils.h"
 
 #include <QElapsedTimer>
 #include <fmt/core.h>
@@ -15,12 +16,18 @@ RoadsRasterizer::RoadsRasterizer(RoadsVectorMapPtr vector_map):
         roads_(vector_map->roads),
         crossroad_nodes_{},
         lane_width_(3.5),
+//        lane_width_(1),
         image_projector_{}
 {
 }
 
-void RoadsRasterizer::DFS(ID node, double depth, std::unordered_set<ID>& nodes_set) const {
+void RoadsRasterizer::DFS(ID node, double depth, std::unordered_set<ID>& nodes_set, bool root) const {
     if (depth <= 0) {
+        return;
+    }
+
+    // TODO: ignore crossroad_nodes??
+    if (!root && (crossroad_nodes_.contains(node) || crossroad_nodes_merge_.contains(node))) {
         return;
     }
 
@@ -34,11 +41,11 @@ void RoadsRasterizer::DFS(ID node, double depth, std::unordered_set<ID>& nodes_s
     for(const auto& other_node : vector_map_->roads_for_node.at(node)) {
         if (other_node.prev_node) {
             const double dist = geometry::Distance(pos, nodes_.at(*other_node.prev_node).c);
-            DFS(*other_node.prev_node, depth - dist, nodes_set);
+            DFS(*other_node.prev_node, depth - dist, nodes_set, false);
         }
         if (other_node.next_node) {
             const double dist = geometry::Distance(pos, nodes_.at(*other_node.next_node).c);
-            DFS(*other_node.next_node, depth - dist, nodes_set);
+            DFS(*other_node.next_node, depth - dist, nodes_set, false);
         }
     }
 }
@@ -75,7 +82,11 @@ Lane RoadsRasterizer::BuildLane(const SegmentsGroup& road) {
     PointF node_center;
     PointF dir;
 
+    VERIFY(road.into_node || road.out_of_node);
+
     if (road.into_node) {
+        VERIFY(nodes_.contains(road.into_node->n1.id));
+        VERIFY(nodes_.contains(road.into_node->n2.id));
         right_perpendicular = road.into_node->dir.RightPerpendicular();
         left_perpendicular = road.into_node->dir.LeftPerpendicular();
         right_move = lane_width_ * road.straight.road.lanes_count;
@@ -85,6 +96,8 @@ Lane RoadsRasterizer::BuildLane(const SegmentsGroup& road) {
     }
 
     if (road.out_of_node) {
+        VERIFY(nodes_.contains(road.out_of_node->n1.id));
+        VERIFY(nodes_.contains(road.out_of_node->n2.id));
         left_perpendicular = road.out_of_node->dir.RightPerpendicular();
         right_perpendicular = road.out_of_node->dir.LeftPerpendicular();
         left_move = lane_width_ * road.straight.road.lanes_count;
@@ -101,6 +114,18 @@ Lane RoadsRasterizer::BuildLane(const SegmentsGroup& road) {
     const Line line_left = Line::FromPointAndDir(node_start + left_perpendicular * left_move,
                                                  dir);
     const Line line_center = Line::FromPoints(node_start, node_center);
+
+//    double angle = std::min(
+//            line_center.Dir()
+//                    .AngleAbs(line_left.Dir()),
+//            line_center.Dir()
+//                    .AngleAbs(-line_left.Dir())
+//    );
+//
+//    if (angle > 0.001) {
+//        std::cerr << "Err";
+//    }
+
     return Lane {
         line_left,
         line_right,
@@ -155,12 +180,12 @@ double RoadsRasterizer::CalculateOffestDistanceForRoad(const SegmentsGroup& road
                                                        const std::vector<SegmentsGroup>& segment_groups) {
     Lane road_lane = BuildLane(road);
     double max_distance = 0.;
-    std::cerr << "Calculating for " << road.straight.p1 << " " << road.straight.p2 << std::endl;
+//    std::cerr << "Calculating for " << road.straight.p1 << " " << road.straight.p2 << std::endl;
     for (const auto& other_road : segment_groups) {
         Lane other_lane = BuildLane(other_road);
-        std::cerr << "  with lane " << other_road.straight.p1 << " " << other_road.straight.p2 << std::endl;
-        std::cerr << "     left: " << CaluclateOffsetDistanceForLane(road_lane, other_lane.line_left) << std::endl;
-        std::cerr << "     right: " << CaluclateOffsetDistanceForLane(road_lane, other_lane.line_right) << std::endl;
+//        std::cerr << "  with lane " << other_road.straight.p1 << " " << other_road.straight.p2 << std::endl;
+//        std::cerr << "     left: " << CaluclateOffsetDistanceForLane(road_lane, other_lane.line_left) << std::endl;
+//        std::cerr << "     right: " << CaluclateOffsetDistanceForLane(road_lane, other_lane.line_right) << std::endl;
         max_distance = std::max(max_distance,
                                 CaluclateOffsetDistanceForLane(road_lane, other_lane.line_left));
         max_distance = std::max(max_distance,
@@ -190,56 +215,75 @@ void RoadsRasterizer::RasterizeRoads(RasterMap &map) {
     int not_enough_layers_cnt = 0;
 
     FindCrossroads();
+    for (const auto& node_id : crossroad_nodes_) {
+        std::unordered_set<ID> nodes_to_merge;
+        DFS(node_id, 40, nodes_to_merge);
 
-//    std::unordered_set<ID> nodes_to_skip{};
-//    for (const auto& node_id : crossroad_nodes_) {
-//        DFS(node_id, 30, nodes_to_skip);
-//    }
+        for (const auto& node_id_to_merge : nodes_to_merge) {
+            crossroad_nodes_merge_[node_id_to_merge] = node_id;
+        }
+        crossroad_nodes_merge_backward_.insert({node_id, nodes_to_merge});
+    }
 
-//    for (const auto& node_id : crossroad_nodes_) {
-//        const Node& center_node = nodes_.at(node_id);
-//        const auto& roads_for_node = vector_map_->roads_for_node.at(node_id);
-//        auto [ingoing_segments, outgoing_segments, segment_groups] =
-//                BuildIngoingAndOutgoingSegments(center_node, roads_for_node);
-//        std::cerr << "Calculating for " << center_node.c << std::endl;
-//
-//        for (auto& segment_group : segment_groups) {
-//            double offset = CalculateOffestDistanceForRoad(segment_group, segment_groups);
-//            std::cerr << "    offset " << offset << " for " <<
-//                segment_group.straight.n1.id << "  " << segment_group.straight.n2.id << std::endl;
-//            segment_group.offset = 20.;// offset;
-//        }
-//
-//    }
 
     for (const auto& [node_id, roads_for_node] : vector_map_->roads_for_node) {
-//        if (nodes_to_skip.contains(node_id)) {
-//            continue;
-//        }
         const Node& center_node = nodes_.at(node_id);
+        { // DRAW DEBUG
+            const auto polygon = ExpandPoint(center_node.c, 1.);
+            const PolygonI polygonImage = image_projector_->project(polygon);
+            if (crossroad_nodes_merge_.contains(node_id) &&
+                crossroad_nodes_merge_.at(node_id) != node_id) {
+                map.debug.fill(polygonImage, 0xff0000);
+            } else if (crossroad_nodes_merge_.contains(node_id) &&
+                       crossroad_nodes_merge_.at(node_id) == node_id) {
+                map.debug.fill(polygonImage, 0x00ff00);
+            } else {
+                map.debug.fill(polygonImage, 0x0f0fffu);
+            }
+        }
+
+        // ignore removed nodes
+        if (crossroad_nodes_merge_.contains(node_id) &&
+            crossroad_nodes_merge_[node_id] != node_id) {
+            continue;
+        }
+
+        // add removed nodes for center nodes
+        std::vector<RoadsVectorMap::RoadForNode> new_roads_for_node;
+        if (crossroad_nodes_.contains(node_id)) {
+            for (const auto other_node : crossroad_nodes_merge_backward_.at(node_id)) {
+                const auto& roads_for_other_node = vector_map_->roads_for_node.at(other_node);
+                new_roads_for_node.insert(std::end(new_roads_for_node),
+                                          std::begin(roads_for_other_node), std::end(roads_for_other_node));
+            }
+        } else {
+            new_roads_for_node = roads_for_node;
+        }
+
 
         auto [ingoing_segments, outgoing_segments, segment_groups] =
-              BuildIngoingAndOutgoingSegments(center_node, roads_for_node);
-//        { DRAW DEBUG
-//            const auto polygon = ExpandPoint(center_node.c.asPointF(), 1.);
-//            const PolygonI polygonImage = image_projector_->project(polygon);
-//            map.decision2.fill(polygonImage, {1, 0});
-//        }
+              BuildIngoingAndOutgoingSegments(center_node, new_roads_for_node);
+
 
         // TODO : probably better to build some sort of return path??
         if (ingoing_segments.empty()  || outgoing_segments.empty() || segment_groups.size() <= 1) {
             continue;
         }
 
+
         for (auto& segment_group : segment_groups) {
+            VERIFY(nodes_.contains(segment_group.straight.n1.id));
+            VERIFY(nodes_.contains(segment_group.straight.n2.id));
             double offset = CalculateOffestDistanceForRoad(segment_group, segment_groups);
 //            std::cerr << "    offset " << offset << " for " <<
 //                      segment_group.straight.n1.id << "  " << segment_group.straight.n2.id << std::endl;
             segment_group.offset = offset + 2.;
         }
 
-        HandleSegments(ingoing_segments, outgoing_segments, segment_groups);
+        HandleSegments(center_node, ingoing_segments, outgoing_segments, segment_groups);
     }
+
+
 
     fmt::print("Got {} not enough decision layers \n", not_enough_layers_cnt);
 

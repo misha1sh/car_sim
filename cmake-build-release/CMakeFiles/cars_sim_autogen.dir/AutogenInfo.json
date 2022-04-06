@@ -633,6 +633,11 @@
 			"MU",
 			null
 		],
+		[
+			"/home/misha-sh/course/src/rasterize/roads_rasterizer_utils.cpp",
+			"MU",
+			null
+		],
 		[ "/home/misha-sh/course/src/ui/main_window.cpp", "MU", null ],
 		[ "/home/misha-sh/course/src/ui/map/glmapwidget.cpp", "MU", null ],
 		[ "/home/misha-sh/course/src/ui/map/map_painter.cpp", "MU", null ],

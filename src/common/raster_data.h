@@ -148,6 +148,7 @@ private:
 
 using RasterDataPoint = RasterData<PointF, cv::Vec2d>;
 
+
 template <typename T>
 using RasterDataT = RasterData<T, T>;
 

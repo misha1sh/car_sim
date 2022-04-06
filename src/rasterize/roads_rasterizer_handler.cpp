@@ -22,6 +22,8 @@ void RoadsRasterizer::CreateLane(const PointF& left_bottom_corner, const PointF&
 void RoadsRasterizer::ConnectRoadSegmentEachToEach(const RoadSegment& ingoing_segment,
                                                    const RoadSegment& outgoing_segment) {
     VERIFY(ingoing_segment.segment_group_id != outgoing_segment.segment_group_id);
+    VERIFY(ingoing_segment.n2.id == outgoing_segment.n1.id);
+    VERIFY(!crossroad_nodes_.contains(ingoing_segment.n2.id));
 //                std::cerr << ingoing_segment.p1.x << " -> " << ingoing_segment.p2.x << "   " << outgoing_segment.p1.x << " -> " << outgoing_segment.p2.x << "  " << ingoing_segment.dir.AngleAbs(outgoing_segment.dir) / M_PI * 180 << std::endl;
 
 
@@ -83,6 +85,17 @@ void RoadsRasterizer::ConnectRoadSegmentEachToEach(const RoadSegment& ingoing_se
 }
 
 void RoadsRasterizer::ConnectToJunction(const RoadSegment& segment, const bool is_ingoing, double offset) {
+//    if (offset > geometry::Distance(segment.p1, segment.p2)) {
+//        std::cerr << offset << " offset is too big" << std::endl;
+//        std::cerr << segment.n1.id << " " << segment.n2.id << std::endl;
+//        std::cerr <<  GetMergedNodeID(segment.n1.id) << " " << GetMergedNodeID(segment.n2.id) << std::endl;
+//    }
+    VERIFY(segment.n1.id != segment.n2.id);
+    VERIFY(GetMergedNodeID(segment.n1.id) == segment.n1.id);
+    VERIFY(GetMergedNodeID(segment.n2.id) == segment.n2.id);
+
+
+
 //    std::cerr << offset << ": ";
     offset = std::min(offset,
                       geometry::Distance(segment.p1, segment.p2) - 0.5);
@@ -97,6 +110,7 @@ void RoadsRasterizer::ConnectToJunction(const RoadSegment& segment, const bool i
     } else {
         p1 += segment.dir * offset;
     }
+
 
     const auto perp = segment.dir.RightPerpendicular();
     for (int i = 1; i <= segment.road.lanes_count; i++) {
@@ -113,10 +127,12 @@ void RoadsRasterizer::ConnectToJunction(const RoadSegment& segment, const bool i
     }
 }
 
-void RoadsRasterizer::HandleSegments(const std::vector<RoadSegment>& ingoing_segments,
+void RoadsRasterizer::HandleSegments(const Node& center_node,
+                                     const std::vector<RoadSegment>& ingoing_segments,
                                      const std::vector<RoadSegment>& outgoing_segments,
                                      const std::vector<SegmentsGroup>& segment_groups) {
-    if (segment_groups.size() == 2) {
+    //if (segment_groups.size() == 2) {
+    if (!crossroad_nodes_.contains(center_node.id)) {
         // no junction, just road continuation
         //   - connect each to each
         for (const auto& ingoing_segment : ingoing_segments) {
