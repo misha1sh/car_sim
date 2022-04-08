@@ -1,0 +1,23 @@
+# ninja log v5
+0	1745	1649418773594028414	cars_sim_autogen/timestamp	13cd1f1d371b5fad
+0	1745	1649418773594028414	cars_sim_autogen/mocs_compilation.cpp	13cd1f1d371b5fad
+0	1745	1649418773594028414	/home/misha-sh/course/cmake-build-release/cars_sim_autogen/timestamp	13cd1f1d371b5fad
+0	1745	1649418773594028414	/home/misha-sh/course/cmake-build-release/cars_sim_autogen/mocs_compilation.cpp	13cd1f1d371b5fad
+1745	32512	1649418804317565619	CMakeFiles/cars_sim.dir/src/ui/map/glmapwidget.cpp.o	c9c16b7c9d46d36b
+1745	34498	1649418806145538084	CMakeFiles/cars_sim.dir/src/ui/main_window.cpp.o	5cfd3ff835756335
+1747	46724	1649418818541351364	CMakeFiles/cars_sim.dir/src/projections/lon_lat_to_meters_projector.cpp.o	b3949c395688e764
+32516	47404	1649418819245340759	CMakeFiles/cars_sim.dir/src/projections/meters_to_image_projector.cpp.o	980f36c1c5c43b5d
+47404	47520	1649418819333339433	CMakeFiles/cars_sim.dir/src/rasterize/roads_rasterizer_deprecated.cpp.o	1769e45de39691c7
+34504	48073	1649418819893330998	CMakeFiles/cars_sim.dir/src/common/geometry.cpp.o	5648251a3dda0eff
+1748	50367	1649418822009299125	CMakeFiles/cars_sim.dir/src/main/raster_map_builder.cpp.o	6fc74b7514b3fee1
+1745	50663	1649418822185296474	CMakeFiles/cars_sim.dir/cars_sim_autogen/mocs_compilation.cpp.o	c8d2b07552a08a6b
+46725	60040	1649418831877150483	CMakeFiles/cars_sim.dir/src/utils/mutex_pimpl.cpp.o	75250d8158c24d07
+1746	61087	1649418832909134938	CMakeFiles/cars_sim.dir/src/rasterize/roads_rasterizer.cpp.o	d6f0951620a3b9e7
+1745	61352	1649418833141131444	CMakeFiles/cars_sim.dir/src/ui/map/map_painter.cpp.o	e8edf196c9393286
+1745	62550	1649418834365113007	CMakeFiles/cars_sim.dir/src/main.cpp.o	4f571be096a31304
+47520	67082	1649418838837045645	CMakeFiles/cars_sim.dir/src/rasterize/roads_rasterizer_segmenter.cpp.o	d6999b5d3161ceea
+48073	72801	1649418844552959545	CMakeFiles/cars_sim.dir/src/rasterize/roads_rasterizer_handler.cpp.o	b83aa41006331b00
+1746	73961	1649418845652942975	CMakeFiles/cars_sim.dir/src/main/simulator.cpp.o	dae3ba514a2845e9
+1745	85115	1649418856744775897	CMakeFiles/cars_sim.dir/src/rasterize/roads_map_reader.cpp.o	c99cf3589c2daebd
+50372	91020	1649418862840684073	CMakeFiles/cars_sim.dir/src/rasterize/roads_rasterizer_utils.cpp.o	74917c76165b3772
+91020	91112	1649418862960682266	cars_sim	68cbdcff59f2fabc

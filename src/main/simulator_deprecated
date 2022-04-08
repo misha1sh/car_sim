@@ -1,0 +1,43 @@
+            auto lane_id = map_->lane_id(new_pos);
+            if (lane_id == 0) {
+                break;
+            }
+            new_road_dir = map_->lane_dir.at(lane_id);
+            if (new_road_dir != PointF{0, 0}) {
+                break;
+            }
+
+//            const PointF new_decision1 = map_->decision1(new_pos);
+//            const PointF new_decision2 = map_->decision2(new_pos);
+//            const bool no_decision1 = new_decision1 == PointF{0, 0};
+//            const bool no_decision2 = new_decision2 == PointF{0, 0};
+//            if (no_decision1 && no_decision2) {
+//                if (try_number == 0) {
+//                    new_pos = car.pos + perp + (car.dir) * (car.speed * map_->pixels_per_meter * delta);
+//                } else if (try_number == 1) {
+//                    new_pos = car.pos - perp + (car.dir) * (car.speed * map_->pixels_per_meter * delta);
+//                } else {
+//                    new_pos = car.pos;
+//                    new_road_dir = car.dir;
+//                    break;
+//                }
+//
+//                try_number++;
+//                continue;
+//            } else if (no_decision2) {
+//                car.decision_layer = 1;
+//                new_road_dir = new_decision1;
+//                break;
+//            } else if (no_decision1) {
+//                car.decision_layer = 2;
+//                new_road_dir = new_decision2;
+//                break;
+//            } else if (car.decision_layer == 1) {
+//                new_road_dir = new_decision1;
+//                break;
+//            } else if (car.decision_layer == 2) {
+//                new_road_dir = new_decision2;
+//                break;
+//            } else {
+//                VERIFY(false && "Unknown decision_layer");
+//            }

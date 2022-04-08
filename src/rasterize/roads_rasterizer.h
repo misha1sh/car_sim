@@ -15,6 +15,7 @@ struct RoadSegment {
     PointF p1, p2;
     PointF dir;
     ID segment_group_id; // IMPORTANT: parallel segments from one road will have the same id, but different is_reverse
+    int id;
 };
 
 struct SegmentsGroup {
@@ -55,14 +56,14 @@ private:
 
     void ConnectRoadSegmentEachToEach(const RoadSegment& ingoing_segment,
                                       const RoadSegment& outgoing_segment);
-    void ConnectToJunction(const RoadSegment& segment, bool is_ingoing, double offset);
+    std::vector<int> ConnectToJunction(const RoadSegment& segment, bool is_ingoing, double offset);
 //    void ConnectRoadSegmentMainToIngoing(const RoadSegment& ingoing_segment,
 //                                         const RoadSegment& outgoing_segment, RasterDataPoint* map_to_fill);
 //
 //    void ConnectRoadSegmentMainToOutgoing(const RoadSegment& ingoing_segment,
 //                                         const RoadSegment& outgoing_segment, RasterDataPoint* map_to_fill);
 
-    void CreateLane(const PointF& left_bottom_corner, const PointF& right_bottom_corner,
+    ID CreateLane(const PointF& left_bottom_corner, const PointF& right_bottom_corner,
                            const PointF& left_top_corner, const PointF& right_top_corner);
 
     void HandleSegments(const Node& center_node,
@@ -96,6 +97,8 @@ private:
     MetersToImageProjector* image_projector_{nullptr};
 
     ID lane_id_counter_{1};
+    int segment_id_counter_ = 1;
+
 };
 
 

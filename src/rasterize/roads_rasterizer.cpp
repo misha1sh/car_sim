@@ -156,6 +156,8 @@ double CaluclateOffsetDistanceForLane(const Lane& lane,
         return 0.;
     }*/
 
+
+
     const PointF projection_left = geometry::ProjectOnLine(lane.line_center, *intersection_left);
     const PointF projection_right = geometry::ProjectOnLine(lane.line_center, *intersection_right);
 
@@ -168,10 +170,22 @@ double CaluclateOffsetDistanceForLane(const Lane& lane,
     if (geometry::DistancePointToSegment(projection_left, seg_1, seg_2) < 0.001) {
         res = geometry::Distance(lane.line_center.b, projection_left);
     }
+
     if (geometry::DistancePointToSegment(projection_right, seg_1, seg_2) < 0.001) {
         res = std::max(res,
                        geometry::Distance(lane.line_center.b, projection_right));
     }
+
+    // TODO: find bug
+//    const double len_left = geometry::OrientedProjectionLength(lane.line_center.b, lane.line_center.a, *intersection_left);
+//    const double len_right = geometry::OrientedProjectionLength(lane.line_center.b, lane.line_center.a, *intersection_left);
+//    double res = 0.;
+//    if (len_left > 0) {
+//        res = len_left;
+//    }
+//    if (len_right > 0) {
+//        res = std::max(res, len_right);
+//    }
 
     return res;
 }
@@ -218,7 +232,7 @@ void RoadsRasterizer::RasterizeRoads(RasterMap &map) {
     for (const auto& node_id : crossroad_nodes_) {
         std::unordered_set<ID> nodes_to_merge;
         DFS(node_id, 40, nodes_to_merge);
-
+//                    nodes_to_merge.insert(node_id);
         for (const auto& node_id_to_merge : nodes_to_merge) {
             crossroad_nodes_merge_[node_id_to_merge] = node_id;
         }
@@ -231,15 +245,19 @@ void RoadsRasterizer::RasterizeRoads(RasterMap &map) {
         { // DRAW DEBUG
             const auto polygon = ExpandPoint(center_node.c, 1.);
             const PolygonI polygonImage = image_projector_->project(polygon);
+            int color;
             if (crossroad_nodes_merge_.contains(node_id) &&
                 crossroad_nodes_merge_.at(node_id) != node_id) {
-                map.debug.fill(polygonImage, 0xff0000);
+                color = 0xff0000;
             } else if (crossroad_nodes_merge_.contains(node_id) &&
                        crossroad_nodes_merge_.at(node_id) == node_id) {
-                map.debug.fill(polygonImage, 0x00ff00);
+                color = 0x00ff00;
             } else {
-                map.debug.fill(polygonImage, 0x0f0fffu);
+                color = 0x0f0fffu;
             }
+            const auto text_pos = center_node.c - PointF{0, 10};
+//            map.debug.text(image_projector_->project(text_pos), 1, std::to_string(center_node.id), color);
+            map.debug.fill(polygonImage, color);
         }
 
         // ignore removed nodes
@@ -265,10 +283,10 @@ void RoadsRasterizer::RasterizeRoads(RasterMap &map) {
               BuildIngoingAndOutgoingSegments(center_node, new_roads_for_node);
 
 
-        // TODO : probably better to build some sort of return path??
-        if (ingoing_segments.empty()  || outgoing_segments.empty() || segment_groups.size() <= 1) {
-            continue;
-        }
+//        // TODO : probably better to build some sort of return path??
+//        if (ingoing_segments.empty()  || outgoing_segments.empty() || segment_groups.size() <= 1) {
+//            continue;
+//        }
 
 
         for (auto& segment_group : segment_groups) {

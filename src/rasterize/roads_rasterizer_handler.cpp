@@ -1,7 +1,9 @@
 #include "roads_rasterizer.h"
 #include "common/geometry.h"
 
-void RoadsRasterizer::CreateLane(const PointF& left_bottom_corner, const PointF& right_bottom_corner,
+#include <map>
+
+ID RoadsRasterizer::CreateLane(const PointF& left_bottom_corner, const PointF& right_bottom_corner,
                                  const PointF& left_top_corner, const PointF& right_top_corner) {
     const PolygonI polygonImage = image_projector_->project(PolygonF{{
                                                                              left_bottom_corner,
@@ -12,8 +14,10 @@ void RoadsRasterizer::CreateLane(const PointF& left_bottom_corner, const PointF&
     const PointF dir = (left_top_corner - left_bottom_corner).Norm();
     const ID lane_id = lane_id_counter_++;
 
-    raster_map_->lane_id.fill(polygonImage, lane_id);
+    raster_map_->lane_id.fill(polygonImage, (int)lane_id);
     raster_map_->lane_dir.insert({lane_id, dir});
+
+    return lane_id;
 }
 
 
@@ -84,7 +88,7 @@ void RoadsRasterizer::ConnectRoadSegmentEachToEach(const RoadSegment& ingoing_se
 //    }
 }
 
-void RoadsRasterizer::ConnectToJunction(const RoadSegment& segment, const bool is_ingoing, double offset) {
+std::vector<int> RoadsRasterizer::ConnectToJunction(const RoadSegment& segment, const bool is_ingoing, double offset) {
 //    if (offset > geometry::Distance(segment.p1, segment.p2)) {
 //        std::cerr << offset << " offset is too big" << std::endl;
 //        std::cerr << segment.n1.id << " " << segment.n2.id << std::endl;
@@ -93,8 +97,6 @@ void RoadsRasterizer::ConnectToJunction(const RoadSegment& segment, const bool i
     VERIFY(segment.n1.id != segment.n2.id);
     VERIFY(GetMergedNodeID(segment.n1.id) == segment.n1.id);
     VERIFY(GetMergedNodeID(segment.n2.id) == segment.n2.id);
-
-
 
 //    std::cerr << offset << ": ";
     offset = std::min(offset,
@@ -111,6 +113,7 @@ void RoadsRasterizer::ConnectToJunction(const RoadSegment& segment, const bool i
         p1 += segment.dir * offset;
     }
 
+    std::vector<int> lane_ids;
 
     const auto perp = segment.dir.RightPerpendicular();
     for (int i = 1; i <= segment.road.lanes_count; i++) {
@@ -123,8 +126,19 @@ void RoadsRasterizer::ConnectToJunction(const RoadSegment& segment, const bool i
         PointF left_top = p2 + perp * lane_width_ * (i - 1);
         PointF right_top = p2 + perp * lane_width_ * i;
 
-        CreateLane(left_bottom, right_bottom, left_top, right_top);
+        const auto lane_id = CreateLane(left_bottom, right_bottom, left_top, right_top);
+        lane_ids.push_back(lane_id);
+        raster_map_->crossroad_lanes.insert({lane_id,
+            CrossroadLane {
+                .goes_into_crossroad = is_ingoing,
+                .start_point = (left_bottom + right_bottom) / 2.,
+                .end_point = (left_top + right_top) / 2.,
+                .end_lanes = {} // we'll fill it later
+            }
+        });
     }
+
+    return lane_ids;
 }
 
 void RoadsRasterizer::HandleSegments(const Node& center_node,
@@ -144,11 +158,35 @@ void RoadsRasterizer::HandleSegments(const Node& center_node,
             }
         }
     } else {
+        std::map<int, std::vector<int>> lane_ids_for_segment;
         for (const auto& ingoing_segment : ingoing_segments) {
-            ConnectToJunction(ingoing_segment, true, segment_groups[ingoing_segment.segment_group_id].offset);
+            const auto lane_ids = ConnectToJunction(ingoing_segment, true,
+                                                    segment_groups[ingoing_segment.segment_group_id].offset);
+
+            lane_ids_for_segment.insert({ingoing_segment.id, lane_ids});
         }
         for (const auto& outgoing_segment : outgoing_segments) {
-            ConnectToJunction(outgoing_segment, false, segment_groups[outgoing_segment.segment_group_id].offset);
+            const auto lane_ids = ConnectToJunction(outgoing_segment, false,
+                                                    segment_groups[outgoing_segment.segment_group_id].offset);
+            lane_ids_for_segment.insert({outgoing_segment.id, lane_ids});
+        }
+
+        for (const auto& ingoing_segment : ingoing_segments) {
+            for (const auto& outgoing_segment : outgoing_segments) {
+                if (ingoing_segment.segment_group_id == outgoing_segment.segment_group_id) {
+                    continue;
+                }
+
+                for (const auto& ingoing_lane_id : lane_ids_for_segment.at(ingoing_segment.id)) {
+                    auto& ingoing_lane = raster_map_->crossroad_lanes.at(ingoing_lane_id);
+                    for (const auto& outgoing_lane_id : lane_ids_for_segment.at(outgoing_segment.id)) {
+                        const auto& outgoing_lane = raster_map_->crossroad_lanes.at(outgoing_lane_id);
+                        ingoing_lane.end_lanes.push_back(
+                                outgoing_lane
+                        );
+                    }
+                }
+            }
         }
     }
 }

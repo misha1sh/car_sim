@@ -18,7 +18,8 @@ public:
     explicit RasterData(int len_x, int len_y, const T& default_value) :
         len_x_(len_x),
         len_y_(len_y),
-        data_(len_y, len_x, toCV(default_value)) // swap to view mem
+        data_(len_y, len_x, toCV(default_value)), // swap to view mem
+        default_value_(default_value)
     {
     }
 
@@ -85,6 +86,14 @@ public:
                      cv::LineTypes::LINE_4);
     }
 
+    void fillBox(const PointI& p1, const PointI& p2, const T& value) {
+        cv::rectangle(data_,
+                      cv::Point{p1.x, p1.y},
+                      cv::Point{p2.x, p2.y},
+                      toCV(value),
+                      cv::LineTypes::FILLED);
+    }
+
     inline int sizeX() {
         return len_x_;
     }
@@ -99,6 +108,36 @@ public:
     }
 
 
+    void text(const PointI& pos, float size, const std::string& text, const T& color) {
+        int baseline;
+        auto text_size = cv::getTextSize(text, cv::FONT_HERSHEY_SIMPLEX, size, 2, &baseline);
+        text_size.height += baseline;
+        cv::Mat_<CV_T> mat(text_size.height, text_size.width, toCV(default_value_));
+//        cv::Mat_<cv::Vec3f> mat(text_size.height, text_size.width, {0, 0, 0});
+        cv::putText(mat,
+                    text,
+                    {0, text_size.height - baseline},
+                    cv::FONT_HERSHEY_SIMPLEX,
+                    size,
+//                    {1, 1, 1},
+                    toCV(color),
+                    2,
+                    true
+        );
+//        cv::imshow("test", mat);
+//        cv::waitKey(0);
+
+        cv::flip(mat, mat, 0);
+
+        for (int x = 0; x < text_size.width; x++) {
+            for (int y = 0; y < text_size.height; y++) {
+                if (x + pos.x > data_.cols || y + pos.y > data_.rows) {
+                    continue;
+                }
+                data_.template at<CV_T>(y + pos.y, x + pos.x) = mat.template at<CV_T>(y, x);
+            }
+        }
+    }
 
     void copyTo(RasterData<T, CV_T>& other) {
         VERIFY(len_x_ == other.len_x_ && len_y_ == other.len_y_);
@@ -133,6 +172,7 @@ public:
 private:
     int len_x_, len_y_;
     cv::Mat_<CV_T> data_;
+    T default_value_;
 
     inline CV_T toCV(const T& t) const {
         T t_copy = t;

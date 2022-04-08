@@ -46,7 +46,8 @@ add_executable(cars_sim
         src/ui/draw_settings.h src/utils/guard_holder.h src/rasterize/roads_rasterizer_utils.h
         src/rasterize/roads_rasterizer_deprecated.cpp
         src/rasterize/roads_rasterizer_segmenter.cpp
-        src/rasterize/roads_rasterizer_handler.cpp src/utils/mutex_pimpl.h src/utils/mutex_pimpl.cpp src/common/geometry.h src/common/geometry.cpp src/rasterize/roads_rasterizer_utils.cpp)
+        src/rasterize/roads_rasterizer_handler.cpp src/utils/mutex_pimpl.h src/utils/mutex_pimpl.cpp
+        src/common/geometry.h src/common/geometry.cpp src/rasterize/roads_rasterizer_utils.cpp)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

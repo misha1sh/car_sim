@@ -20,10 +20,34 @@ inline PointIType projectValue(const double value,
     return norm_val * (max_val_after - min_val_after) + min_val_after;
 }
 
+inline double projectValueF(const double value,
+                               const double min_val_before, const double max_val_before,
+                               const double min_val_after, const double max_val_after) {
+    const double norm_val = ((value - min_val_before) /
+                             (max_val_before - min_val_before));
+    return norm_val * (max_val_after - min_val_after) + min_val_after;
+}
+
+
 PointI MetersToImageProjector::project(const PointF& coord) const {
     return {
             projectValue(coord.x, min_corner_.x, max_corner_.x, 0, image_x_size_),
             projectValue(coord.y, min_corner_.y, max_corner_.y, 0, image_y_size_)
+    };
+}
+
+PointF MetersToImageProjector::projectF(const PointF& coord) const {
+    return {
+            projectValueF(coord.x, min_corner_.x, max_corner_.x, 0, image_x_size_),
+            projectValueF(coord.y, min_corner_.y, max_corner_.y, 0, image_y_size_)
+    };
+}
+
+
+PointF MetersToImageProjector::projectBackwards(const PointF& coord_on_image) const {
+    return {
+            projectValueF(coord_on_image.x, 0, image_x_size_, min_corner_.x, max_corner_.x),
+            projectValueF(coord_on_image.y, 0, image_y_size_, min_corner_.y, max_corner_.y)
     };
 }
 

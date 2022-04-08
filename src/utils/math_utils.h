@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/entities.h"
+
 namespace math_utils {
     template <typename T>
     inline T Crop(const T& value, const T& min_val, const T& max_val) {
@@ -11,4 +13,7 @@ namespace math_utils {
         }
         return value;
     }
+
+
 }
+

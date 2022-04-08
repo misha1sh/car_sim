@@ -178,6 +178,14 @@ struct PointF {
         return std::abs(Angle(other));
     }
 
+    inline PointF Rotate(const double angle) const {
+        double s, c;
+        s = sin(angle);
+        c = cos(angle);
+        return {x * c - y * s,
+                x * s + y * c};
+    }
+
     inline std::tuple<PointF, bool> RotateTowards(const PointF &other, const double angle_speed) {
         double angle = Angle(other);
 

@@ -36,6 +36,18 @@ PointF ProjectOnLine(const Line& line, const PointF& point);
 
 double DistancePointToSegment(const PointF& p1, const PointF& seg_1, const PointF& seg_2);
 
+// projects p on ray p1->p2
+double OrientedProjectionLength(const PointF& p1, const PointF& p2, const PointF& p);
+
+PointF BeizerCurve(double t,
+                   const PointF& p1, const PointF& p2,
+                   const PointF& p3, const PointF& p4);
+
+// returns <new_t, projection>
+std::tuple<double, PointF> FindBeizerProjection(double min_t, double max_t, const PointF& p,
+                                               const PointF& p1, const PointF& p2,
+                                               const PointF& p3, const PointF& p4);
+
 }  // namespace geometry
 
 

@@ -7,12 +7,21 @@
 #include "utils/guard_holder.h"
 #include "utils/verify.h"
 
+#include <unordered_set>
 #include <memory>
 
-enum class CarCellType : unsigned char {
-    NONE = 0,
-    CENTER = 128,
-    BODY = 254,
+//enum class CarCellType : unsigned char {
+//    NONE = 0,
+//    CENTER = 128,
+//    BODY = 254,
+//};
+
+struct CrossroadLane {
+    bool goes_into_crossroad;
+    PointF start_point;
+    PointF end_point;
+
+    std::vector<CrossroadLane> end_lanes;
 };
 
 struct RasterMap {
@@ -20,6 +29,9 @@ struct RasterMap {
     // -1 = crossroad
     RasterDataT<int> lane_id;
     std::unordered_map<int, PointF> lane_dir;
+
+
+    std::unordered_map<int, CrossroadLane> crossroad_lanes;
 
     RasterDataEnum<CarCellType> car_cells;
     RasterDataPoint car_data;
@@ -41,6 +53,7 @@ struct RasterMap {
               MetersToImageProjector image_projector_):
             lane_id(x_len, y_len, 0),
             lane_dir{},
+            crossroad_lanes{},
             car_cells(x_len, y_len, CarCellType::NONE),
             car_data(x_len, y_len, {0, 0}),
             new_car_cells(x_len, y_len, CarCellType::NONE),
@@ -60,6 +73,7 @@ struct RasterMap {
 
         lane_id.copyTo(other.lane_id);
         other.lane_dir = lane_dir;
+        other.crossroad_lanes = crossroad_lanes;
         car_cells.copyTo(other.car_cells);
         car_data.copyTo(other.car_data);
         new_car_cells.copyTo(other.new_car_cells);

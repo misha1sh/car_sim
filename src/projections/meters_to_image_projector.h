@@ -10,6 +10,8 @@ public:
                            int image_x_size, int image_y_size);
 
     PointI project(const PointF& coord) const;
+    PointF projectF(const PointF& coord) const;
+    PointF projectBackwards(const PointF& coord_on_image) const;
     PolygonI project(const PolygonF& polygonF) const;
 
 private:

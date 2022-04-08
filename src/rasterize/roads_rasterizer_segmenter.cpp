@@ -19,7 +19,8 @@ RoadSegment RoadsRasterizer::CreateIngoingSegment(const Node& node1, const Node&
             .p1 = p1,
             .p2 = p2,
             .dir = dir,
-            .segment_group_id = segment_group_id
+            .segment_group_id = segment_group_id,
+            .id= segment_id_counter_++
     };
 }
 
@@ -34,7 +35,8 @@ RoadSegment RoadsRasterizer::CreateOutgoingSegment(const Node& node1, const Node
             .p1 = p1,
             .p2 = p2,
             .dir = dir,
-            .segment_group_id = segment_group_id
+            .segment_group_id = segment_group_id,
+            .id= segment_id_counter_++
     };
 }
 
@@ -65,11 +67,9 @@ RoadsRasterizer::BuildIngoingAndOutgoingSegments(const Node& center_node_before_
 
     for (const auto& road_for_node : roads_for_node) {
         const auto& road = roads_.at(road_for_node.road_id);
-        if (road_for_node.next_node) {
+        if (road_for_node.next_node &&
+                GetMergedNodeID(*road_for_node.next_node) != center_node.id) {
             const auto next_node = GetMergedNode(*road_for_node.next_node);
-            if (center_node.id == next_node.id) {
-                continue;
-            }
 
             const ID segment_group_id = segment_id_counter++;
             outgoing_segments.push_back(
@@ -97,11 +97,9 @@ RoadsRasterizer::BuildIngoingAndOutgoingSegments(const Node& center_node_before_
         }
 
 
-        if (road_for_node.prev_node) {
+        if (road_for_node.prev_node &&
+                GetMergedNodeID(*road_for_node.prev_node) != center_node.id) {
             const auto prev_node = GetMergedNode(*road_for_node.prev_node);
-            if (center_node.id == prev_node.id) {
-                continue;
-            }
 
             const ID segment_group_id = segment_id_counter++;
             ingoing_segments.push_back(
