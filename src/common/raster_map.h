@@ -33,11 +33,11 @@ struct RasterMap {
 
     std::unordered_map<int, CrossroadLane> crossroad_lanes;
 
-    RasterDataEnum<CarCellType> car_cells;
-    RasterDataPoint car_data;
+    RasterDataT<int> car_cells;
+//    RasterDataPoint car_data;
 
-    RasterDataEnum<CarCellType> new_car_cells;
-    RasterDataPoint new_car_data;
+    RasterDataT<int> new_car_cells;
+//    RasterDataPoint new_car_data;
 
     RasterDataT<int> debug;
 
@@ -54,10 +54,8 @@ struct RasterMap {
             lane_id(x_len, y_len, 0),
             lane_dir{},
             crossroad_lanes{},
-            car_cells(x_len, y_len, CarCellType::NONE),
-            car_data(x_len, y_len, {0, 0}),
-            new_car_cells(x_len, y_len, CarCellType::NONE),
-            new_car_data(x_len, y_len, {0, 0}),
+            car_cells(x_len, y_len, 0),
+            new_car_cells(x_len, y_len, 0),
             debug(x_len, y_len, 0),
             // IMPORTANT : DO NOT FORGET TO ADD TO COPY
             size(x_len, y_len),
@@ -75,9 +73,7 @@ struct RasterMap {
         other.lane_dir = lane_dir;
         other.crossroad_lanes = crossroad_lanes;
         car_cells.copyTo(other.car_cells);
-        car_data.copyTo(other.car_data);
         new_car_cells.copyTo(other.new_car_cells);
-        new_car_data.copyTo(other.new_car_data);
         debug.copyTo(other.debug);
     }
 

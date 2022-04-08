@@ -62,21 +62,21 @@ inline Color IdToRGB(int id) {
     return RGB(hash & 0x0000ff, (hash & 0x00ff00) >> 2, (hash & 0xff0000) >> 4);
 }
 
-inline Color CarTypeToRGB(const CarCellType& car_type) {
-    if (car_type == CarCellType::CENTER) {
-        return RGB(0, 0, 255);
-    }
-    if (car_type == CarCellType::BODY) {
-        return RGB(0, 0, 128);
-    }
-    return RGB(0, 0, 0);
-    // VERIFY(false && "Unknown car cell type");
-}
+//inline Color CarTypeToRGB(const CarCellType& car_type) {
+//    if (car_type == CarCellType::CENTER) {
+//        return RGB(0, 0, 255);
+//    }
+//    if (car_type == CarCellType::BODY) {
+//        return RGB(0, 0, 128);
+//    }
+//    return RGB(0, 0, 0);
+//    // VERIFY(false && "Unknown car cell type");
+//}
 
 
 
 inline bool DrawDir(RasterDataPoint& data, int imageX, int imageY, int& pixIdx, uchar* pix) {
-    const auto dir = data.getOrDefault({imageX, imageY}, {0, 0});
+    const auto dir = data(imageX, imageY); // data.getOrDefault({imageX, imageY}, {0, 0});
     if (dir != PointF{0, 0}) {
         setPixels(pix, pixIdx, DirToRGB(dir));
         return true;
@@ -85,10 +85,10 @@ inline bool DrawDir(RasterDataPoint& data, int imageX, int imageY, int& pixIdx, 
     return false;
 }
 
-inline bool DrawCarType(RasterDataEnum<CarCellType>& data, int imageX, int imageY, int& pixIdx, uchar* pix) {
-    const auto car_type = data.getOrDefault({imageX, imageY}, CarCellType::NONE);
-    if (car_type != CarCellType::NONE) {
-        setPixels(pix, pixIdx, CarTypeToRGB(car_type));
+inline bool DrawCarType(RasterDataT<int>& data, int imageX, int imageY, int& pixIdx, uchar* pix) {
+    const auto car_type = data(imageX, imageY); //data.getOrDefault({imageX, imageY}, 0);
+    if (car_type != 0) {
+        setPixels(pix, pixIdx, RGB(0, 0, 128));
         return true;
     }
 
@@ -182,8 +182,8 @@ void MapPainter::paintMap(QPainter &painter, QPaintEvent* event, Camera camera) 
     //    }
     //    ff++;
 
-        auto& new_car_data = map_->new_car_data;
-        auto& car_data = map_->car_data;
+//        auto& new_car_data = map_->new_car_data;
+//        auto& car_data = map_->car_data;
         auto& new_car_cells = map_->new_car_cells;
         auto& car_cells = map_->car_cells;
         auto& lane_id = map_->lane_id;
@@ -211,17 +211,17 @@ void MapPainter::paintMap(QPainter &painter, QPaintEvent* event, Camera camera) 
                     }
                 }
 
-                if (cur_draw_settings.draw_prev_car_data) {
-                    if (DrawDir(new_car_data, imageX, imageY, pixIdx, pix)) {
-                        continue;
-                    }
-                }
-
-                if (cur_draw_settings.draw_car_data) {
-                    if (DrawDir(car_data, imageX, imageY, pixIdx, pix)) {
-                        continue;
-                    }
-                }
+//                if (cur_draw_settings.draw_prev_car_data) {
+//                    if (DrawDir(new_car_data, imageX, imageY, pixIdx, pix)) {
+//                        continue;
+//                    }
+//                }
+//
+//                if (cur_draw_settings.draw_car_data) {
+//                    if (DrawDir(car_data, imageX, imageY, pixIdx, pix)) {
+//                        continue;
+//                    }
+//                }
 
                 if (cur_draw_settings.draw_prev_car_type) {
                     if (DrawCarType(new_car_cells, imageX, imageY, pixIdx, pix)) {

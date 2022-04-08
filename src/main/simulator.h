@@ -10,6 +10,7 @@ struct Car {
     PointF size;
     double speed;
     int decision_layer;
+    int id;
 };
 
 namespace actions {
@@ -58,18 +59,17 @@ public:
 
     void Initialize();
 
-    Car ReadCar(const PointI& pos);
     void WriteCar(const Car& car);
     void SpawnCars(int count);
     bool TrySpawnCar(int x, int y);
 
-    bool HasCollisionAt(const Car& car, const PointF& pos);
+    bool HasCollisionAt(const Car& car, const PointF& pos, const PointF& dir, const double forward_margin, bool with_new);
 
     void RunTick();
     void SimulateCars(double delta);
-    std::optional<CarAction> SimulateGoCrossroad(double delta, int car_id, Car& car, actions::GoOnCrossroad action);
-    std::optional<CarAction> SimulateGoStraight(double delta, int car_id, Car& car, actions::GoStraight action);
-    std::optional<CarAction> SimulateCar(double delta, int car_id, Car& car);
+    std::optional<CarAction> SimulateGoCrossroad(double delta, Car& car, actions::GoOnCrossroad action);
+    std::optional<CarAction> SimulateGoStraight(double delta, Car& car, actions::GoStraight action);
+    std::optional<CarAction> SimulateCar(double delta, Car& car);
     void Clear();
 
     RasterMapHolder GetMapHolder();
@@ -89,9 +89,10 @@ private:
     RasterMapHolder map_holder_{};
     RasterMapPtr map_{};
 
-    std::vector<std::pair<int, PointI>> last_cars_{};
-    std::vector<std::pair<int, PointI>> cars_{};
-    std::vector<std::pair<int, PointI>> new_cars_{};
+    std::vector<Car> last_cars_{};
+    std::vector<Car> cars_{};
+    std::vector<Car> new_cars_{};
+
 
     std::map<int, CarAction> car_actions_{};
     std::map<int, CarAction> new_car_actions_{};

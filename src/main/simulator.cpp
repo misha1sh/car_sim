@@ -33,7 +33,6 @@ void Simulator::Initialize() {
 //    map_->new_car_cells.writeToFile("new_car_cells.bmp");
 //    map_->new_car_cells.writeToFile("new_car_cellsv2.bmp");
 //    map_->new_car_data.writeToFile("new_car_data.bmp");
-        std::swap(map_->car_data, map_->new_car_data);
         std::swap(map_->car_cells, map_->new_car_cells);
         std::swap(cars_, new_cars_);
         fmt::print("Spawning cars took {} ms\n", timer.restart());
@@ -62,32 +61,19 @@ PolygonI BuildCarPolygon(PointF pos, PointF size, PointF dir) {
                      }};
 }
 
-Car Simulator::ReadCar(const PointI& pos) {
-    Car res;
-    VERIFY(map_->car_cells(pos.x, pos.y) == CarCellType::CENTER);
-
-    res.pos = map_->car_data(pos.x, pos.y);
-    res.dir = map_->car_data(pos.x, pos.y + 1);
-    res.size = map_->car_data(pos.x + 1, pos.y);
-    res.speed = map_->car_data(pos.x - 1, pos.y).x;
-    res.decision_layer = (int) map_->car_data(pos.x - 1, pos.y).y;
-
-    return res;
-}
-
 
 void Simulator::WriteCar(const Car& car) {
-    PointI pos = car.pos.asPointI();
+//    PointI pos = car.pos.asPointI();
 
-    map_->new_car_data(pos.x, pos.y) = car.pos; // pos in absoulute coords
-    map_->new_car_data(pos.x, pos.y + 1) = car.dir; // dir normalized
-    map_->new_car_data(pos.x + 1, pos.y) = car.size; // size in pixels (double)
-    map_->new_car_data(pos.x - 1, pos.y) = {car.speed, car.decision_layer}; // speed in meters / second
+//    map_->new_car_data(pos.x, pos.y) = car.pos; // pos in absoulute coords
+//    map_->new_car_data(pos.x, pos.y + 1) = car.dir; // dir normalized
+//    map_->new_car_data(pos.x + 1, pos.y) = car.size; // size in pixels (double)
+//    map_->new_car_data(pos.x - 1, pos.y) = {car.speed, car.decision_layer}; // speed in meters / second
 
     PolygonI poly = BuildCarPolygon(car.pos, car.size, car.dir);
     // TODO : fill convex
-    map_->new_car_cells.fill(poly, CarCellType::BODY);
-    map_->new_car_cells(pos.x, pos.y) = CarCellType::CENTER;
+    map_->new_car_cells.fill(poly, car.id);
+//    map_->new_car_cells(pos.x, pos.y) = CarCellType::CENTER;
 }
 
 bool Simulator::TrySpawnCar(int x, int y) {
@@ -103,12 +89,11 @@ bool Simulator::TrySpawnCar(int x, int y) {
     car.size = (PointF{0.3, 1.} * random_double_(rng_) + PointF{1.5, 4}) * map_->pixels_per_meter;
     car.speed = 3;
     car.decision_layer = random_int_(rng_) % 2 + 1;
-
-    const int car_id = car_id_counter_++;
+    car.id = car_id_counter_++;
 
     WriteCar(car);
-    car_actions_.insert({car_id, actions::GoStraight{}});
-    new_cars_.push_back({car_id, {x, y}});
+    car_actions_.insert({car.id, actions::GoStraight{}});
+    new_cars_.push_back(car);
 
     return true;
 }
@@ -142,48 +127,76 @@ void Simulator::Clear() {
 //    map_->new_car_data.fill({0, 0});
     /// CLEAR
     new_cars_.resize(0);
-    for (const auto& [car_id, car_pos] : last_cars_) {
-        PointI left_bottom = (car_pos.asPointF() - PointF{4, 4} * map_->pixels_per_meter).asPointI();
-        PointI right_top = (car_pos.asPointF() + PointF{4, 4} * map_->pixels_per_meter).asPointI();
-        map_->new_car_cells.fillBox(left_bottom, right_top, CarCellType::NONE);
-        map_->new_car_data.fillBox(left_bottom, right_top, {0, 0});
+    for (const auto& car : last_cars_) {
+        PolygonI poly = BuildCarPolygon(car.pos, car.size, car.dir);
+        // TODO : fill convex
+        map_->new_car_cells.fill(poly, 0);
+//        PointI left_bottom = (car.pos - PointF{4, 4} * map_->pixels_per_meter).asPointI();
+//        PointI right_top = (car.pos + PointF{4, 4} * map_->pixels_per_meter).asPointI();
+//        map_->new_car_cells.fillBox(left_bottom, right_top, 0);
     }
     last_cars_ = cars_;
 }
 
-std::optional<CarAction> Simulator::SimulateGoCrossroad(double delta, int car_id, Car& car, actions::GoOnCrossroad action) {
-
+std::optional<CarAction> Simulator::SimulateGoCrossroad(double delta, Car& car, actions::GoOnCrossroad action) {
     double dist1 = car.speed * map_->pixels_per_meter * delta;
     double dist2 = 0;
+    double step = 0.001;
 
-    int steps = 10;
-    for (int i = 0; i < steps; i++) {
-        const auto old_pos = car.pos;
+    int steps_count = 0;
+    double t;
+    PointF old_pos = car.pos;
+    PointF new_pos = car.pos;
+    for (t = action.progress; t < 1.; t = std::min(1., t + step)) {
+        steps_count++;
 
-        PointF new_pos = car.pos + car.dir * (car.speed * map_->pixels_per_meter * delta / steps);
-        geometry::Distance(new_pos, car.pos);
-
-        const auto [new_progress, new_pos_projected] =
-        geometry::FindBeizerProjection(action.progress, 1.,
-                                       map_->image_projector.projectBackwards(new_pos),
-                                       action.start_point, action.middle_point_1,
+        new_pos = geometry::BeizerCurve(t, action.start_point, action.middle_point_1,
                                        action.middle_point_2, action.end_point);
+        new_pos = map_->image_projector.projectF(new_pos);
 
-        car.pos = map_->image_projector.projectF(new_pos_projected);
-        car.dir = (car.pos - old_pos).Norm();
-        action.progress = new_progress;
-        dist2 += geometry::Distance(car.pos, old_pos);
-
-
-        if (new_progress > 0.99) {
-//            std::cerr << "s " << dist1 << " " << dist2 << "\n";
-            return actions::GoStraight{};
-        }
-
-        if (dist2 > dist1) {
+        dist2 += geometry::Distance(old_pos, new_pos);
+        if (dist2 >= dist1) {
             break;
         }
+
+        old_pos = new_pos;
     }
+    car.dir = (new_pos - old_pos).Norm();
+    car.pos = new_pos;
+    action.progress = t;
+    map_->debug(car.pos) = 0xff0000;
+
+    if (t == 1) {
+        return actions::GoStraight{};
+    }
+
+//    int steps = 10;
+//    for (int i = 0; i < steps; i++) {
+//        const auto old_pos = car.pos;
+//
+//        PointF new_pos = car.pos + car.dir * (car.speed * map_->pixels_per_meter * delta / steps);
+//        geometry::Distance(new_pos, car.pos);
+//
+//        const auto [new_progress, new_pos_projected] =
+//        geometry::FindBeizerProjection(action.progress, 1.,
+//                                       map_->image_projector.projectBackwards(new_pos),
+//                                       action.start_point, action.middle_point_1,
+//                                       action.middle_point_2, action.end_point);
+//
+//        car.pos = map_->image_projector.projectF(new_pos_projected);
+//        car.dir = (car.pos - old_pos).Norm();
+//        action.progress = new_progress;
+//        dist2 += geometry::Distance(car.pos, old_pos);
+//
+//
+//        if (new_progress > 0.99) {
+//            return actions::GoStraight{};
+//        }
+//
+//        if (dist2 > dist1) {
+//            break;
+//        }
+//    }
 
 
 //    std::cerr << dist1 << " " << dist2 << "\n";
@@ -192,7 +205,7 @@ std::optional<CarAction> Simulator::SimulateGoCrossroad(double delta, int car_id
     return action;
 }
 
-std::optional<CarAction> Simulator::SimulateGoStraight(double delta, int car_id, Car& car, actions::GoStraight action) {
+std::optional<CarAction> Simulator::SimulateGoStraight(double delta, Car& car, actions::GoStraight action) {
     const auto car_front = car.pos + car.dir * car.size.y / 2.;
     const auto perp = car.dir.RightPerpendicular();
 
@@ -255,13 +268,13 @@ std::optional<CarAction> Simulator::SimulateGoStraight(double delta, int car_id,
             }
 
 
-
-            for (double t = 0; t < 1; t += 0.001) {
-                PointF b = geometry::BeizerCurve(t, start_point, middle_point_1, middle_point_2, end_point);
-                auto pr = map_->image_projector.project(b).asPointF();
-                map_->debug.fillBox((pr - PointF{2, 2}).asPointI(),
-                                    (pr + PointF{2, 2}).asPointI(), 0xff00ff);
-            }
+// DRAW beizer curve
+//            for (double t = 0; t < 1; t += 0.001) {
+//                PointF b = geometry::BeizerCurve(t, start_point, middle_point_1, middle_point_2, end_point);
+//                auto pr = map_->image_projector.project(b).asPointF();
+//                map_->debug.fillBox((pr - PointF{2, 2}).asPointI(),
+//                                    (pr + PointF{2, 2}).asPointI(), 0xff00ff);
+//            }
 
             return actions::GoOnCrossroad{
                .start_point= start_point,
@@ -279,33 +292,36 @@ std::optional<CarAction> Simulator::SimulateGoStraight(double delta, int car_id,
     // FEATURE : Steer left when we out right side out of road
     if (lane_id_at_front_left && lane_id_at_front_left == lane_id_at_front_center &&
         lane_id_at_front_right != lane_id_at_front_center ) {
-        const auto ideal_dir = car.dir.Rotate(M_PI / 10);
-//            const auto [new_dir, rotated] = car.dir.RotateTowards(, M_PI / 5 * delta);
-        new_car_dir = ideal_dir;
+        const auto ideal_dir = car.dir.Rotate(M_PI / 20);
+        const auto [new_dir, rotated] = car.dir.RotateTowards(ideal_dir, M_PI / 10 * delta);
+        new_car_dir = new_dir;
+//        new_car_dir = ideal_dir;
     }
 
     if (lane_id_at_front_right && lane_id_at_front_right == lane_id_at_front_center &&
         lane_id_at_front_right != lane_id_at_front_center ) {
-        const auto ideal_dir = car.dir.Rotate(M_PI / 10);
-//            const auto [new_dir, rotated] = car.dir.RotateTowards(, M_PI / 5 * delta);
-        new_car_dir = ideal_dir;
+        const auto ideal_dir = car.dir.Rotate(M_PI / 20);
+        const auto [new_dir, rotated] = car.dir.RotateTowards(ideal_dir, M_PI / 10 * delta);
+        new_car_dir = new_dir;
+//        new_car_dir = ideal_dir;
     }
 
+    map_->debug(new_pos) = 0x00ff00;
     car.pos = new_pos;
     car.dir = new_car_dir;
 
     return action;
 }
 
-std::optional<CarAction> Simulator::SimulateCar(double delta, int car_id, Car& car) {
-    const auto* action = &car_actions_.at(car_id);
+std::optional<CarAction> Simulator::SimulateCar(double delta, Car& car) {
+    const auto* action = &car_actions_.at(car.id);
 
     if (const auto* go_straight = std::get_if<actions::GoStraight>(action)) {
-        return SimulateGoStraight(delta, car_id, car, *go_straight);
+        return SimulateGoStraight(delta, car, *go_straight);
     }
 
     if (const auto* go_on_crossroad = std::get_if<actions::GoOnCrossroad>(action)) {
-        return SimulateGoCrossroad(delta, car_id, car, *go_on_crossroad);
+        return SimulateGoCrossroad(delta, car, *go_on_crossroad);
     }
     VERIFY(false && "Unknown action type");
 
@@ -322,32 +338,37 @@ void Simulator::SimulateCars(double delta) {
     /// MAIN LOOP
     int died_in_collision = 0;
     int died_out_of_road = 0;
-    for (const auto& [car_id, car_pos] : cars_) {
-        if (map_->car_cells(car_pos) != CarCellType::CENTER) {
+    for (Car car : cars_) {
+        if (map_->car_cells(car.pos) != car.id) {
             died_in_collision++;
             continue;
         }
-        if (car_pos.x < 10  * map_->pixels_per_meter || car_pos.y < 10  * map_->pixels_per_meter) {
+        if (car.pos.x < 10  * map_->pixels_per_meter || car.pos.y < 10  * map_->pixels_per_meter) {
             died_out_of_road++;
             continue;
         }
-        if (car_pos.x + 10  * map_->pixels_per_meter > map_->size.x || car_pos.y + 10  * map_->pixels_per_meter > map_->size.y) {
+        if (car.pos.x + 10  * map_->pixels_per_meter > map_->size.x || car.pos.y + 10  * map_->pixels_per_meter > map_->size.y) {
             died_out_of_road++;
             continue;
         }
 
-        Car car = ReadCar(car_pos);
-        if (geometry::Distance(car_pos.asPointF(), car.pos) > 3) {
-            continue;
-        }
-        const auto action_opt = SimulateCar(delta, car_id, car);
+        const auto old_pos = car.pos;
+        const auto old_dir = car.dir;
+
+        const auto action_opt = SimulateCar(delta, car);
         if (!action_opt) {
             continue;
         }
 
-        car_actions_.at(car_id) = *action_opt;
+        if (HasCollisionAt(car, car.pos, car.dir, 2., true) && false) {
+            car.pos = old_pos;
+            car.dir = old_dir;
+        } else {
+            car_actions_.at(car.id) = *action_opt;
+        }
+
         WriteCar(car);
-        new_cars_.emplace_back(car_id, PointI{(int)car.pos.x, (int)car.pos.y});
+        new_cars_.emplace_back(car);
     }
 
     int spawned_count = 0;
@@ -358,23 +379,40 @@ void Simulator::SimulateCars(double delta) {
         spawned_count = cars_to_spawn;
     }
 
-    std::swap(map_->car_data, map_->new_car_data);
     std::swap(map_->car_cells, map_->new_car_cells);
     std::swap(cars_, new_cars_);
 
 
-    if (died_in_collision != 0 || died_out_of_road != 0) {
-        std::cout<< "cars removed : " << "collisions=" << died_in_collision << " out_of_road="  << died_out_of_road << " spawned=" << spawned_count << "\n";
+    if (died_in_collision != 0 || died_out_of_road != 0 || spawned_count != 0) {
+        std::cout<< "cars : " << "collisions=" << died_in_collision << " out_of_road="  << died_out_of_road << " spawned=" << spawned_count << "\n";
     }
 }
 
 
-bool Simulator::HasCollisionAt(const Car& car, const PointF& pos) {
-    const PointI posI = pos.asPointI();
+bool Simulator::HasCollisionAt(const Car& car, const PointF& pos, const PointF& dir, const double forward_margin, bool with_new) {
+    const auto perp = dir.RightPerpendicular();
+    auto size = car.size / 2.;
 
-    if (map_->car_cells(posI) != CarCellType::NONE) {
 
+    auto& m = with_new? map_->new_car_cells : map_->car_cells;
+    auto check = [&](const PointF& p) -> bool {
+        const int val = m(p.asPointI());
+        return val != 0 && val != car.id;
+    };
+
+    if (check(pos + dir * (size.y + forward_margin) + perp * size.x)) {
+        return true;
     }
+    if (check(pos + dir * (size.y + forward_margin) - perp * size.x)) {
+        return true;
+    }
+    if (check(pos - dir * size.y + perp * size.x)) {
+        return true;
+    }
+    if (check(pos - dir * size.y - perp * size.x)) {
+        return true;
+    }
+    return false;
 }
 
 
