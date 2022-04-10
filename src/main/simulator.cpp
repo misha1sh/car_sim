@@ -167,6 +167,13 @@ std::optional<CarAction> Simulator::SimulateGoCrossroad(double delta, Car& car, 
     map_->debug(car.pos) = 0xff0000;
 
     if (t == 1) {
+        const auto car_front = car.pos + car.dir * car.size.y / 2.;
+        const auto lane_id_at_front_center = map_->lane_id(car_front);
+        if (!lane_id_at_front_center) {
+            return std::nullopt;
+        }
+        car.dir = map_->lane_dir.at(lane_id_at_front_center);
+
         return actions::GoStraight{};
     }
 
@@ -232,7 +239,8 @@ std::optional<CarAction> Simulator::SimulateGoStraight(double delta, Car& car, a
         const double proj = geometry::OrientedProjectionLength(start_lane.end_point, start_lane.start_point,
                                                                map_->image_projector.projectBackwards(car_front));
         if (start_lane.goes_into_crossroad &&
-            proj < 1.) {
+            proj < 1. &&
+            !start_lane.end_lanes.empty()) {
 
             PointF start_point, end_point, middle_point_1, middle_point_2;
             bool is_bad_proj = true;
@@ -360,11 +368,17 @@ void Simulator::SimulateCars(double delta) {
             continue;
         }
 
-        if (HasCollisionAt(car, car.pos, car.dir, 2., true) && false) {
+        if (HasCollisionAt(car, car.pos, car.dir, 2., true) /*||
+                HasCollisionAt(car, car.pos, car.dir, 2., false)*/) {
             car.pos = old_pos;
             car.dir = old_dir;
         } else {
             car_actions_.at(car.id) = *action_opt;
+        }
+
+        if (HasCollisionAt(car, car.pos, car.dir, 0., true)) {
+            died_in_collision++;
+            continue;
         }
 
         WriteCar(car);
@@ -419,6 +433,26 @@ bool Simulator::HasCollisionAt(const Car& car, const PointF& pos, const PointF& 
 void Simulator::RunTick() {
     VERIFY(state_ == State::PAUSED)
     state_ = State::RUNNING;
+
+//    for (const auto& [traffic_lights_id, traffic_lights] : map_->traffic_lights) {
+//        if (traffic_lights.lanes.empty()) {
+//            continue;
+//        }
+//
+//        if (!traffic_lights_state_.contains(traffic_lights_id)) {
+//            traffic_lights_state_.insert({traffic_lights_id, TrafficLightsState{
+//                .state = 0,
+//                .traffic_lights_id = 5
+//            }});
+//        }
+//        const auto& state = traffic_lights_state_.at(traffic_lights_id);
+//        state.time_to_next_state -= params_.delta_time_per_simulation;
+//
+//        if (state.time_to_next_state < 0) {
+//            state.time_to_next_state = 5.;
+////            state.lanes
+//        }
+//    }
 
     if (params_.enable_cars) {
         SimulateCars(params_.delta_time_per_simulation);

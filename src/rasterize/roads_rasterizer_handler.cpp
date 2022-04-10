@@ -133,6 +133,7 @@ std::vector<int> RoadsRasterizer::ConnectToJunction(const RoadSegment& segment, 
                 .goes_into_crossroad = is_ingoing,
                 .start_point = (left_bottom + right_bottom) / 2.,
                 .end_point = (left_top + right_top) / 2.,
+                .lane_num = i,
                 .end_lanes = {} // we'll fill it later
             }
         });
@@ -171,23 +172,110 @@ void RoadsRasterizer::HandleSegments(const Node& center_node,
             lane_ids_for_segment.insert({outgoing_segment.id, lane_ids});
         }
 
+
+
         for (const auto& ingoing_segment : ingoing_segments) {
             for (const auto& outgoing_segment : outgoing_segments) {
                 if (ingoing_segment.segment_group_id == outgoing_segment.segment_group_id) {
                     continue;
                 }
+                bool is_straight = false;
+                if (ingoing_segment.road.id == outgoing_segment.road.id) {
+                    is_straight = true;
+                }
+                if (ingoing_segment.dir.AngleAbs(outgoing_segment.dir) < M_PI / 5) {
+                    is_straight = true;
+                }
+
+                bool is_left = false;
+                bool is_right = false;
+                double angle = ingoing_segment.dir.AngleAbs(outgoing_segment.dir);
+                if (std::abs(angle) > 3 * M_PI / 4) {
+                    continue;
+                }
+
+                if (!is_straight) {
+                    if (angle < 0) {
+                        is_left = true;
+                    } else {
+                        is_right = true;
+                    }
+                }
+
+
 
                 for (const auto& ingoing_lane_id : lane_ids_for_segment.at(ingoing_segment.id)) {
                     auto& ingoing_lane = raster_map_->crossroad_lanes.at(ingoing_lane_id);
                     for (const auto& outgoing_lane_id : lane_ids_for_segment.at(outgoing_segment.id)) {
                         const auto& outgoing_lane = raster_map_->crossroad_lanes.at(outgoing_lane_id);
+                        if (is_straight && (
+                                ingoing_lane.lane_num != outgoing_lane.lane_num &&
+                                        !(ingoing_lane.lane_num > outgoing_segment.road.lanes_count &&
+                                          outgoing_lane.lane_num == outgoing_segment.road.lanes_count))) {
+                            continue;
+                        }
+
+                        if (is_right && !(
+                                ingoing_lane.lane_num == ingoing_segment.road.lanes_count &&
+                                outgoing_lane.lane_num == outgoing_segment.road.lanes_count
+                                )) {
+                            continue;
+                        }
+
+                        if (is_left && !(
+                                ingoing_lane.lane_num == 1)
+                            ) {
+                            continue;
+                        }
+
+
                         ingoing_lane.end_lanes.push_back(
                                 outgoing_lane
                         );
+//                        ingoing_lane.
+//
+//                        if (is_straight && !in_traffic_lights.contains(ingoing_lane.lane_num)) {
+//                            in_traffic_lights.insert({ingoing_lane.lane_num});
+//                            in_traffic_lights.insert({outgoing_lane.lane_num});
+//                            traffic_lights.lanes.push_back({ingoing_lane.lane_num, outgoing_lane.lane_num});
+//                        }
                     }
                 }
+
+
+
+
             }
         }
+
+
+        TrafficLights traffic_lights{
+                .center = center_node.c,
+                .lanes = {}
+        };
+        int traffic_lights_id = traffic_lights_counter_++;
+        for (const auto& ingoing_segment : ingoing_segments) {
+            for (const auto &ingoing_lane_id: lane_ids_for_segment.at(ingoing_segment.id)) {
+                const auto lane = raster_map_->crossroad_lanes.at(ingoing_lane_id);
+                const auto lane_dir = (lane.end_point - lane.start_point).Norm();
+                bool found = false;
+                for (auto& lanes_group : traffic_lights.lanes) {
+                    const auto other_lane = raster_map_->crossroad_lanes.at(*lanes_group.begin());
+                    const auto other_lane_dir = (other_lane.end_point - other_lane.start_point).Norm();
+                    const double angle = lane_dir.AngleAbs(other_lane_dir);
+                    if (angle < M_PI / 5 || angle > 4 * M_PI / 5.) {
+                        lanes_group.insert(ingoing_lane_id);
+                    }
+                }
+
+                if (!found) {
+                    traffic_lights.lanes.push_back({ingoing_lane_id});
+                }
+
+            }
+        }
+        raster_map_->traffic_lights.insert({traffic_lights_id, traffic_lights});
+
     }
 }
 

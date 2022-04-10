@@ -7,6 +7,7 @@
 #include "utils/guard_holder.h"
 #include "utils/verify.h"
 
+#include <set>
 #include <unordered_set>
 #include <memory>
 
@@ -20,8 +21,14 @@ struct CrossroadLane {
     bool goes_into_crossroad;
     PointF start_point;
     PointF end_point;
+    int lane_num;
 
     std::vector<CrossroadLane> end_lanes;
+};
+
+struct TrafficLights {
+    PointF center;
+    std::vector<std::set<int>> lanes;
 };
 
 struct RasterMap {
@@ -32,6 +39,7 @@ struct RasterMap {
 
 
     std::unordered_map<int, CrossroadLane> crossroad_lanes;
+    std::unordered_map<int, TrafficLights> traffic_lights;
 
     RasterDataT<int> car_cells;
 //    RasterDataPoint car_data;

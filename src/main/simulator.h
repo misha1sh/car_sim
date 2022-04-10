@@ -32,14 +32,17 @@ struct GoOnCrossroad {
 typedef std::variant<actions::GoStraight, actions::GoOnCrossroad> CarAction;
 
 
-
+struct TrafficLightsState {
+    int state;
+    double time_to_next_state;
+};
 
 struct SimulatorParams {
     double pixels_per_meter = 5;
     std::string map_path = "../data/moscow_easy.osm";  // moscow_easy moscow_hard
 
     bool enable_cars = true;
-    int cars_count = 100;
+    int cars_count = 1000;
 
     double delta_time_per_simulation = 0.1;
 };
@@ -93,6 +96,7 @@ private:
     std::vector<Car> cars_{};
     std::vector<Car> new_cars_{};
 
+    std::map<int, TrafficLightsState> traffic_lights_state_;
 
     std::map<int, CarAction> car_actions_{};
     std::map<int, CarAction> new_car_actions_{};

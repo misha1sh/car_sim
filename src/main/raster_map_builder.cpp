@@ -98,6 +98,20 @@ void RasterMapBuilder::CreateRoadsMap(std::filesystem::path osm_input_file_path)
 //            false
 //    );
 
+//
+//    auto roads_vector_map = RoadsVectorMap::Create(
+//            {{1, Node{1, {0, 0}}},
+//             {2, Node{2, {12.5, 12.5}}},
+//             {3, Node{3, {50, 50}}},
+//             {4, Node{4, {175 / 2., 25 / 2.}}},
+//             {5, Node{5, {225 / 2., 0}}}
+//            },
+//            {
+//                    {1, Road{/*id*/ 1, /*lanes_count*/ 1, /* is_oneway */ false, {1, 2, 3, 4, 5}}},
+//            },
+//            false
+//    );
+
     const auto image_size = ((roads_vector_map->stats.max_xy - roads_vector_map->stats.min_xy) * pixels_per_meter_).asPointI() ;
 
     const MetersToImageProjector image_projector{

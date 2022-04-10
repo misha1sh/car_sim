@@ -159,6 +159,9 @@ struct PointF {
     inline double AngleDenormalized(const PointF &other) const {
         const double dot = x * other.x + y * other.y;
         const double det = x * other.y - y * other.x;
+        if (dot == 0 && det == 0) {
+            return 0.;
+        }
         return atan2(det, dot);
     }
 

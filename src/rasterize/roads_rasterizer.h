@@ -98,6 +98,7 @@ private:
 
     ID lane_id_counter_{1};
     int segment_id_counter_ = 1;
+    int traffic_lights_counter_ = 1;
 
 };
 
