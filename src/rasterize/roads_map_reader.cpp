@@ -96,7 +96,7 @@ struct RoadsMapExtractor : public osmium::handler::Handler {
 };
 
 RoadsVectorMapPtr RoadsMapReader::ReadRoads(const std::filesystem::path& osm_input_file_path) {
-    osmium::io::Reader reader{osm_input_file_path, osmium::osm_entity_bits::node | osmium::osm_entity_bits::way};
+    osmium::io::Reader reader{osm_input_file_path.string(), osmium::osm_entity_bits::node | osmium::osm_entity_bits::way};
     QElapsedTimer timer;
     timer.start();
 

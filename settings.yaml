@@ -1,0 +1,5 @@
+pixels_per_meter : 5.
+map_path : "data/map (2).osm"
+enable_cars : true
+cars_count : 700
+delta_time_per_simulation : 0.1

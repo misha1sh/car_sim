@@ -1,35 +1,70 @@
+#include "main/simulator.h"
 #include "ui/main_window.h"
-#include "utils/verify.h"
-
-#include "ui/map/map_painter.h"
 
 #include <boost/geometry.hpp>
-
+#include <yaml-cpp/yaml.h>
 #include <QApplication>
-#include <iostream>
+#include <QMessageBox>
+#include <osmium/io/error.hpp>
 
-#include "main/simulator.h"
+#include <optional>
 
+
+void ShowErrorMessage(const std::string& message) {
+    QMessageBox messageBox;
+    messageBox.critical(nullptr, "Error", message.c_str());
+    messageBox.setFixedSize(500,200);
+}
+
+std::optional<SimulatorParams> ReadFromYaml(const std::string& path) {
+    try {
+        const auto settings = YAML::LoadFile(path);
+        return SimulatorParams {
+                .pixels_per_meter = settings["pixels_per_meter"].as<double>(),
+                .map_path = settings["map_path"].as<std::string>(),
+                .enable_cars = settings["enable_cars"].as<bool>(),
+                .cars_count = settings["cars_count"].as<int>(),
+                .delta_time_per_simulation = settings["delta_time_per_simulation"].as<double>()
+        };
+    } catch (const YAML::BadFile& exception) {
+        ShowErrorMessage("Could not read file settings.yaml");
+    } catch (const YAML::InvalidNode& node) {
+        ShowErrorMessage("Invalid data in settins.yaml: " + node.msg);
+    } catch (...) {
+        ShowErrorMessage("Unable to parse settings.yaml");
+    }
+    return std::nullopt;
+}
 
 int main(int argc, char *argv[]) {
-//    std::unique_ptr<QThread> simulator_thread = std::make_unique<QThread>();
+    QApplication a(argc, argv);
+
+    const auto simulator_params_opt = ReadFromYaml("settings.yaml");
+    if (!simulator_params_opt) {
+        return -1;
+    }
+
+    // TODO: memory leak
     QThread* simulator_thread = new QThread();
     simulator_thread->setObjectName("Simulator thread");
 
-    SimulatorParams simulator_params{};
-    simulator_params.enable_cars = true;
-
-    Simulator simulator(simulator_params);
-    simulator.Initialize();
+    Simulator simulator(*simulator_params_opt);
+    try {
+        simulator.Initialize();
+    } catch (const osmium::io_error& error) {
+        ShowErrorMessage("Failed to read map from " + simulator_params_opt->map_path);
+        return -1;
+    } catch (...) {
+        ShowErrorMessage("Failed to init");
+        return -1;
+    }
 
     simulator.moveToThread(simulator_thread);
-
-//    simulator.RunTick();
 
     MapPainterPtr map_painter = std::make_shared<MapPainter>();
     map_painter->setMap(simulator.GetMapHolder());
 
-    QApplication a(argc, argv);
+
     MainWindow w;
     w.show();
 

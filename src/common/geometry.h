@@ -2,7 +2,7 @@
 
 #include "common/entities.h"
 #include <iostream>
-
+#include <optional>
 
 struct Line {
     PointF a;

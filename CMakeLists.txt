@@ -16,6 +16,9 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 add_subdirectory(libs/range-v3)
 
+find_package(PROJ REQUIRED)
+
+
 find_package(Osmium REQUIRED COMPONENTS xml io proj)
 find_package(Boost REQUIRED)
 
@@ -23,11 +26,12 @@ find_package(Qt6 COMPONENTS Widgets OpenGL OpenGLWidgets REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
 find_package(OpenCV REQUIRED )
+find_package(yaml-cpp REQUIRED)
 
 add_subdirectory(libs/fmt)
 
-
 include_directories(src)
+include_directories(${YAML_CPP_INCLUDE_DIRS})
 include_directories(SYSTEM ${OSMIUM_INCLUDE_DIRS})
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 
@@ -47,7 +51,8 @@ add_executable(cars_sim
         src/rasterize/roads_rasterizer_deprecated.cpp
         src/rasterize/roads_rasterizer_segmenter.cpp
         src/rasterize/roads_rasterizer_handler.cpp src/utils/mutex_pimpl.h src/utils/mutex_pimpl.cpp
-        src/common/geometry.h src/common/geometry.cpp src/rasterize/roads_rasterizer_utils.cpp)
+        src/common/geometry.h src/common/geometry.cpp src/rasterize/roads_rasterizer_utils.cpp
+        src/utils/automatic_counter.h)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
@@ -59,7 +64,6 @@ target_include_directories(cars_sim PUBLIC SYSTEM ${BOOST_INCLUDE_DIRS})
 target_link_libraries(cars_sim PRIVATE
     Qt6::Widgets Qt6::OpenGL Qt6::OpenGLWidgets
     range-v3::range-v3 fmt::fmt-header-only
-    ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${OSMIUM_LIBRARIES} ${BOOST_LIBRARIES} ${OpenCV_LIBS})
-
+    ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${OSMIUM_LIBRARIES} ${BOOST_LIBRARIES} ${OpenCV_LIBS} ${YAML_CPP_LIBRARIES})
 #-DCMAKE_CXX_FLAGS="-fuse-ld=lld"
 
