@@ -18,7 +18,6 @@ void GLMapWidget::setPainter(MapPainterPtr map_painter) {
 }
 
 void GLMapWidget::setMapSize(PointF map_size) {
-    map_size_ = map_size;
     camera_.camera0 = PointF(0., map_size.y - height());
     camera_.camera1 = PointF(width(), map_size.y);
 }

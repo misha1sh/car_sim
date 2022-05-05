@@ -134,6 +134,8 @@ std::vector<int> RoadsRasterizer::ConnectToJunction(const RoadSegment& segment, 
                 .start_point = (left_bottom + right_bottom) / 2.,
                 .end_point = (left_top + right_top) / 2.,
                 .lane_num = i,
+                .traffic_lights_id = -1,
+                .traffic_lights_state = 0,
                 .end_lanes = {} // we'll fill it later
             }
         });
@@ -189,16 +191,16 @@ void RoadsRasterizer::HandleSegments(const Node& center_node,
 
                 bool is_left = false;
                 bool is_right = false;
-                double angle = ingoing_segment.dir.AngleAbs(outgoing_segment.dir);
+                double angle = ingoing_segment.dir.Angle(outgoing_segment.dir);
                 if (std::abs(angle) > 3 * M_PI / 4) {
                     continue;
                 }
 
                 if (!is_straight) {
                     if (angle < 0) {
-                        is_left = true;
-                    } else {
                         is_right = true;
+                    } else {
+                        is_left = true;
                     }
                 }
 
@@ -214,7 +216,7 @@ void RoadsRasterizer::HandleSegments(const Node& center_node,
                                           outgoing_lane.lane_num == outgoing_segment.road.lanes_count))) {
                             continue;
                         }
-
+//
                         if (is_right && !(
                                 ingoing_lane.lane_num == ingoing_segment.road.lanes_count &&
                                 outgoing_lane.lane_num == outgoing_segment.road.lanes_count
@@ -228,11 +230,21 @@ void RoadsRasterizer::HandleSegments(const Node& center_node,
                             continue;
                         }
 
+                        CrossroadLane::EndType type;
+                        if (is_straight) {
+                            type = CrossroadLane::EndType::STRAIGHT;
+                        } else if (is_left) {
+                            type = CrossroadLane::EndType::LEFT;
+                        } else if (is_right) {
+                            type = CrossroadLane::EndType::RIGHT;
+                        } else {
+                            VERIFY(false && "UNKNOWN TYPE");
+                        }
 
-                        ingoing_lane.end_lanes.push_back(
-                                outgoing_lane
+                        ingoing_lane.end_lanes.emplace_back(
+                                outgoing_lane,
+                                type
                         );
-//                        ingoing_lane.
 //
 //                        if (is_straight && !in_traffic_lights.contains(ingoing_lane.lane_num)) {
 //                            in_traffic_lights.insert({ingoing_lane.lane_num});
@@ -263,8 +275,9 @@ void RoadsRasterizer::HandleSegments(const Node& center_node,
                     const auto other_lane = raster_map_->crossroad_lanes.at(*lanes_group.begin());
                     const auto other_lane_dir = (other_lane.end_point - other_lane.start_point).Norm();
                     const double angle = lane_dir.AngleAbs(other_lane_dir);
-                    if (angle < M_PI / 5 || angle > 4 * M_PI / 5.) {
+                    if (angle < M_PI / 5 /*|| angle > 4 * M_PI / 5.*/) {
                         lanes_group.insert(ingoing_lane_id);
+                        found = true;
                     }
                 }
 
@@ -274,7 +287,17 @@ void RoadsRasterizer::HandleSegments(const Node& center_node,
 
             }
         }
-        raster_map_->traffic_lights.insert({traffic_lights_id, traffic_lights});
+        if (traffic_lights.lanes.size() > 1) {
+            for (size_t i = 0; i < traffic_lights.lanes.size(); i++) {
+                const auto& lanes_group = traffic_lights.lanes[i];
+                for (const auto& lane_id : lanes_group) {
+                    auto& lane = raster_map_->crossroad_lanes.at(lane_id);
+                    lane.traffic_lights_id = traffic_lights_id;
+                    lane.traffic_lights_state = i;
+                }
+            }
+            raster_map_->traffic_lights.insert({traffic_lights_id, traffic_lights});
+        }
 
     }
 }

@@ -33,6 +33,5 @@ private:
     MapPainterPtr map_painter_;
     QTimer frame_update_timer;
     Camera camera_{};
-    PointF map_size_{};
 
 };

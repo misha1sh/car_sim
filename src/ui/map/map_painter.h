@@ -24,10 +24,8 @@ private:
     std::unique_ptr<RasterMap> map_{nullptr};
     DrawSettingsPtr draw_settings_{};
 
-    QBrush background;
-    QBrush circleBrush;
+
     QFont textFont;
-    QPen circlePen;
     QPen textPen;
 
     QImage img{};

@@ -28,12 +28,12 @@ bool is_road(const osmium::Way& way) {
 }
 
 int find_lanes_count(const osmium::Way& way) {
-    const char* lanes_str = way.tags()["A"];
+    const char* lanes_str = way.tags()["lanes"];
     int lanes_count;
     if (!lanes_str || !boost::conversion::try_lexical_convert(lanes_str, lanes_count)) {
         return 1;
     }
-    return lanes_count;
+    return std::min(lanes_count, 2);
 }
 
 bool is_one_way(const osmium::Way& way) {

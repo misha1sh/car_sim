@@ -107,7 +107,7 @@ void RasterMapBuilder::CreateRoadsMap(std::filesystem::path osm_input_file_path)
 //             {5, Node{5, {225 / 2., 0}}}
 //            },
 //            {
-//                    {1, Road{/*id*/ 1, /*lanes_count*/ 1, /* is_oneway */ false, {1, 2, 3, 4, 5}}},
+//                    {1, Road{/*id*/ 1, /*lanes_count*/ 2, /* is_oneway */ false, {1, 2, 3, 4, 5}}},
 //            },
 //            false
 //    );

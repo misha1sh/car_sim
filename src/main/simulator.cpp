@@ -3,9 +3,13 @@
 
 #include "common/geometry.h"
 #include "main/raster_map_builder.h"
+#include "rasterize/roads_rasterizer_utils.h"
 #include "utils/verify.h"
 
 #include <fmt/core.h>
+
+const bool draw_cars_trajectory = false;
+
 
 Simulator::Simulator(const SimulatorParams& params):
         params_(params) {
@@ -77,23 +81,47 @@ void Simulator::WriteCar(const Car& car) {
 }
 
 bool Simulator::TrySpawnCar(int x, int y) {
-    int id = map_->lane_id(x, y);
-    if (id == 0) {
+    int lane_id = map_->lane_id(x, y);
+    if (lane_id == 0) {
         return false;
     }
-    PointF lane_dir = map_->lane_dir.at(id);
+    // check that there not cars around
+    for (int i = - 5; i < 5; i ++) {
+        for (int j  = -5; j < 5; j++) {
+            PointI p = PointF{x + i * map_->pixels_per_meter * 0.3,
+                        y + j *  map_->pixels_per_meter * 0.3}.asPointI();
+            auto val = map_->new_car_cells.getOrDefault(p, 0);
+            if (val != 0) {
+                return false;
+            }
+        }
+    }
+
+    PointF lane_dir = map_->lane_dir.at(lane_id);
 
     Car car;
     car.pos = {x, y};
     car.dir = lane_dir.Norm();
     car.size = (PointF{0.3, 1.} * random_double_(rng_) + PointF{1.5, 4}) * map_->pixels_per_meter;
     car.speed = 3;
-    car.decision_layer = random_int_(rng_) % 2 + 1;
     car.id = car_id_counter_++;
+    car.age = 0;
+
+    const auto car_front = car.pos + car.dir * car.size.y / 2.;
+    const auto perp = car.dir.RightPerpendicular();
+
+    const auto lane_id_at_front_center = map_->lane_id(car_front);
+    const auto lane_id_at_front_right = map_->lane_id(car_front + perp * car.size.x / 2.);
+    const auto lane_id_at_front_left = map_->lane_id(car_front - perp * car.size.x / 2.);
+    if (lane_id_at_front_center != lane_id ||
+            lane_id_at_front_left != lane_id ||
+            lane_id_at_front_right != lane_id) {
+        return false;
+    }
 
     WriteCar(car);
     car_actions_.insert({car.id, actions::GoStraight{}});
-    new_cars_.push_back(car);
+    new_cars_.insert({car.id, car});
 
     return true;
 }
@@ -126,8 +154,8 @@ void Simulator::Clear() {
     //    map_->new_car_cells.fill(CarCellType::NONE);
 //    map_->new_car_data.fill({0, 0});
     /// CLEAR
-    new_cars_.resize(0);
-    for (const auto& car : last_cars_) {
+    new_cars_.clear();
+    for (const auto& [car_id, car] : last_cars_) {
         PolygonI poly = BuildCarPolygon(car.pos, car.size, car.dir);
         // TODO : fill convex
         map_->new_car_cells.fill(poly, 0);
@@ -139,6 +167,32 @@ void Simulator::Clear() {
 }
 
 std::optional<CarAction> Simulator::SimulateGoCrossroad(double delta, Car& car, actions::GoOnCrossroad action) {
+    const auto& start_lane = map_->crossroad_lanes.at(action.start_lane_id);
+
+    if (traffic_lights_state_.contains(start_lane.traffic_lights_id)) {
+        auto& current_state = traffic_lights_state_.at(start_lane.traffic_lights_id);
+
+
+        if (action.counter_pointer) {
+            // means we are already on crossroad
+            // then just go
+        } else {
+            if (current_state.state != start_lane.traffic_lights_state) {
+                // if state is wrong -- just wait
+                return action;
+            }
+            if (current_state.command != TrafficLightsState::Command::Go) {
+                // we are not allowed to go
+                return action;
+            }
+
+            // go on crossroad
+            action.counter_pointer = current_state.cars_counter.GetCounterPointer();
+        }
+
+    }
+
+
     double dist1 = car.speed * map_->pixels_per_meter * delta;
     double dist2 = 0;
     double step = 0.001;
@@ -164,12 +218,30 @@ std::optional<CarAction> Simulator::SimulateGoCrossroad(double delta, Car& car, 
     car.dir = (new_pos - old_pos).Norm();
     car.pos = new_pos;
     action.progress = t;
-    map_->debug(car.pos) = 0xff0000;
+    if (draw_cars_trajectory) {
+        map_->debug(car.pos) = 0xff0000;
+    }
 
     if (t == 1) {
+        const auto lane_id_at_center = map_->lane_id(car.pos);
+        if (!lane_id_at_center) {
+            died_out_of_road2_ ++;
+            if (draw_cars_trajectory) {
+                map_->debug(car.pos) = 0xffff00;
+            }
+            return std::nullopt;
+        }
+        car.dir = map_->lane_dir.at(lane_id_at_center);
+
+
         const auto car_front = car.pos + car.dir * car.size.y / 2.;
         const auto lane_id_at_front_center = map_->lane_id(car_front);
         if (!lane_id_at_front_center) {
+            died_out_of_road2_ ++;
+            if (draw_cars_trajectory) {
+                map_->debug(car.pos) = 0x0000ff;
+                map_->debug(car_front) = 0xff00ff;
+            }
             return std::nullopt;
         }
         car.dir = map_->lane_dir.at(lane_id_at_front_center);
@@ -235,29 +307,66 @@ std::optional<CarAction> Simulator::SimulateGoStraight(double delta, Car& car, a
 
     // FEATURE: Slowdown near crossroad
     if (map_->crossroad_lanes.contains(lane_id_at_front_center)) {
-        const auto start_lane = map_->crossroad_lanes.at(lane_id_at_front_center);
+        const auto& start_lane = map_->crossroad_lanes.at(lane_id_at_front_center);
         const double proj = geometry::OrientedProjectionLength(start_lane.end_point, start_lane.start_point,
                                                                map_->image_projector.projectBackwards(car_front));
+
+        if (start_lane.goes_into_crossroad && start_lane.end_lanes.empty()) {
+//            const PolygonI polygonImage =
+//                    map_->image_projector_.project(ExpandPolyline({start_lane..asPointF(), po.asPointF()}, 0.5));
+            map_->debug.fillBox(map_->image_projector.project(start_lane.start_point),
+                                map_->image_projector.project(start_lane.start_point - PointF{1., 1.}),
+                                0xff0000);
+        }
+
         if (start_lane.goes_into_crossroad &&
             proj < 1. &&
             !start_lane.end_lanes.empty()) {
 
             PointF start_point, end_point, middle_point_1, middle_point_2;
             bool is_bad_proj = true;
-            for (int tries_count = 0; tries_count < 10 && is_bad_proj; tries_count++) {
-                is_bad_proj = false;
-
-                const auto end_lane = start_lane.end_lanes.at(
+            for (int tries_count = 0; tries_count < 20 && is_bad_proj; tries_count++) {
+                const auto [end_lane, end_lane_type] = start_lane.end_lanes.at(
                         random_int_(rng_) % start_lane.end_lanes.size()
                 );
+//                if (end_lane_type == CrossroadLane::EndType::LEFT) {
+//                    if (random_int_(rng_) % 30 != 0) {
+//                        continue;
+//                    }
+//                }
+
+
                 start_point = map_->image_projector.projectBackwards(new_pos);
                 const auto start_dir = (start_lane.end_point - start_lane.start_point).Norm();
 
                 const auto end_dir = (end_lane.end_point - end_lane.start_point).Norm();
-                end_point = end_lane.start_point + end_dir * 3.;
+                end_point = end_lane.start_point + end_dir * 3.; // 3.
 
-                const double curvature_coef = 0.66;
+                if (map_->car_cells(map_->image_projector.project(end_lane.start_point)) ||
+                    map_->car_cells(map_->image_projector.project(end_lane.start_point + end_dir * 3.)) ||
+                    map_->car_cells(map_->image_projector.project(end_lane.start_point + end_dir * 9.))||
+                    map_->car_cells(map_->image_projector.project(end_lane.start_point + end_dir * 12.))) {
+                    if (true || random_int_(rng_) % 10 != 0) {
+                        map_->debug.fillBox(map_->image_projector.project(end_lane.start_point),
+                                            map_->image_projector.project(end_lane.start_point - PointF{1., 1.}),
+                                            0xff00ff);
+                        continue;
+                    }
+                } else {
+                    map_->debug.fillBox(map_->image_projector.project(end_lane.start_point),
+                                        map_->image_projector.project(end_lane.start_point - PointF{1., 1.}),
+                                        0x00ff00);
+                }
 
+
+                double curvature_coef = 0.9;//0.8; // 0.66
+                if (end_lane_type == CrossroadLane::EndType::LEFT ||
+                        end_lane_type == CrossroadLane::EndType::RIGHT) {
+                    curvature_coef = 0.5;
+                }
+
+
+                is_bad_proj = false;
                 auto proj1 = geometry::OrientedProjectionLength(start_point, start_point + start_dir,
                                                                 end_point);
                 if (proj1 < 1.) {
@@ -270,11 +379,17 @@ std::optional<CarAction> Simulator::SimulateGoStraight(double delta, Car& car, a
                                                                 start_point);
                 if (proj2 < 1.) {
                     proj2 = 1.;
-                    is_bad_proj = false;
+                    is_bad_proj = true; // ?
                 }
                 middle_point_2 = end_point - end_dir * (proj2 * curvature_coef);
             }
 
+            if (is_bad_proj) {
+                map_->debug.fillBox(map_->image_projector.project(start_lane.start_point),
+                                    map_->image_projector.project(start_lane.start_point - PointF{1., 1.}),
+                                    0xff00ff);
+                return std::nullopt;
+            }
 
 // DRAW beizer curve
 //            for (double t = 0; t < 1; t += 0.001) {
@@ -285,11 +400,13 @@ std::optional<CarAction> Simulator::SimulateGoStraight(double delta, Car& car, a
 //            }
 
             return actions::GoOnCrossroad{
+               .start_lane_id = lane_id_at_front_center,
                .start_point= start_point,
                .middle_point_1= middle_point_1,
                .middle_point_2= middle_point_2,
                .end_point= end_point,
-               .progress=0.
+               .progress=0.,
+               .counter_pointer= std::nullopt
             } ;
         }
     }
@@ -314,7 +431,9 @@ std::optional<CarAction> Simulator::SimulateGoStraight(double delta, Car& car, a
 //        new_car_dir = ideal_dir;
     }
 
-    map_->debug(new_pos) = 0x00ff00;
+    if (draw_cars_trajectory) {
+        map_->debug(new_pos) = 0x00ff00;
+    }
     car.pos = new_pos;
     car.dir = new_car_dir;
 
@@ -337,26 +456,25 @@ std::optional<CarAction> Simulator::SimulateCar(double delta, Car& car) {
 }
 
 void Simulator::SimulateCars(double delta) {
-    auto guard = map_holder_.Get(map_);
 
-    VERIFY(map_);
     Clear();
 
 
     /// MAIN LOOP
-    int died_in_collision = 0;
-    int died_out_of_road = 0;
-    for (Car car : cars_) {
+    died_out_of_road_ = 0;
+    died_out_of_road2_ = 0;
+    died_in_collision_ = 0;
+    for (auto [car_id, car] : cars_) {
         if (map_->car_cells(car.pos) != car.id) {
-            died_in_collision++;
+            died_in_collision_++;
             continue;
         }
         if (car.pos.x < 10  * map_->pixels_per_meter || car.pos.y < 10  * map_->pixels_per_meter) {
-            died_out_of_road++;
+            died_out_of_road_++;
             continue;
         }
         if (car.pos.x + 10  * map_->pixels_per_meter > map_->size.x || car.pos.y + 10  * map_->pixels_per_meter > map_->size.y) {
-            died_out_of_road++;
+            died_out_of_road_++;
             continue;
         }
 
@@ -368,21 +486,38 @@ void Simulator::SimulateCars(double delta) {
             continue;
         }
 
-        if (HasCollisionAt(car, car.pos, car.dir, 2., true) /*||
-                HasCollisionAt(car, car.pos, car.dir, 2., false)*/) {
+        if (HasCollisionAt(car, car.pos, car.dir, 2., /*count_rear*/false, /*new_cars*/true,
+                           /*ignore_colinear */ false) ||
+                HasCollisionAt(car, car.pos, car.dir, 2., /*count_rear*/ false, /*new_cars*/false,
+                               /*ignore_colinear */ false)) {
+            // only add age for cars that are not stuck in usual traffic
+            if (HasCollisionAt(car, car.pos, car.dir, 2., /*count_rear*/false, /*new_cars*/true,
+                    /*ignore_colinear */ true) ||
+                HasCollisionAt(car, car.pos, car.dir, 2., /*count_rear*/ false, /*new_cars*/false,
+                        /*ignore_colinear */ true)) {
+                car.age++;
+            }
+
             car.pos = old_pos;
             car.dir = old_dir;
         } else {
             car_actions_.at(car.id) = *action_opt;
         }
 
-        if (HasCollisionAt(car, car.pos, car.dir, 0., true)) {
-            died_in_collision++;
+
+
+        if (HasCollisionAt(car, car.pos, car.dir, 0., /*count_rear*/ false, /*new_cars*/ true,
+                           /*ignore_colinear */ false)) {
+            died_in_collision_++;
+            continue;
+        }
+        if (car.age > 100) {
+            died_in_collision_++;
             continue;
         }
 
         WriteCar(car);
-        new_cars_.emplace_back(car);
+        new_cars_.insert({car.id, car});
     }
 
     int spawned_count = 0;
@@ -397,13 +532,25 @@ void Simulator::SimulateCars(double delta) {
     std::swap(cars_, new_cars_);
 
 
-    if (died_in_collision != 0 || died_out_of_road != 0 || spawned_count != 0) {
-        std::cout<< "cars : " << "collisions=" << died_in_collision << " out_of_road="  << died_out_of_road << " spawned=" << spawned_count << "\n";
+    for (auto it = car_actions_.begin(); it != car_actions_.end();) {
+        if (cars_.contains(it->first)) {
+            ++it;
+        } else {
+            it = car_actions_.erase(it);
+        }
+    }
+
+    VERIFY(cars_.size() == car_actions_.size());
+
+    if (died_in_collision_ != 0 || died_out_of_road_ != 0 || spawned_count != 0) {
+        std::cout<< "cars : " << "collisions=" << died_in_collision_ << " out_of_road="  << died_out_of_road_ << " " << died_out_of_road2_ << " spawned=" << spawned_count << "\n";
     }
 }
 
 
-bool Simulator::HasCollisionAt(const Car& car, const PointF& pos, const PointF& dir, const double forward_margin, bool with_new) {
+bool Simulator::HasCollisionAt(const Car& car, const PointF& pos, const PointF& dir,
+                               const double forward_margin, bool count_from_backward, bool with_new,
+                               bool ignore_colinear) {
     const auto perp = dir.RightPerpendicular();
     auto size = car.size / 2.;
 
@@ -411,49 +558,89 @@ bool Simulator::HasCollisionAt(const Car& car, const PointF& pos, const PointF& 
     auto& m = with_new? map_->new_car_cells : map_->car_cells;
     auto check = [&](const PointF& p) -> bool {
         const int val = m(p.asPointI());
-        return val != 0 && val != car.id;
+        bool res = val != 0 && val != car.id;
+        if (res && ignore_colinear) {
+            const auto angle = cars_.at(val).dir.AngleAbs(car.dir);
+            bool is_colinear = angle < M_PI / 6;
+            return !is_colinear;
+        }
+        return res;
     };
 
     if (check(pos + dir * (size.y + forward_margin) + perp * size.x)) {
         return true;
     }
+    if (check(pos + dir * (size.y + forward_margin))) {
+        return true;
+    }
     if (check(pos + dir * (size.y + forward_margin) - perp * size.x)) {
         return true;
     }
-    if (check(pos - dir * size.y + perp * size.x)) {
+    if (count_from_backward && check(pos - dir * size.y + perp * size.x)) {
         return true;
     }
-    if (check(pos - dir * size.y - perp * size.x)) {
+    if (count_from_backward && check(pos - dir * size.y - perp * size.x)) {
         return true;
     }
     return false;
 }
 
+void Simulator::UpdateTrafficLights(double  delta) {
+    for (const auto& [traffic_lights_id, traffic_lights] : map_->traffic_lights) {
+        if (traffic_lights.lanes.empty()) {
+            continue;
+        }
+
+        if (!traffic_lights_state_.contains(traffic_lights_id)) {
+            traffic_lights_state_.insert({traffic_lights_id, TrafficLightsState{
+                .command = TrafficLightsState::Command::Go,
+                .state = 0,
+                .cars_counter = AutomaticCounter(),
+                .time_to_next_state = 5
+            }});
+        }
+        auto& state = traffic_lights_state_.at(traffic_lights_id);
+        state.time_to_next_state -= delta;
+
+        thread_local const std::vector<int> colors = {
+                0xff0000,
+                0x0000ff,
+                0xff00ff,
+                0x00ff00,
+                0xa000d0,
+                0x00ffff,
+                0x00aaaa,
+                0xbbbbbb
+        };
+        if (state.time_to_next_state < 0) {
+            if (state.cars_counter.Count() > 0) {
+                // wait till everybody leaves crossroad
+                if (state.command != TrafficLightsState::Command::ClearCrossroad) {
+                    state.command = TrafficLightsState::Command::ClearCrossroad;
+                    const auto polyF = ExpandPoint(traffic_lights.center, 0.8);
+                    const auto polyI = map_->image_projector.project(polyF);
+                    map_->debug.fill(polyI, 0xffff00 /*yellow*/);
+                }
+            } else {
+                state.time_to_next_state = 5.;
+                state.state = (state.state + 1u) % traffic_lights.lanes.size();
+                state.command = TrafficLightsState::Command::Go;
+                const auto polyF = ExpandPoint(traffic_lights.center, 0.8);
+                const auto polyI = map_->image_projector.project(polyF);
+                map_->debug.fill(polyI, colors[state.state % colors.size()]);
+            }
+        }
+    }
+}
 
 void Simulator::RunTick() {
     VERIFY(state_ == State::PAUSED)
     state_ = State::RUNNING;
+    auto guard = map_holder_.Get(map_);
 
-//    for (const auto& [traffic_lights_id, traffic_lights] : map_->traffic_lights) {
-//        if (traffic_lights.lanes.empty()) {
-//            continue;
-//        }
-//
-//        if (!traffic_lights_state_.contains(traffic_lights_id)) {
-//            traffic_lights_state_.insert({traffic_lights_id, TrafficLightsState{
-//                .state = 0,
-//                .traffic_lights_id = 5
-//            }});
-//        }
-//        const auto& state = traffic_lights_state_.at(traffic_lights_id);
-//        state.time_to_next_state -= params_.delta_time_per_simulation;
-//
-//        if (state.time_to_next_state < 0) {
-//            state.time_to_next_state = 5.;
-////            state.lanes
-//        }
-//    }
+    VERIFY(map_);
 
+    UpdateTrafficLights(params_.delta_time_per_simulation);
     if (params_.enable_cars) {
         SimulateCars(params_.delta_time_per_simulation);
     }

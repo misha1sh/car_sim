@@ -10,10 +10,6 @@ MapPainter::MapPainter() {
     gradient.setColorAt(0.0, Qt::white);
     gradient.setColorAt(1.0, QColor(0xa6, 0xce, 0x39));
 
-    background = QBrush(QColor(10, 10, 10));
-    circleBrush = QBrush(gradient);
-    circlePen = QPen(Qt::black);
-    circlePen.setWidth(1);
     textPen = QPen(Qt::white);
     textFont.setPixelSize(12);
 }

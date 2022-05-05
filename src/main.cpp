@@ -29,7 +29,7 @@ std::optional<SimulatorParams> ReadFromYaml(const std::string& path) {
     } catch (const YAML::BadFile& exception) {
         ShowErrorMessage("Could not read file settings.yaml");
     } catch (const YAML::InvalidNode& node) {
-        ShowErrorMessage("Invalid data in settins.yaml: " + node.msg);
+        ShowErrorMessage("Invalid data in settings.yaml: " + node.msg);
     } catch (...) {
         ShowErrorMessage("Unable to parse settings.yaml");
     }

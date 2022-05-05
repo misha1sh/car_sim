@@ -17,13 +17,23 @@
 //    BODY = 254,
 //};
 
+
+
 struct CrossroadLane {
+    enum class EndType : unsigned char {
+        STRAIGHT,
+        LEFT,
+        RIGHT
+    };
+
     bool goes_into_crossroad;
     PointF start_point;
     PointF end_point;
     int lane_num;
 
-    std::vector<CrossroadLane> end_lanes;
+    int traffic_lights_id;
+    int traffic_lights_state;
+    std::vector<std::pair<CrossroadLane, EndType>> end_lanes;
 };
 
 struct TrafficLights {

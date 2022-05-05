@@ -239,6 +239,19 @@ void RoadsRasterizer::RasterizeRoads(RasterMap &map) {
         crossroad_nodes_merge_backward_.insert({node_id, nodes_to_merge});
     }
 
+//    for (const auto& [road_id, road] : vector_map_->roads) {
+//        for (int i= 0; i + 1 < road.nodes.size(); i++) {
+////            const auto c1 = vector_map_->nodes.at(road.nodes[i]).c;
+////            const auto c2 = vector_map_->nodes.at(road.nodes[i + 1]).c;
+//            const auto c1 = GetMergedNode(road.nodes[i]).c;
+//            const auto c2 = GetMergedNode(road.nodes[i + 1]).c;
+//
+//            const auto polygon = ExpandPolyline(PolylineF{c1, c2},  4 * 0.4);
+//            const PolygonI polygonImage = image_projector_->project(polygon);
+//            map.debug.fill(polygonImage, 0x0000ff);
+//        }
+//
+//    }
 
     for (const auto& [node_id, roads_for_node] : vector_map_->roads_for_node) {
         const Node& center_node = nodes_.at(node_id);
@@ -249,6 +262,7 @@ void RoadsRasterizer::RasterizeRoads(RasterMap &map) {
             if (crossroad_nodes_merge_.contains(node_id) &&
                 crossroad_nodes_merge_.at(node_id) != node_id) {
                 color = 0xff0000;
+                continue;
             } else if (crossroad_nodes_merge_.contains(node_id) &&
                        crossroad_nodes_merge_.at(node_id) == node_id) {
                 color = 0x00ff00;
